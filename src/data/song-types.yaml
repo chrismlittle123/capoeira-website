@@ -7,17 +7,17 @@ louvacao:
   name: Louvação
   plural: Louvações
   order: 2
-  description: Call-and-response praise that follows the ladainha — "Iê viva meu Deus… camará". Gives thanks to God, the mestres and the capoeira itself.
+  description: Call-and-response praise that follows the ladainha — "Iê viva meu Deus… camará". Gives thanks to God, the mestres and the capoeira itself. In the Angola tradition this is often called the chula or canto de entrada.
 chula:
   name: Chula
   plural: Chulas
   order: 3
-  description: A short solo sung between the ladainha and the corridos, or to change the energy of the roda. Often used interchangeably with "quadra".
+  description: A name with different meanings between lineages — in many Angola rodas it is the louvação itself; elsewhere a short solo verse sung to open the roda or change its energy. Use it for songs your group calls chulas.
 quadra:
   name: Quadra
   plural: Quadras
   order: 4
-  description: A four-line (or short) solo verse typical of Capoeira Regional, sung to open a roda before the corridos begin.
+  description: A short solo verse, often four lines, typical of Capoeira Regional, sung to open a roda before the corridos begin.
 corrido:
   name: Corrido
   plural: Corridos

@@ -13,14 +13,14 @@ mestre-pastinha:
 besouro-manganga:
   name: Besouro Mangangá
   kind: legendary
-  aka: [Besouro Preto, Manoel Henrique Pereira]
-  lived: 1895–1924
+  aka: [Besouro Cordão de Ouro, Manoel Henrique Pereira]
+  lived: c. 1895–1924
   description: Legendary capoeirista from Santo Amaro, said to have a "corpo fechado" — a body that bullets and blades could not harm.
 lampiao:
   name: Lampião
   kind: historical
   aka: [Virgulino Ferreira da Silva]
-  lived: 1898–1938
+  lived: c. 1897–1938
   description: The most famous cangaceiro (bandit) of the Brazilian northeastern backlands.
 zumbi-dos-palmares:
   name: Zumbi dos Palmares

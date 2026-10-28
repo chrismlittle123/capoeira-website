@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getSongs, getNames, lyricsOf } from '../lib/songs';
+import { getSongs, getNames, lyricsOf, mediaBadge } from '../lib/songs';
 import { allLines, hookLine } from '../lib/lyrics';
 
 export interface SearchDoc {
@@ -16,7 +16,8 @@ export interface SearchDoc {
   lyrics: string;
   translation: string;
   lines: string[];
-  audio: boolean;
+  /** e.g. { icon: '▶', label: 'watch' } when the song has recordings */
+  media?: { icon: string; label: string };
 }
 
 export const GET: APIRoute = async () => {
@@ -42,7 +43,7 @@ export const GET: APIRoute = async () => {
       lyrics: [...new Set(lines.map((l) => l.text))].join('\n'),
       translation: [...new Set(lines.map((l) => l.translation).filter(Boolean))].join('\n'),
       lines: [...new Set(lines.flatMap((l) => [l.text, l.translation ?? '']).filter(Boolean))],
-      audio: d.recordings.length > 0,
+      media: mediaBadge(song),
     };
   });
   return new Response(JSON.stringify(docs), { headers: { 'Content-Type': 'application/json' } });

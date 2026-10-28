@@ -1,5 +1,5 @@
-@import '@fontsource-variable/fraunces/full.css';
-@import '@fontsource-variable/fraunces/full-italic.css';
+@import '@fontsource-variable/fraunces/soft.css';
+@import '@fontsource-variable/fraunces/wght-italic.css';
 @import '@fontsource-variable/outfit';
 
 /* ───────────────────────── Tokens ───────────────────────── */
@@ -18,7 +18,7 @@
   --surface-3: #3a2919;
   --text: #f6ecdc;
   --muted: #bda78a;
-  --faint: #8a735a;
+  --faint: #a48c70;
   --line: rgba(246, 236, 220, 0.11);
   --gold: #f2b54b;
   --gold-ink: #241505;
@@ -47,14 +47,14 @@
     --surface-2: #f1e5d1;
     --surface-3: #e6d4b8;
     --text: #2a1b0e;
-    --muted: #775e45;
-    --faint: #a08669;
+    --muted: #5f4a35;
+    --faint: #735c43;
     --line: rgba(42, 27, 14, 0.12);
-    --gold: #b67710;
+    --gold: #8a5800;
     --gold-ink: #fffaf1;
     --green: #237347;
-    --terra: #b4441f;
-    --coro: #9a5f05;
+    --terra: #a33c18;
+    --coro: #8a5300;
     --solo: #2a1b0e;
     --mark: rgba(242, 170, 50, 0.38);
     --shadow: 0 10px 30px -14px rgba(80, 50, 20, 0.35);
@@ -68,14 +68,14 @@
   --surface-2: #f1e5d1;
   --surface-3: #e6d4b8;
   --text: #2a1b0e;
-  --muted: #775e45;
-  --faint: #a08669;
+  --muted: #5f4a35;
+  --faint: #735c43;
   --line: rgba(42, 27, 14, 0.12);
-  --gold: #b67710;
+  --gold: #8a5800;
   --gold-ink: #fffaf1;
   --green: #237347;
-  --terra: #b4441f;
-  --coro: #9a5f05;
+  --terra: #a33c18;
+  --coro: #8a5300;
   --solo: #2a1b0e;
   --mark: rgba(242, 170, 50, 0.38);
   --shadow: 0 10px 30px -14px rgba(80, 50, 20, 0.35);
@@ -190,6 +190,20 @@ p {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+.skip:focus-visible {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 12px;
+  width: auto;
+  height: auto;
+  padding: 10px 16px;
+  clip-path: none;
+  border-radius: 99px;
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-weight: 600;
+}
 .eyebrow {
   font: 600 12px/1 var(--font-ui);
   letter-spacing: 0.16em;
@@ -234,6 +248,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-height: 36px;
   padding: 6px 12px;
   border-radius: 99px;
   border: 1px solid var(--line);
@@ -264,7 +279,7 @@ button.chip:hover {
   opacity: 0.7;
 }
 .chip-type {
-  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  background: color-mix(in srgb, var(--gold) 11%, transparent);
   border-color: color-mix(in srgb, var(--gold) 40%, transparent);
   color: var(--gold);
   font-weight: 600;
@@ -449,9 +464,14 @@ button.chip:hover {
   @view-transition {
     navigation: none;
   }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 /* room for the docked mini-player */
-body:has(.player.docked) main {
-  padding-bottom: 140px;
+body:has(.player.docked) {
+  padding-bottom: 110px;
 }

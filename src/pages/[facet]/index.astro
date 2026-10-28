@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { FACETS, getSongs, getTaxonomy, facetIds, facetUrl, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
 
 export function getStaticPaths() {
   return (Object.keys(FACETS) as TaxonomyKey[]).map((key) => ({ params: { facet: FACETS[key].path }, props: { key } }));
@@ -8,7 +8,10 @@ export function getStaticPaths() {
 const { key } = Astro.props as { key: TaxonomyKey };
 const facet = FACETS[key];
 const [songs, entries] = await Promise.all([getSongs(), getTaxonomy(key)]);
-const items = entries.map((e) => ({ e, n: songs.filter((s) => facetIds(s, key).includes(e.id)).length }));
+// entries that have songs first; empty ones stay listed (they explain the ontology) but dimmed
+const items = entries
+  .map((e) => ({ e, n: songs.filter((s) => facetIds(s, key).includes(e.id)).length }))
+  .sort((a, b) => Number(b.n > 0) - Number(a.n > 0));
 ---
 
 <Base title={facet.label} description={facet.blurb}>
@@ -22,11 +25,10 @@ const items = entries.map((e) => ({ e, n: songs.filter((s) => facetIds(s, key).i
       {
         items.map(({ e, n }, i) => (
           <li style={`--i:${i}`}>
-            <a class="card" href={facetUrl(key, e.id)}>
+            <a class:list={['card', n === 0 && 'empty']} href={facetUrl(key, e.id)}>
               <div class="meta">
                 {'emoji' in e.data && e.data.emoji && <span aria-hidden="true">{e.data.emoji}</span>}
-                {'lived' in e.data && e.data.lived && <span>{e.data.lived}</span>}
-                {'tempo' in e.data && e.data.tempo && <span>{e.data.tempo} tempo</span>}
+                <span>{entryFacts(e.data).join(' · ')}</span>
                 <span class="n">{n === 0 ? 'no songs yet' : `${n} ${n === 1 ? 'song' : 'songs'}`}</span>
               </div>
               <h3>{e.data.name}</h3>
@@ -65,5 +67,12 @@ const items = entries.map((e) => ({ e, n: songs.filter((s) => facetIds(s, key).i
   }
   .n {
     margin-left: auto;
+    white-space: nowrap;
+  }
+  .empty {
+    opacity: 0.6;
+  }
+  .empty:hover {
+    opacity: 1;
   }
 </style>

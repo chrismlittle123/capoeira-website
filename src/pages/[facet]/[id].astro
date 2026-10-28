@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
-import { FACETS, getSongs, getNames, getTaxonomy, facetIds, facetUrl, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, getSongs, getNames, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -24,8 +24,17 @@ const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).
   <div class="wrap">
     <header class="page-head">
       <p class="eyebrow"><a href={facetUrl(key)}>{facet.label}</a></p>
-      <h1>{typeof data.emoji === 'string' && <span class="emoji" aria-hidden="true">{data.emoji}</span>} {data.name}</h1>
-      {(aka || data.lived) && <p class="muted">{[aka, data.lived].filter(Boolean).join(' · ')}</p>}
+      <h1>
+        {typeof data.emoji === 'string' && <span class="emoji" aria-hidden="true">{`${data.emoji} `}</span>}{data.name}
+      </h1>
+      {aka && <p class="muted">Also known as {aka}</p>}
+      {entryFacts(data).length > 0 && (
+        <ul class="chips facts">
+          {entryFacts(data).map((f) => (
+            <li class="chip">{f}</li>
+          ))}
+        </ul>
+      )}
       {data.description && <p class="desc">{data.description}</p>}
     </header>
     <div class="corda" aria-hidden="true"></div>
@@ -62,6 +71,9 @@ const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).
   }
   .eyebrow a {
     text-decoration: none;
+  }
+  .facts {
+    margin: 12px 0 4px;
   }
   .desc {
     font-size: 18px;

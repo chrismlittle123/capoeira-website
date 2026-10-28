@@ -2,12 +2,12 @@
 import { getEntries, getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Lyrics from '../../components/Lyrics.astro';
-import AudioPlayer from '../../components/AudioPlayer.astro';
+import MediaPlayer from '../../components/MediaPlayer.astro';
 import SongCard from '../../components/SongCard.astro';
 import Icon from '../../components/Icon.astro';
 import Berimbau from '../../components/Berimbau.astro';
 import { getSongs, getNames, lyricsOf, facetIds, facetUrl, songUrl, type Song, type TaxonomyKey } from '../../lib/songs';
-import { allLines, hasTranslation } from '../../lib/lyrics';
+import { allLines, hasTranslation, plainText } from '../../lib/lyrics';
 import { SITE } from '../../site.config';
 
 export async function getStaticPaths() {
@@ -30,19 +30,18 @@ const names = await getNames();
 const type = (await getEntry(d.type))!;
 const [toques, people] = await Promise.all([getEntries(d.toques), getEntries(d.people)]);
 
-// Related: explicit links first, then songs sharing toques/themes.
+// Related: explicit links first, then shared themes/people/places. Toques are shared by
+// so many songs that they only break ties.
 const all = await getSongs();
 const explicit = new Set(d.related.map((r) => r.id));
+const WEIGHTS: [TaxonomyKey, number][] = [['themes', 3], ['people', 3], ['places', 2], ['toques', 0.5]];
 const score = (s: Song) =>
   (explicit.has(s.id) || s.data.related.some((r) => r.id === song.id) ? 10 : 0) +
-  (['themes', 'toques', 'people', 'places'] as TaxonomyKey[]).reduce(
-    (n, k) => n + facetIds(s, k).filter((id) => facetIds(song, k).includes(id)).length,
-    0,
-  );
+  WEIGHTS.reduce((n, [k, w]) => n + w * facetIds(s, k).filter((id) => facetIds(song, k).includes(id)).length, 0);
 const related = all
   .filter((s) => s.id !== song.id)
   .map((s) => ({ s, n: score(s) }))
-  .filter((x) => x.n > 0)
+  .filter((x) => x.n >= 2)
   .sort((a, b) => b.n - a.n)
   .slice(0, 4)
   .map((x) => x.s);
@@ -58,25 +57,35 @@ const allFacts: Fact[] = [
 ];
 const facts = allFacts.filter((f) => f.items.length);
 
-const plainLyrics = sections
-  .map((s) => `${s.label}\n${s.stanzas.map((st) => st.map((l) => l.text).join('\n')).join('\n\n')}`)
-  .join('\n\n');
+const nonEmpty = <T,>(a: T[]) => (a.length ? a : undefined);
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'MusicComposition',
   name: d.title,
-  alternateName: d.alternateTitles,
+  alternateName: nonEmpty(d.alternateTitles),
   genre: ['Capoeira', type.data.name],
   inLanguage: d.language,
   composer: d.composer ? { '@type': 'Person', name: d.composer } : undefined,
-  lyrics: { '@type': 'CreativeWork', text: plainLyrics, inLanguage: d.language },
-  about: people.map((p) => ({ '@type': 'Person', name: p.data.name })),
-  recordedAs: d.recordings.map((r) => ({
-    '@type': 'MusicRecording',
-    name: r.title ?? d.title,
-    byArtist: r.performer ? { '@type': 'MusicGroup', name: r.performer } : undefined,
-    audio: { '@type': 'AudioObject', contentUrl: new URL(r.file, Astro.site).href },
-  })),
+  lyrics: { '@type': 'CreativeWork', text: plainText(sections), inLanguage: d.language },
+  about: nonEmpty(people.map((p) => ({ '@type': 'Person', name: p.data.name }))),
+  recordedAs: nonEmpty(
+    d.recordings.map((r) => ({
+      '@type': 'MusicRecording',
+      name: r.title ?? d.title,
+      byArtist: r.performer ? { '@type': 'MusicGroup', name: r.performer } : undefined,
+      ...(r.kind === 'youtube'
+        ? {
+            video: {
+              '@type': 'VideoObject',
+              name: r.title ?? d.title,
+              embedUrl: `https://www.youtube-nocookie.com/embed/${r.videoId}`,
+              thumbnailUrl: `https://i.ytimg.com/vi/${r.videoId}/hqdefault.jpg`,
+              url: r.src,
+            },
+          }
+        : { audio: { '@type': 'AudioObject', contentUrl: new URL(r.src, Astro.site).href } }),
+    })),
+  ),
   license: SITE.licenseUrl,
   url: new URL(songUrl(song.id), Astro.site).href,
 };
@@ -85,9 +94,9 @@ const description =
 const translated = hasTranslation(sections);
 ---
 
-<Base title={d.title} description={description} jsonLd={jsonLd}>
+<Base title={d.title} description={description} jsonLd={jsonLd} type="music.song">
   <article class="wrap song">
-    <a class="back" href="/"><Icon name="back" size={18} /> All songs</a>
+    <a class="back" href="/songs/"><Icon name="back" size={18} /> All songs</a>
 
     <header class="head">
       <div class="head-text">
@@ -99,28 +108,27 @@ const translated = hasTranslation(sections);
       <div class="head-art" aria-hidden="true"><Berimbau height={190} /></div>
     </header>
 
-    {d.recordings.length > 0 && <AudioPlayer recordings={d.recordings} songTitle={d.title} />}
+    {d.recordings.length > 0 && <MediaPlayer recordings={d.recordings} songTitle={d.title} />}
 
     <div class="toolbar" role="toolbar" aria-label="Reading options">
       {
         translated && (
-          <button class="icon-btn" type="button" data-tool="translation" aria-pressed="true" title="Show translation">
+          <button class="icon-btn" type="button" data-tool="translation" aria-pressed="true" aria-label="Show translation" title="Hide translation">
             <Icon name="translate" />
-            <span class="sr-only">Show translation</span>
           </button>
         )
       }
-      <button class="icon-btn" type="button" data-tool="smaller" title="Smaller text">
-        <span class="aa small">A</span><span class="sr-only">Smaller text</span>
+      <button class="icon-btn" type="button" data-tool="smaller" aria-label="Smaller text" title="Smaller text">
+        <span class="aa small" aria-hidden="true">A</span>
       </button>
-      <button class="icon-btn" type="button" data-tool="bigger" title="Bigger text">
-        <span class="aa big">A</span><span class="sr-only">Bigger text</span>
+      <button class="icon-btn" type="button" data-tool="bigger" aria-label="Bigger text" title="Bigger text">
+        <span class="aa big" aria-hidden="true">A</span>
       </button>
-      <button class="icon-btn" type="button" data-tool="awake" aria-pressed="false" title="Keep screen on" hidden>
-        <Icon name="eye" /><span class="sr-only">Keep screen on</span>
+      <button class="icon-btn" type="button" data-tool="awake" aria-pressed="false" aria-label="Keep screen on" title="Keep screen on" hidden>
+        <Icon name="eye" />
       </button>
-      <button class="icon-btn" type="button" data-tool="share" title="Share">
-        <Icon name="share" /><span class="sr-only">Share</span>
+      <button class="icon-btn" type="button" data-tool="share" aria-label="Share" title="Share">
+        <Icon name="share" />
       </button>
       <span class="toast" data-toast aria-live="polite"></span>
     </div>
@@ -152,7 +160,7 @@ const translated = hasTranslation(sections);
                 <dd>
                   <ul class="chips">
                     {f.items.map((it) => (
-                      <li>{f.key ? <a class="chip" href={facetUrl(f.key, it.id)}>{it.name}</a> : <span class="chip">{it.name}</span>}</li>
+                      <li>{f.key ? <a class="chip" href={facetUrl(f.key, it.id)}>{it.name}</a> : <span class="plain">{it.name}</span>}</li>
                     ))}
                   </ul>
                 </dd>
@@ -199,7 +207,6 @@ const translated = hasTranslation(sections);
 
 <script>
   const root = document.documentElement;
-  const lyrics = document.querySelector<HTMLElement>('[data-lyrics]')!;
   const toast = document.querySelector<HTMLElement>('[data-toast]')!;
   const tool = (name: string) => document.querySelector<HTMLButtonElement>(`[data-tool="${name}"]`);
   const store = {
@@ -222,64 +229,84 @@ const translated = hasTranslation(sections);
     setTimeout(() => toast.classList.remove('show'), 1800);
   };
 
-  // translation
+  // translation (the class lives on <html> so it can be applied before first paint)
   const tr = tool('translation');
   const setTr = (on: boolean) => {
-    lyrics.classList.toggle('hide-translation', !on);
+    root.classList.toggle('hide-translation', !on);
     tr?.setAttribute('aria-pressed', String(on));
+    tr?.setAttribute('title', on ? 'Hide translation' : 'Show translation');
     store.set('translation', on ? '1' : '0');
   };
   setTr(store.get('translation') !== '0');
   tr?.addEventListener('click', () => setTr(tr.getAttribute('aria-pressed') !== 'true'));
 
   // text size
+  const MIN = 0.8;
+  const MAX = 1.8;
+  const smaller = tool('smaller')!;
+  const bigger = tool('bigger')!;
   let scale = Number(store.get('lyric-scale') ?? 1) || 1;
   const setScale = (s: number) => {
-    scale = Math.min(1.8, Math.max(0.8, Math.round(s * 10) / 10));
+    scale = Math.min(MAX, Math.max(MIN, Math.round(s * 10) / 10));
     root.style.setProperty('--lyric-scale', String(scale));
     store.set('lyric-scale', String(scale));
+    smaller.disabled = scale <= MIN;
+    bigger.disabled = scale >= MAX;
   };
   setScale(scale);
-  tool('smaller')?.addEventListener('click', () => setScale(scale - 0.1));
-  tool('bigger')?.addEventListener('click', () => setScale(scale + 0.1));
+  smaller.addEventListener('click', () => setScale(scale - 0.1));
+  bigger.addEventListener('click', () => setScale(scale + 0.1));
 
   // keep the screen awake while reading in the roda
   const awake = tool('awake');
   let lock: WakeLockSentinel | null = null;
+  let wantAwake = false; // the browser drops the lock when the tab is hidden; re-take it on return
   if ('wakeLock' in navigator && awake) {
     awake.hidden = false;
     const request = async () => {
       try {
         lock = await navigator.wakeLock.request('screen');
-        awake.setAttribute('aria-pressed', 'true');
-        lock.addEventListener('release', () => awake.setAttribute('aria-pressed', 'false'));
-      } catch {}
+        return true;
+      } catch {
+        return false;
+      }
     };
     awake.addEventListener('click', async () => {
-      if (lock && !lock.released) {
-        await lock.release();
+      if (wantAwake) {
+        wantAwake = false;
+        await lock?.release();
         lock = null;
         say('Screen can sleep');
-      } else {
-        await request();
+      } else if (await request()) {
+        wantAwake = true;
         say('Screen stays on');
+      } else {
+        say("Couldn't keep the screen on");
       }
+      awake.setAttribute('aria-pressed', String(wantAwake));
     });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && awake.getAttribute('aria-pressed') === 'true') request();
+      if (document.visibilityState === 'visible' && wantAwake) request();
     });
   }
 
   // share
   tool('share')?.addEventListener('click', async () => {
     const data = { title: document.title, url: location.href };
-    try {
-      if (navigator.share) await navigator.share(data);
-      else {
-        await navigator.clipboard.writeText(location.href);
-        say('Link copied');
+    if (navigator.share) {
+      try {
+        await navigator.share(data);
+        return;
+      } catch (e) {
+        if ((e as DOMException).name === 'AbortError') return; // user closed the share sheet
       }
-    } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(location.href);
+      say('Link copied');
+    } catch {
+      say(location.href);
+    }
   });
 
   // remember recently viewed songs
@@ -361,6 +388,21 @@ const translated = hasTranslation(sections);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--line);
     box-shadow: var(--shadow);
+  }
+  @media (max-width: 860px) {
+    /* on phones a pinned toolbar would sit on top of the lyrics */
+    .toolbar {
+      position: static;
+      box-shadow: none;
+    }
+  }
+  .icon-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .plain {
+    display: inline-block;
+    padding: 6px 0;
   }
   .aa {
     font-family: var(--font-display);

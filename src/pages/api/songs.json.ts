@@ -29,7 +29,11 @@ export const GET: APIRoute = async ({ site }) => {
       summary: d.summary,
       about: d.about,
       lyrics: lyricsOf({ id, data: d, ...song }),
-      recordings: d.recordings.map((r) => ({ ...r, file: abs(r.file) })),
+      recordings: d.recordings.map(({ src, videoId, ...r }) =>
+        r.kind === 'youtube'
+          ? { ...r, url: src, youtubeId: videoId }
+          : { ...r, url: abs(src) },
+      ),
       added: d.added,
       updated: d.updated,
     })),

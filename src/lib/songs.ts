@@ -46,7 +46,7 @@ export function facetIds(song: Song, key: TaxonomyKey): string[] {
 
 export async function getTaxonomy<K extends TaxonomyKey>(key: K): Promise<CollectionEntry<K>[]> {
   const entries = (await getCollection(key)) as CollectionEntry<K>[];
-  const order = (e: CollectionEntry<K>) => ('order' in e.data ? e.data.order : 0);
+  const order = (e: CollectionEntry<K>) => (e.data as { order?: number }).order ?? 999;
   return entries.sort((a, b) => order(a) - order(b) || a.data.name.localeCompare(b.data.name, 'pt'));
 }
 
@@ -61,5 +61,32 @@ export async function getNames() {
 
 export const lyricsOf = (song: Song) => parseLyrics(song.body ?? '');
 export const hookOf = (song: Song) => hookLine(lyricsOf(song));
+const STYLE_NAMES: Record<string, string> = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' };
+const KIND_NAMES: Record<string, string> = {
+  mestre: 'Mestre',
+  historical: 'Historical figure',
+  legendary: 'Legend',
+  religious: 'Religious figure',
+  other: '',
+};
+
+/** Short facts about a taxonomy entry (tempo, style, dates…) for its cards and page. */
+export function entryFacts(data: Record<string, unknown>): string[] {
+  const out: string[] = [];
+  if (typeof data.kind === 'string' && KIND_NAMES[data.kind]) out.push(KIND_NAMES[data.kind]);
+  if (typeof data.lived === 'string') out.push(data.lived);
+  if (typeof data.tempo === 'string') out.push(`${data.tempo} tempo`);
+  if (Array.isArray(data.associatedWith) && data.associatedWith.length)
+    out.push(data.associatedWith.map((s) => STYLE_NAMES[s] ?? s).join(' · '));
+  if (typeof data.region === 'string') out.push(data.region);
+  return out;
+}
+
+/** "listen" / "watch" badge for a song, or undefined if it has no recordings. */
+export function mediaBadge(song: Song) {
+  const kinds = new Set(song.data.recordings.map((r) => r.kind));
+  if (kinds.has('youtube')) return { icon: '▶', label: 'watch' };
+  if (kinds.has('audio')) return { icon: '♪', label: 'listen' };
+}
 export const songUrl = (id: string) => `/songs/${id}/`;
 export const facetUrl = (key: TaxonomyKey, id?: string) => `/${FACETS[key].path}/${id ? `${id}/` : ''}`;

@@ -1,5 +1,5 @@
 ---
-import { hookOf, songUrl, type Song } from '../lib/songs';
+import { hookOf, mediaBadge, songUrl, type Song } from '../lib/songs';
 
 interface Props {
   song: Song;
@@ -9,13 +9,14 @@ interface Props {
   morph?: boolean;
 }
 const { song, typeName, i = 0, morph = true } = Astro.props;
+const badge = mediaBadge(song);
 ---
 
 <li style={`--i:${i}`}>
   <a class="card" href={songUrl(song.id)}>
     <div class="meta">
       <span class="chip chip-type">{typeName}</span>
-      {song.data.recordings.length > 0 && <span class="has-audio" title="Has audio">♪ audio</span>}
+      {badge && <span class="has-audio">{badge.icon} {badge.label}</span>}
     </div>
     <h3 style={morph ? `view-transition-name: song-${song.id}` : undefined}>{song.data.title}</h3>
     <p class="hook">{hookOf(song)}</p>

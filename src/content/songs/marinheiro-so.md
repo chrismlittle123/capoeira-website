@@ -15,52 +15,37 @@ about: |
 added: 2026-10-28
 ---
 
-## Solo
+## Solo & coro
 Eu não sou daqui
 > I'm not from here
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
-## Solo
 Eu não tenho amor
 > I don't have a love
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
-## Solo
 Eu sou da Bahia
 > I'm from Bahia
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
-## Solo
 De São Salvador
 > From São Salvador
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
 
-## Solo
 Ô marinheiro, marinheiro
 > Oh sailor, sailor
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
-## Solo
 Quem te ensinou a nadar?
 > Who taught you to swim?
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
-## Solo
 Ou foi o tombo do navio
 > Was it the tumbling of the ship
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor
-## Solo
 Ou foi o balanço do mar
 > Or the swaying of the sea?
-## Coro
-Marinheiro só
++ Marinheiro só
 > Lonely sailor

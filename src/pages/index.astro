@@ -94,10 +94,14 @@ const title = 'Cantigas';
   btn?.addEventListener('click', () => {
     const ids: string[] = JSON.parse(btn.dataset.random!);
     const id = ids[Math.floor(Math.random() * ids.length)];
+    btn.classList.remove('spinning');
+    void btn.offsetWidth; // restart the animation
     btn.classList.add('spinning');
     const go = () => (location.href = `/songs/${id}/`);
     matchMedia('(prefers-reduced-motion: reduce)').matches ? go() : setTimeout(go, 650);
   });
+  // coming Back from the random song restores this page from cache mid-cartwheel
+  addEventListener('pageshow', () => btn?.classList.remove('spinning'));
 </script>
 
 <style>
@@ -132,7 +136,7 @@ const title = 'Cantigas';
   }
   .berimbau-left {
     position: absolute;
-    left: max(-20px, calc(50% - 640px));
+    left: max(24px, calc(50% - 600px));
     top: 30px;
     opacity: 0.9;
     pointer-events: none;

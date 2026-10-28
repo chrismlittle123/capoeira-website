@@ -24,7 +24,7 @@ const typeFilters = types.filter((t) => counts.get(t.id));
       id={id}
       name="q"
       type="search"
-      placeholder="Sing a line… “paranauê”"
+      placeholder="Sing any line…"
       autocomplete="off"
       autocapitalize="off"
       autocorrect="off"
@@ -38,7 +38,7 @@ const typeFilters = types.filter((t) => counts.get(t.id));
       <ul class="chips filters" aria-label="Filter by song type">
         {typeFilters.map((t) => (
           <li>
-            <button type="button" class="chip" data-filter={t.id} aria-pressed="false">
+            <button type="button" class="chip" data-filter={t.id} data-label={t.data.plural} aria-pressed="false">
               {t.data.plural} <span class="count">{counts.get(t.id)}</span>
             </button>
           </li>
@@ -105,7 +105,8 @@ const typeFilters = types.filter((t) => counts.get(t.id));
     color: var(--faint);
     font: 13px var(--font-ui);
   }
-  form:focus-within .hint {
+  form:focus-within .hint,
+  .has-text .hint {
     opacity: 0;
   }
   @media (hover: none) {
@@ -125,13 +126,29 @@ const typeFilters = types.filter((t) => counts.get(t.id));
   }
   .status :global(.empty) {
     display: block;
+    overflow-wrap: anywhere;
     padding: 32px 0;
     text-align: center;
     font: italic 22px/1.4 var(--font-display);
     color: var(--text);
   }
   .status :global(.empty small) {
+    display: block;
+    margin-top: 6px;
     font: 15px var(--font-ui);
     color: var(--muted);
+  }
+  .results :global(.why) {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .results :global(.why mark),
+  .results :global(.hook mark),
+  .results :global(h3 mark) {
+    background: var(--mark);
+    color: inherit;
+    border-radius: 4px;
+    padding: 0 2px;
   }
 </style>

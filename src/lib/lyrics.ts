@@ -6,12 +6,16 @@
  *   > Paranauê, Paraná      ← "> " gives the translation of the line above
  *                           ← blank line = new stanza
  *   ## Solo                 ← any other heading is sung by the lead singer
+ *   Eu não sou daqui
+ *   + Marinheiro só          ← "+ " = the coro answers inside a solo section
  */
 
 export type Role = 'solo' | 'coro';
 
 export interface LyricLine {
   text: string;
+  /** set when the coro answers inline ("+ " lines) */
+  coro?: boolean;
   translation?: string;
   /** seconds into the synced recording */
   time?: number;
@@ -58,10 +62,13 @@ export function parseLyrics(body: string): LyricSection[] {
       if (prev) prev.translation = prev.translation ? `${prev.translation} ${t}` : t;
     } else {
       ensureSection();
-      const m = line.match(TIME);
+      const coro = line.startsWith('+ ');
+      const rest = coro ? line.slice(2).trim() : line;
+      const m = rest.match(TIME);
       stanza.push({
-        text: m ? line.slice(m[0].length) : line,
+        text: m ? rest.slice(m[0].length) : rest,
         time: m ? Number(m[1]) * 60 + Number(m[2]) : undefined,
+        ...(coro && { coro: true }),
       });
     }
   }
@@ -70,7 +77,7 @@ export function parseLyrics(body: string): LyricSection[] {
 }
 
 export const allLines = (sections: LyricSection[]) =>
-  sections.flatMap((s) => s.stanzas.flat().map((l) => ({ ...l, role: s.role })));
+  sections.flatMap((s) => s.stanzas.flat().map((l) => ({ ...l, role: l.coro ? ('coro' as Role) : s.role })));
 
 export const hasTranslation = (sections: LyricSection[]) =>
   allLines(sections).some((l) => l.translation);
@@ -79,6 +86,10 @@ export const isSynced = (sections: LyricSection[]) => allLines(sections).some((l
 
 /** The first line of the coro, else the first line — what people actually remember. */
 export function hookLine(sections: LyricSection[]): string {
-  const coro = sections.find((s) => s.role === 'coro');
-  return (coro ?? sections[0])?.stanzas[0]?.[0]?.text ?? '';
+  const lines = allLines(sections);
+  return (lines.find((l) => l.role === 'coro') ?? lines[0])?.text ?? '';
 }
+
+/** Plain text of the lyrics, one line per sung line (for JSON-LD / exports). */
+export const plainText = (sections: LyricSection[]) =>
+  sections.map((s) => s.stanzas.map((st) => st.map((l) => l.text).join('\n')).join('\n\n')).join('\n\n');

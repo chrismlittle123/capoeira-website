@@ -43,7 +43,7 @@ const themes = await pick('Themes', ids('themes'));
 const people = await pick('People', ids('people'));
 const places = await pick('Places', ids('places'));
 
-let recordings = '';
+const recordings = [];
 const audio = argAudio || (await ask('\nPath to an audio file to add (blank to skip)'));
 if (audio) {
   const src = audio.replace(/^['"]|['"]$/g, '').replace(/\\ /g, ' ');
@@ -55,8 +55,17 @@ if (audio) {
   const dest = `/audio/${slug}/${slugify(basename(src, extname(src)))}${extname(src).toLowerCase()}`;
   copyFileSync(src, `public${dest}`);
   const performer = await ask('Who is singing? (optional)');
-  recordings = `recordings:\n  - file: ${dest}\n${performer ? `    performer: ${performer}\n` : ''}    sync: false\n`;
+  recordings.push(`  - file: ${dest}\n${performer ? `    performer: ${JSON.stringify(performer)}\n` : ''}`);
   console.log(`✓ copied audio to public${dest}`);
+}
+const youtube = await ask('YouTube link (blank to skip)');
+if (youtube) {
+  if (!/youtu\.?be/.test(youtube)) {
+    console.error(`✗ that doesn't look like a YouTube link: ${youtube}`);
+    process.exit(1);
+  }
+  const title = await ask('Video title (optional)');
+  recordings.push(`  - youtube: ${youtube}\n${title ? `    title: ${JSON.stringify(title)}\n` : ''}`);
 }
 rl.close();
 
@@ -68,7 +77,7 @@ writeFileSync(
 title: ${JSON.stringify(title)}
 type: ${type}
 ${list('toques', toques)}${list('themes', themes)}${list('people', people)}${list('places', places)}summary: ""
-${recordings}added: ${today}
+${recordings.length ? `recordings:\n${recordings.join('')}` : ''}added: ${today}
 ---
 
 ## Coro

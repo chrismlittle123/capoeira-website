@@ -5,11 +5,12 @@ import { SITE } from '../site.config';
 
 const songs = await getSongs();
 const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 ---
 
 <Base title="About & open data" description="About this songbook and how to use its open data.">
   <div class="wrap prose">
-    <p class="eyebrow">Sobre</p>
+    <p class="eyebrow kicker">Sobre</p>
     <h1>An open songbook for the roda</h1>
     <p>
       This songbook is kept by <strong>{SITE.groupName}</strong> so that anyone — a new student, a visiting capoeirista, or
@@ -17,7 +18,8 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
       and hear how it goes.
     </p>
     <p>
-      It currently holds <strong>{songs.length}</strong> songs and <strong>{recordings}</strong> recordings. Songs vary
+      It currently holds <strong>{plural(songs.length, 'song', 'songs')}</strong> and
+      <strong>{plural(recordings, 'recording', 'recordings')}</strong> (audio and video). Songs vary
       from roda to roda: these are the versions we sing.
     </p>
 
@@ -59,7 +61,7 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
     font-size: 26px;
     margin: 36px 0 8px;
   }
-  p,
+  p:not(.kicker),
   li {
     color: var(--muted);
     font-size: 17px;

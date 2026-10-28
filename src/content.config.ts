@@ -2,6 +2,7 @@ import { defineCollection, reference } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
+import { toSeconds, youtubeId, youtubeStart } from './lib/media';
 
 /*
  * The songbook ontology.
@@ -12,7 +13,7 @@ import { existsSync } from 'node:fs';
  *        ──people────▶ Person        (mestres & figures sung about / composers)
  *        ──places────▶ Place
  *        ──related───▶ Song
- *        ──recordings  (audio clips, optionally time-synced to lyric lines)
+ *        ──recordings  (audio files or YouTube videos, optionally time-synced to lyric lines)
  *   GlossaryTerm  (Portuguese words explained inline in lyrics)
  *
  * Every reference is checked at build time: a typo in an id fails the build
@@ -35,6 +36,7 @@ const songTypes = taxonomy('src/data/song-types.yaml', {
 });
 
 const toques = taxonomy('src/data/toques.yaml', {
+  order: z.number().optional(),
   tempo: z.enum(['slow', 'medium', 'fast']).optional(),
   associatedWith: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
 });
@@ -66,16 +68,48 @@ const audioPath = z
     { error: (iss) => `audio file not found in public/: ${String(iss.input)}` },
   );
 
-const recording = z.object({
-  file: audioPath,
-  title: z.string().optional(),
-  performer: z.string().optional(),
-  recordedAt: z.coerce.date().optional(),
-  source: z.string().optional(),
-  notes: z.string().optional(),
-  // Line timestamps written as [m:ss] in the lyrics refer to the recording with sync: true.
-  sync: z.boolean().default(false),
-});
+const time = z
+  .union([z.number().nonnegative(), z.string()])
+  .transform((v, ctx) => {
+    const t = toSeconds(v);
+    if (Number.isNaN(t)) ctx.addIssue({ code: 'custom', message: `can't read "${v}" as a time — use 90, 1:30 or 1m30s` });
+    return t;
+  });
+
+/*
+ * A recording is either an audio file (`file:`) or a YouTube video (`youtube:`).
+ * Both are normalised to { kind, src, videoId?, start, end?, … } for the pages.
+ */
+const recording = z
+  .object({
+    file: audioPath.optional(),
+    youtube: z
+      .string()
+      .refine((u) => !!youtubeId(u), { error: (iss) => `not a YouTube video link: ${String(iss.input)}` })
+      .optional(),
+    // Play only part of the media, e.g. a song inside a long roda video.
+    start: time.optional(),
+    end: time.optional(),
+    title: z.string().optional(),
+    performer: z.string().optional(),
+    recordedAt: z.coerce.date().optional(),
+    source: z.string().optional(),
+    notes: z.string().optional(),
+    // Line timestamps written as [m:ss] in the lyrics refer to the recording with sync: true.
+    sync: z.boolean().default(false),
+  })
+  .refine((r) => !r.file !== !r.youtube, { error: 'each recording needs exactly one of `file:` or `youtube:`' })
+  .transform(({ file, youtube, start, ...r }) =>
+    youtube
+      ? {
+          ...r,
+          kind: 'youtube' as const,
+          src: youtube,
+          videoId: youtubeId(youtube)!,
+          start: start ?? youtubeStart(youtube) ?? 0,
+        }
+      : { ...r, kind: 'audio' as const, src: file!, videoId: undefined, start: start ?? 0 },
+  );
 
 const songs = defineCollection({
   loader: glob({ pattern: '**/*.md', base: 'src/content/songs' }),

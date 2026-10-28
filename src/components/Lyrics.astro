@@ -28,9 +28,11 @@ function linkGlossary(text: string) {
   let last = 0;
   for (const m of text.matchAll(re)) {
     const id = byForm.get(m[0].toLocaleLowerCase('pt'));
-    if (!id) continue;
+    if (!id || used.has(id)) continue; // explain each word once, where it first appears
     used.add(id);
-    out += esc(text.slice(last, m.index)) + `<span class="gloss" role="button" tabindex="0" aria-expanded="false" data-term="${id}">${esc(m[0])}</span>`;
+    out +=
+      esc(text.slice(last, m.index)) +
+      `<span class="gloss" role="button" tabindex="0" aria-expanded="false" aria-controls="gloss-pop" data-term="${id}">${esc(m[0])}</span>`;
     last = m.index! + m[0].length;
   }
   return out + esc(text.slice(last));
@@ -55,7 +57,7 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
         {s.stanzas.map((st) => (
           <div class="stanza">
             {st.map((l) => (
-              <p class="line" data-time={l.time}>
+              <p class:list={['line', l.coro && 'coro-line']} data-time={l.time}>
                 {l.time != null && (
                   <button type="button" class="seek" data-seek={l.time} aria-label={`Play from ${fmt(l.time)}`}>
                     {fmt(l.time)}
@@ -81,7 +83,7 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
     <script is:inline type="application/json" id="glossary-data" set:html={JSON.stringify(Object.fromEntries(usedTerms.map((g) => [g.id, g.data]))).replace(/</g, '\\u003c')} />
   )
 }
-<div class="gloss-pop" role="tooltip" hidden></div>
+<div class="gloss-pop" id="gloss-pop" aria-live="polite" hidden></div>
 
 <script>
   const data = JSON.parse(document.querySelector('#glossary-data')?.textContent || '{}');
@@ -93,6 +95,7 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
     current = null;
   };
   document.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('.gloss-pop')) return;
     const btn = (e.target as HTMLElement).closest<HTMLElement>('.gloss');
     if (!btn) return hide();
     if (btn === current) return hide();
@@ -103,16 +106,24 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
     b.textContent = g.term;
     const p = document.createElement('span');
     p.textContent = g.definition;
-    pop.append(b, p);
+    const more = document.createElement('a');
+    more.href = `/glossary/#${btn.dataset.term}`;
+    more.textContent = 'All words →';
+    pop.append(b, p, more);
     pop.hidden = false;
     const r = btn.getBoundingClientRect();
     const w = pop.offsetWidth;
-    pop.style.left = `${Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width / 2 - w / 2))}px`;
-    pop.style.top = `${r.bottom + scrollY + 8}px`;
+    const h = pop.offsetHeight;
+    const vw = document.documentElement.clientWidth; // excludes the scrollbar
+    pop.style.left = `${Math.max(12, Math.min(vw - w - 12, r.left + r.width / 2 - w / 2)) + scrollX}px`;
+    // open above the word when there isn't room below
+    const below = r.bottom + 8 + h < innerHeight || r.top - 8 - h < 0;
+    pop.style.top = `${(below ? r.bottom + 8 : r.top - 8 - h) + scrollY}px`;
     current?.setAttribute('aria-expanded', 'false');
     current = btn;
     btn.setAttribute('aria-expanded', 'true');
   });
+  addEventListener('resize', hide);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') hide();
     const el = e.target as HTMLElement;
@@ -183,9 +194,16 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
     font-variation-settings: 'SOFT' 100, 'opsz' 48;
     color: var(--solo);
   }
-  .coro .pt {
+  .coro .pt,
+  .coro-line .pt {
     color: var(--coro);
     font-weight: 600;
+  }
+  /* the coro answering inside a solo section */
+  .coro-line {
+    margin-left: clamp(16px, 6vw, 48px);
+    padding-left: 12px;
+    border-left: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
   }
   .tr {
     display: block;
@@ -198,7 +216,9 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
   }
   .seek {
     float: right;
-    margin: 6px 0 0 8px;
+    min-width: 44px;
+    min-height: 32px;
+    margin: 2px 0 0 8px;
     padding: 2px 8px;
     border-radius: 99px;
     border: 1px solid var(--line);
@@ -219,7 +239,6 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
   }
   :global(.synced) .line:global(.now) {
     opacity: 1;
-    transform: translateX(6px) scale(1.02);
   }
   .line:global(.now) .pt {
     text-shadow: 0 0 22px color-mix(in srgb, var(--gold) 55%, transparent);
@@ -261,6 +280,15 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
     font-size: 15px;
     line-height: 1.45;
     animation: rise 0.25s var(--ease-out);
+  }
+  .gloss-pop :global(span) {
+    display: block;
+  }
+  .gloss-pop :global(a) {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
   }
   .gloss-pop :global(strong) {
     display: block;

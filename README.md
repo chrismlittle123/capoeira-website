@@ -20,8 +20,8 @@ npm run new-song                                # asks a few questions
 npm run new-song -- "Sou eu Maitá" ~/rec.m4a    # title + audio file up front
 ```
 
-This creates `src/content/songs/<slug>.md` (and copies the audio into
-`public/audio/<slug>/`). Open the file and write the lyrics:
+This creates `src/content/songs/<slug>.md` (copying any audio into
+`public/audio/<slug>/`, and asking for an optional YouTube link). Open the file and write the lyrics:
 
 ```md
 ---
@@ -42,6 +42,9 @@ recordings:
     performer: Mestre Fulano
     recordedAt: 2026-05-01
     sync: true                        # the [m:ss] timestamps below refer to this one
+  - youtube: https://youtu.be/VIDEO_ID?t=95   # any YouTube link; ?t= sets the start
+    title: Batizado 2025
+    end: 2:40                         # optional: stop here (a song inside a long roda video)
 added: 2026-10-28
 ---
 
@@ -52,13 +55,19 @@ added: 2026-10-28
 ## Solo
 [0:09] Vou dizer a minha mulher, paraná
 > I'm going to tell my wife, Paraná
++ Paranauê, paranauê, paraná
+> (the coro answers)
 ```
 
 - `## Coro` (or Chorus/Resposta) = everyone answers; any other heading (`## Solo`,
   `## Ladainha`, …) = the lead singer. Alternate them freely for call-and-response.
+- `+ ` at the start of a line = the coro answers inside a solo section (keeps
+  short call-and-response songs compact).
 - `> ` under a line is its translation. A blank line starts a new stanza.
 - `[m:ss]` timestamps are optional; when present, lines light up karaoke-style
-  while the synced recording plays and become tap-to-seek.
+  while the synced recording (audio **or** YouTube) plays and become tap-to-seek.
+  Times are positions in that recording — for a video starting at `?t=95`, the
+  first line might be `[1:37]`.
 - Words from `src/data/glossary.yaml` are underlined automatically with a tap-to-explain popup.
 - `draft: true` hides a song from the production build.
 
@@ -67,6 +76,14 @@ so a broken song can't reach the live site.
 
 To add a new toque, theme, person, place, song type or glossary word, add an entry to
 the matching YAML file in `src/data/`.
+
+### YouTube
+
+A recording can be a YouTube link instead of a file (`watch?v=`, `youtu.be/`,
+`shorts/`, `live/` all work). The page shows a lightweight thumbnail and only loads
+YouTube's player (privacy-enhanced, `youtube-nocookie.com`) when someone presses
+play. The same controls — speed, loop, start/end, karaoke sync — work for videos.
+A song can mix audio files and videos; listeners switch between them.
 
 ### Audio tips
 
@@ -86,13 +103,16 @@ R2) and use full `https://` URLs in `file:` — everything else keeps working.
   matching line, filters by song type, shareable `?q=` URLs.
 - **Song page**: call-and-response layout, translation toggle, text size, keep-screen-on
   (for reading in the roda), share, glossary popups, related songs.
-- **Player**: the cabaça is the play button and pulses with the actual audio; the wire is
-  the progress bar; 0.5×/0.75× speed for learning, loop, multiple takes, lock-screen
-  controls, docks to the bottom of the screen as you scroll.
-- **Offline**: a service worker caches every song page, so lyrics load with no signal.
-  Installable to the home screen.
+- **Player**: audio files and YouTube videos behind one set of controls. The cabaça is
+  the play button and pulses with the audio; the wire is the progress bar; 0.5×/0.75×
+  speed for learning, loop, start/end clipping, multiple takes, lock-screen controls,
+  docks to the bottom of the screen as you scroll.
+- **Offline**: the service worker precaches the whole site (pages, styles, fonts, search
+  index) on first visit and refreshes automatically whenever a song changes. Audio and
+  YouTube need a connection. Installable to the home screen.
 - **Open data**: `/api/songs.json` (all songs with structured lyrics) and
-  `/api/ontology.json` (all taxonomies); schema.org `MusicComposition` JSON-LD on every song.
+  `/api/ontology.json` (all taxonomies); schema.org `MusicComposition` JSON-LD on every
+  song; `sitemap.xml` and `robots.txt`.
 - Light/dark themes, view-transition animations, respects reduced-motion.
 
 ## Data model
