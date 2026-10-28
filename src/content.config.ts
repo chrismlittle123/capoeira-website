@@ -118,7 +118,7 @@ const songs = defineCollection({
   schema: z.object({
     title: z.string(),
     alternateTitles: z.array(z.string()).default([]),
-    type: reference('songTypes'),
+    type: reference('songTypes').optional(), // not shown on the site
     styles: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
     toques: z.array(reference('toques')).default([]),
     themes: z.array(reference('themes')).default([]),

@@ -1,16 +1,14 @@
 import type { APIRoute } from 'astro';
-import { getCollection } from 'astro:content';
 import { getSongs, getNames, lyricsOf, mediaBadge } from '../lib/songs';
-import { allLines, hookLine } from '../lib/lyrics';
+import { allLines, difficulty, hookLine } from '../lib/lyrics';
 
 export interface SearchDoc {
   id: string;
   title: string;
   alt: string;
-  type: string;
-  typeName: string;
-  typeColor: string;
-  toques: string;
+  /** 1 easy · 2 medium · 3 hard */
+  level: number;
+  levelLabel: string;
   themes: string;
   people: string;
   places: string;
@@ -23,8 +21,7 @@ export interface SearchDoc {
 }
 
 export const GET: APIRoute = async () => {
-  const [songs, names, types] = await Promise.all([getSongs(), getNames(), getCollection('songTypes')]);
-  const colors = Object.fromEntries(types.map((t) => [t.id, t.data.color]));
+  const [songs, names] = await Promise.all([getSongs(), getNames()]);
   const docs: SearchDoc[] = songs.map((song) => {
     const sections = lyricsOf(song);
     const lines = allLines(sections);
@@ -35,10 +32,8 @@ export const GET: APIRoute = async () => {
       id: song.id,
       title: d.title,
       alt: d.alternateTitles.join(' · '),
-      type: d.type.id,
-      typeName: names.songTypes[d.type.id],
-      typeColor: colors[d.type.id],
-      toques: join('toques', d.toques),
+      level: difficulty(sections).level,
+      levelLabel: difficulty(sections).label,
       themes: join('themes', d.themes),
       people: join('people', d.people),
       places: join('places', d.places),

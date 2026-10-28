@@ -1,6 +1,7 @@
 ---
 import Icon from './Icon.astro';
-import { getSongs, getTaxonomy } from '../lib/songs';
+import { getSongs, lyricsOf } from '../lib/songs';
+import { DIFFICULTY, difficulty } from '../lib/lyrics';
 
 interface Props {
   inline?: boolean;
@@ -10,10 +11,12 @@ interface Props {
 }
 const { inline = false, filters = false, syncUrl = false, id = 'q' } = Astro.props;
 
-const [songs, types] = await Promise.all([getSongs(), getTaxonomy('songTypes')]);
-const counts = new Map<string, number>();
-for (const s of songs) counts.set(s.data.type.id, (counts.get(s.data.type.id) ?? 0) + 1);
-const typeFilters = types.filter((t) => counts.get(t.id));
+const songs = await getSongs();
+const levelCounts = new Map<number, number>();
+for (const s of songs) {
+  const l = difficulty(lyricsOf(s)).level;
+  levelCounts.set(l, (levelCounts.get(l) ?? 0) + 1);
+}
 ---
 
 <div class="search" data-search data-inline={inline || undefined} data-sync-url={syncUrl || undefined}>
@@ -34,12 +37,15 @@ const typeFilters = types.filter((t) => counts.get(t.id));
     <kbd class="hint" aria-hidden="true">/</kbd>
   </form>
   {
-    filters && typeFilters.length > 1 && (
-      <ul class="chips filters" aria-label="Filter by song type">
-        {typeFilters.map((t) => (
+    filters && (
+      <ul class="chips filters" aria-label="Filter by difficulty">
+        {DIFFICULTY.filter((d) => levelCounts.get(d.level)).map((d) => (
           <li>
-            <button type="button" class="chip" data-filter={t.id} data-label={t.data.plural} aria-pressed="false">
-              {t.data.plural} <span class="count">{counts.get(t.id)}</span>
+            <button type="button" class="chip level" data-level={d.id} data-label={d.label} aria-pressed="false">
+              <span class="dots" aria-hidden="true">
+                {[1, 2, 3].map((i) => <i class:list={[i <= d.level && 'on']} />)}
+              </span>
+              {d.label} <span class="count">{levelCounts.get(d.level)}</span>
             </button>
           </li>
         ))}
@@ -110,6 +116,26 @@ const typeFilters = types.filter((t) => counts.get(t.id));
   }
   .filters {
     margin-top: 14px;
+  }
+  .filters + .filters {
+    margin-top: 8px;
+  }
+  .level .dots {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .level .dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+  }
+  .level .dots i.on {
+    background: currentColor;
+  }
+  .results :global(.dl) {
+    letter-spacing: 0.1em;
+    color: var(--gold);
   }
   .status {
     margin: 18px 0 12px;

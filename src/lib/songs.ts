@@ -2,12 +2,11 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { parseLyrics, hookLine } from './lyrics';
 
 export type Song = CollectionEntry<'songs'>;
-export type TaxonomyKey = 'songTypes' | 'toques' | 'themes' | 'people' | 'places';
+// Song type and toque are still accepted in song files but no longer shown or browsable.
+export type TaxonomyKey = 'themes' | 'people' | 'places';
 
 /** URL segment for each browsable facet of the ontology. */
 export const FACETS = {
-  songTypes: { path: 'types', label: 'Song types', field: 'type', blurb: 'From the opening ladainha to the corridos that drive the game.' },
-  toques: { path: 'toques', label: 'Toques', field: 'toques', blurb: 'The berimbau rhythms each song is sung over.' },
   themes: { path: 'themes', label: 'Themes', field: 'themes', blurb: 'What the songs sing about.' },
   people: { path: 'people', label: 'People', field: 'people', blurb: 'Mestres, legends and figures named in the songs.' },
   places: { path: 'places', label: 'Places', field: 'places', blurb: 'Where the songs take us.' },
@@ -22,10 +21,10 @@ let validated: Promise<void> | undefined;
 async function validateReferences() {
   const songs = await getCollection('songs');
   const known = new Set<string>(songs.map((s) => `songs:${s.id}`));
-  for (const key of Object.keys(FACETS) as TaxonomyKey[])
-    for (const e of await getCollection(key)) known.add(`${key}:${e.id}`);
+  const keys = ['songTypes', 'toques', 'themes', 'people', 'places'] as const;
+  for (const key of keys) for (const e of await getCollection(key)) known.add(`${key}:${e.id}`);
   const problems = songs.flatMap((s) =>
-    [s.data.type, ...s.data.toques, ...s.data.themes, ...s.data.people, ...s.data.places, ...s.data.related]
+    [...(s.data.type ? [s.data.type] : []), ...s.data.toques, ...s.data.themes, ...s.data.people, ...s.data.places, ...s.data.related]
       .filter((r) => !known.has(`${r.collection}:${r.id}`))
       .map((r) => `  ${s.id}: unknown ${r.collection} "${r.id}"`),
   );
@@ -38,10 +37,9 @@ export async function getSongs() {
   return songs.sort((a, b) => a.data.title.localeCompare(b.data.title, 'pt'));
 }
 
-/** Ids a song references for a given facet (type is single-valued). */
+/** Ids a song references for a given facet. */
 export function facetIds(song: Song, key: TaxonomyKey): string[] {
-  if (key === 'songTypes') return [song.data.type.id];
-  return song.data[FACETS[key].field as 'toques'].map((r) => r.id);
+  return song.data[FACETS[key].field].map((r) => r.id);
 }
 
 export async function getTaxonomy<K extends TaxonomyKey>(key: K): Promise<CollectionEntry<K>[]> {

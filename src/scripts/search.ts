@@ -16,8 +16,6 @@ const queryTerms = (q: string) =>
 
 const TEXT_FIELDS = new Set(['title', 'alt', 'hook', 'lyrics', 'translation']);
 const FACET_LABELS: Record<string, string> = {
-  typeName: 'Type',
-  toques: 'Toque',
   themes: 'Theme',
   people: 'People',
   places: 'Place',
@@ -35,11 +33,11 @@ function loadIndex() {
     .then((r) => r.json() as Promise<SearchDoc[]>)
     .then((docs) => {
       const ms = new MiniSearch<SearchDoc>({
-        fields: ['title', 'alt', 'hook', 'lyrics', 'translation', 'typeName', 'toques', 'themes', 'people', 'places'],
+        fields: ['title', 'alt', 'hook', 'lyrics', 'translation', 'themes', 'people', 'places'],
         storeFields: ['id'],
         processTerm: term,
         searchOptions: {
-          boost: { title: 5, alt: 3, hook: 2.5, lyrics: 1.5, people: 1.5, toques: 0.8, themes: 0.8 },
+          boost: { title: 5, alt: 3, hook: 2.5, lyrics: 1.5, people: 1.5, themes: 0.8 },
           prefix: true,
           // only forgive typos in longer words, so "love" doesn't also find "live"
           fuzzy: (t) => (t.length > 4 ? 0.2 : false),
@@ -116,7 +114,7 @@ function snippet(doc: SearchDoc, terms: string[]) {
 function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
   return `<li style="--i:${i}"><a class="card" href="/songs/${doc.id}/">
-    <div class="meta"><span class="chip chip-type" style="--type-color:${esc(doc.typeColor)}">${esc(doc.typeName)}</span>${
+    <div class="meta"><span class="dl" title="${esc(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(3 - doc.level)} ${esc(doc.levelLabel)}</span>${
       doc.media ? `<span class="has-audio">${doc.media.icon} ${doc.media.label}</span>` : ''
     }</div>
     <h3>${highlight(doc.title, terms)}</h3>
@@ -125,7 +123,7 @@ function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   </a></li>`;
 }
 
-/** If a song matched (partly) through its toque/theme/etc., say so. */
+/** If a song matched (partly) through its theme/people/places, say so. */
 function explain(r: SearchResult, doc: SearchDoc, terms: string[]) {
   // only when some part of the query was found nowhere in the title or lyrics
   const facetOnly = Object.values(r.match).filter((fields) => !fields.some((f) => TEXT_FIELDS.has(f)));
@@ -143,11 +141,11 @@ function init(root: HTMLElement) {
   const input = root.querySelector<HTMLInputElement>('input[type=search]')!;
   const results = root.querySelector<HTMLElement>('[data-results]')!;
   const status = root.querySelector<HTMLElement>('[data-status]')!;
-  const filters = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
-  const filterNames = new Map(filters.map((b) => [b.dataset.filter!, b.dataset.label ?? b.dataset.filter!]));
+  const levelButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-level]')];
+  const LEVELS: Record<string, number> = { easy: 1, medium: 2, hard: 3 };
+  let level = ''; // 'easy' | 'medium' | 'hard' | ''
   const browse = root.hasAttribute('data-inline') ? document.querySelector<HTMLElement>('[data-browse]') : null;
   const syncUrl = root.hasAttribute('data-sync-url');
-  let active = '';
   let runId = 0;
 
   const run = async () => {
@@ -158,10 +156,11 @@ function init(root: HTMLElement) {
     if (syncUrl) {
       const url = new URL(location.href);
       q ? url.searchParams.set('q', q) : url.searchParams.delete('q');
-      active ? url.searchParams.set('type', active) : url.searchParams.delete('type');
+      url.searchParams.delete('type');
+      level ? url.searchParams.set('level', level) : url.searchParams.delete('level');
       history.replaceState(history.state, '', url);
     }
-    if (!terms.length && !active) {
+    if (!terms.length && !level) {
       results.innerHTML = '';
       status.textContent = q ? 'Keep typing…' : '';
       browse?.removeAttribute('hidden');
@@ -170,7 +169,8 @@ function init(root: HTMLElement) {
     browse?.setAttribute('hidden', '');
     const { ms, byId } = await loadIndex();
     if (id !== runId) return; // a newer keystroke won
-    const filter = active ? (r: SearchResult) => byId.get(r.id)?.type === active : undefined;
+    const matches = (d?: SearchDoc) => !!d && (!level || d.level === LEVELS[level]);
+    const filter = level ? (r: SearchResult) => matches(byId.get(r.id)) : undefined;
     let hits: { doc: SearchDoc; r?: SearchResult }[];
     if (terms.length) {
       const query = terms.join(' ');
@@ -181,7 +181,7 @@ function init(root: HTMLElement) {
       }
       hits = res.map((r) => ({ doc: byId.get(r.id)!, r }));
     } else {
-      hits = [...byId.values()].filter((d) => d.type === active).map((doc) => ({ doc }));
+      hits = [...byId.values()].filter((d) => matches(d)).map((doc) => ({ doc }));
     }
     results.innerHTML = hits
       .map(({ doc, r }, i) => {
@@ -190,11 +190,12 @@ function init(root: HTMLElement) {
         return card(doc, marks, i, r && explain(r, doc, marks));
       })
       .join('');
-    const inType = active ? ` in ${esc(filterNames.get(active)!)}` : '';
+    const scope = level ? levelButtons.find((b) => b.dataset.level === level)?.dataset.label : '';
+    const inType = scope ? ` in ${esc(scope)}` : '';
     status.innerHTML = hits.length
       ? `${hits.length} song${hits.length === 1 ? '' : 's'}${inType}`
       : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${esc(q)}”${inType}. ${
-          active ? 'Try clearing the filter, or' : 'Try'
+          level ? 'Try clearing the filter, or' : 'Try'
         } fewer words — or just the coro.</small></span>`;
   };
 
@@ -210,10 +211,10 @@ function init(root: HTMLElement) {
     const first = results.querySelector<HTMLAnchorElement>('a');
     if (first) location.href = first.href;
   });
-  for (const btn of filters) {
+  for (const btn of levelButtons) {
     btn.addEventListener('click', () => {
-      active = active === btn.dataset.filter ? '' : btn.dataset.filter!;
-      filters.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === active)));
+      level = level === btn.dataset.level ? '' : btn.dataset.level!;
+      levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
       run();
     });
   }
@@ -222,10 +223,10 @@ function init(root: HTMLElement) {
   if (syncUrl) {
     const params = new URLSearchParams(location.search);
     input.value = params.get('q') ?? '';
-    const type = params.get('type') ?? '';
-    active = filterNames.has(type) ? type : '';
-    filters.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === active)));
-    if (input.value || active || type) run();
+    const lv = params.get('level') ?? '';
+    level = lv in LEVELS ? lv : '';
+    levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
+    if (input.value || level) run();
   }
 }
 

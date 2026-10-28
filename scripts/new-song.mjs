@@ -37,8 +37,6 @@ if (existsSync(file)) {
   process.exit(1);
 }
 
-const [type] = await pick('Type', ids('song-types'), false);
-const toques = await pick('Toques', ids('toques'));
 const themes = await pick('Themes', ids('themes'));
 const people = await pick('People', ids('people'));
 const places = await pick('Places', ids('places'));
@@ -75,8 +73,7 @@ writeFileSync(
   file,
   `---
 title: ${JSON.stringify(title)}
-type: ${type}
-${list('toques', toques)}${list('themes', themes)}${list('people', people)}${list('places', places)}summary: ""
+${list('themes', themes)}${list('people', people)}${list('places', places)}summary: ""
 ${recordings.length ? `recordings:\n${recordings.join('')}` : ''}added: ${today}
 ---
 

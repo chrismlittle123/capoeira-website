@@ -29,8 +29,6 @@ This creates `src/content/songs/<slug>.md` (copying any audio into
 ---
 title: Paranauê
 alternateTitles: [Paraná ê]
-type: corrido                         # id from src/data/song-types.yaml
-toques: [sao-bento-grande-regional]   # ids from src/data/toques.yaml
 themes: [war, love]                   # src/data/themes.yaml
 people: []                            # src/data/people.yaml
 places: [parana]                      # src/data/places.yaml
@@ -76,8 +74,9 @@ added: 2026-10-28
 **The build fails** on a misspelled id, a missing audio file or a malformed field,
 so a broken song can't reach the live site.
 
-To add a new toque, theme, person, place, song type or glossary word, add an entry to
-the matching YAML file in `src/data/`.
+To add a new theme, person, place or glossary word, add an entry to the matching YAML
+file in `src/data/`. Each song's **difficulty** (Easy / Medium / Hard) is worked out
+automatically from how many words there are to learn in its distinct lines.
 
 ### Removing a song
 

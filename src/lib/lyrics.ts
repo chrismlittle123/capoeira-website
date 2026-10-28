@@ -93,3 +93,20 @@ export function hookLine(sections: LyricSection[]): string {
 /** Plain text of the lyrics, one line per sung line (for JSON-LD / exports). */
 export const plainText = (sections: LyricSection[]) =>
   sections.map((s) => s.stanzas.map((st) => st.map((l) => l.text).join('\n')).join('\n\n')).join('\n\n');
+
+/*
+ * Difficulty = how much there is to learn: the number of words in the song's distinct
+ * sung lines (repeats and "(x2)" don't add anything to memorise). Computed, never set.
+ */
+export const DIFFICULTY = [
+  { level: 1, id: 'easy', label: 'Easy', max: 15 },
+  { level: 2, id: 'medium', label: 'Medium', max: 35 },
+  { level: 3, id: 'hard', label: 'Hard', max: Infinity },
+] as const;
+export type Difficulty = (typeof DIFFICULTY)[number] & { words: number };
+
+export function difficulty(sections: LyricSection[]): Difficulty {
+  const distinct = [...new Set(allLines(sections).map((l) => l.text.replace(/\s*\(x\d+\)/gi, '').trim()))];
+  const words = distinct.reduce((n, l) => n + (l.match(/[\p{L}\p{N}']+/gu)?.length ?? 0), 0);
+  return { ...DIFFICULTY.find((d) => words <= d.max)!, words };
+}

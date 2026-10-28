@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getSongs, lyricsOf, songUrl } from '../../lib/songs';
+import { difficulty } from '../../lib/lyrics';
 import { SITE } from '../../site.config';
 
 export const GET: APIRoute = async ({ site }) => {
@@ -16,9 +17,7 @@ export const GET: APIRoute = async ({ site }) => {
       url: abs(songUrl(id)),
       title: d.title,
       alternateTitles: d.alternateTitles,
-      type: d.type.id,
       styles: d.styles,
-      toques: d.toques.map((r) => r.id),
       themes: d.themes.map((r) => r.id),
       people: d.people.map((r) => r.id),
       places: d.places.map((r) => r.id),
@@ -30,6 +29,7 @@ export const GET: APIRoute = async ({ site }) => {
       about: d.about,
       translationReviewed: d.translationReviewed,
       sources: d.sources,
+      difficulty: (({ id, label, words }) => ({ level: id, label, words }))(difficulty(lyricsOf({ id, data: d, ...song }))),
       lyrics: lyricsOf({ id, data: d, ...song }),
       recordings: d.recordings.map(({ src, videoId, ...r }) =>
         r.kind === 'youtube'

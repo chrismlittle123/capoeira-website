@@ -1,12 +1,13 @@
 ---
-import { getEntries, getEntry } from 'astro:content';
+import { getEntries } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Lyrics from '../../components/Lyrics.astro';
 import MediaPlayer from '../../components/MediaPlayer.astro';
 import SongCard from '../../components/SongCard.astro';
 import Icon from '../../components/Icon.astro';
 import { getSongs, getNames, lyricsOf, facetIds, facetUrl, songUrl, type Song, type TaxonomyKey } from '../../lib/songs';
-import { allLines, hasTranslation, plainText } from '../../lib/lyrics';
+import { allLines, difficulty, hasTranslation, plainText } from '../../lib/lyrics';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { SITE } from '../../site.config';
 
 export async function getStaticPaths() {
@@ -25,15 +26,14 @@ interface Props {
 const { song, prev, next } = Astro.props;
 const d = song.data;
 const sections = lyricsOf(song);
+const level = difficulty(sections);
 const names = await getNames();
-const type = (await getEntry(d.type))!;
-const [toques, people] = await Promise.all([getEntries(d.toques), getEntries(d.people)]);
+const people = await getEntries(d.people);
 
-// Related: explicit links first, then shared themes/people/places. Toques are shared by
-// so many songs that they only break ties.
+// Related: explicit links first, then shared themes/people/places.
 const all = await getSongs();
 const explicit = new Set(d.related.map((r) => r.id));
-const WEIGHTS: [TaxonomyKey, number][] = [['themes', 3], ['people', 3], ['places', 2], ['toques', 0.5]];
+const WEIGHTS: [TaxonomyKey, number][] = [['themes', 3], ['people', 3], ['places', 2]];
 const score = (s: Song) =>
   (explicit.has(s.id) || s.data.related.some((r) => r.id === song.id) ? 10 : 0) +
   WEIGHTS.reduce((n, [k, w]) => n + w * facetIds(s, k).filter((id) => facetIds(song, k).includes(id)).length, 0);
@@ -48,7 +48,6 @@ const related = all
 const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
 type Fact = { label: string; key?: TaxonomyKey; items: { id: string; name: string }[] };
 const allFacts: Fact[] = [
-  { label: 'Toques', key: 'toques', items: d.toques.map((r) => ({ id: r.id, name: names.toques[r.id] })) },
   { label: 'Themes', key: 'themes', items: d.themes.map((r) => ({ id: r.id, name: names.themes[r.id] })) },
   { label: 'People', key: 'people', items: d.people.map((r) => ({ id: r.id, name: names.people[r.id] })) },
   { label: 'Places', key: 'places', items: d.places.map((r) => ({ id: r.id, name: names.places[r.id] })) },
@@ -72,7 +71,7 @@ const jsonLd = {
   '@type': 'MusicComposition',
   name: d.title,
   alternateName: nonEmpty(d.alternateTitles),
-  genre: ['Capoeira', type.data.name],
+  genre: 'Capoeira',
   inLanguage: d.language,
   composer: d.composer ? { '@type': 'Person', name: d.composer } : undefined,
   lyrics: { '@type': 'CreativeWork', text: plainText(sections), inLanguage: d.language },
@@ -99,7 +98,7 @@ const jsonLd = {
   url: new URL(songUrl(song.id), Astro.site).href,
 };
 const description =
-  d.summary || `${type.data.name}: ${allLines(sections).slice(0, 2).map((l) => l.text).join(' / ')}`;
+  d.summary || `Capoeira song: ${allLines(sections).slice(0, 2).map((l) => l.text).join(' / ')}`;
 const translated = hasTranslation(sections);
 ---
 
@@ -110,12 +109,11 @@ const translated = hasTranslation(sections);
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href="/songs/">Songs</a>
         <span aria-hidden="true">/</span>
-        <a href={facetUrl('songTypes', type.id)} style={`color:${type.data.color}`}>{type.data.name}</a>
-        <span aria-hidden="true">/</span>
         <span aria-current="page">{d.title}</span>
       </nav>
       <p class="meta mono">
-        {[toques.map((t) => t.data.name).join(' · '), originText].filter(Boolean).join(' · ')}
+        <DifficultyBadge difficulty={level} />
+        <span>{originText}</span>
       </p>
       {d.alternateTitles.length > 0 && <p class="alt">also sung as {d.alternateTitles.map((t) => `“${t}”`).join(', ')}</p>}
       {d.summary && <p class="summary">{d.summary}</p>}
@@ -209,14 +207,6 @@ const translated = hasTranslation(sections);
             <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : originText}</dd>
           </div>
         </dl>
-        {
-          toques.length > 0 && (
-            <div class="toque-note">
-              <strong>{toques[0].data.name}</strong>
-              <p>{toques[0].data.description}</p>
-            </div>
-          )
-        }
       </aside>
     </div>
 
@@ -394,6 +384,10 @@ const translated = hasTranslation(sections);
     color: var(--gold);
   }
   .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
     margin: 14px 0 0;
     font-size: 0.8rem;
     color: var(--muted);
@@ -563,22 +557,6 @@ const translated = hasTranslation(sections);
   dd {
     margin: 0;
     font-size: 15px;
-  }
-  .toque-note {
-    margin-top: 22px;
-    padding: 14px 16px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--surface) 60%, transparent);
-    font-size: 14px;
-  }
-  .toque-note strong {
-    font-family: var(--font-display);
-    font-size: 17px;
-  }
-  .toque-note p {
-    margin: 4px 0 0;
-    color: var(--muted);
   }
   .pager {
     display: flex;

@@ -14,3 +14,13 @@
 /songs/santo-amaro /songs/ 301
 /songs/vou-para-bahia/ /songs/ 301
 /songs/vou-para-bahia /songs/ 301
+/songs/nessa-vida/ /songs/ 301
+/songs/nessa-vida /songs/ 301
+/songs/nem-todo-amarelo-e-ouro/ /songs/ 301
+/songs/nem-todo-amarelo-e-ouro /songs/ 301
+
+# Song types and toques are no longer browsable.
+/types/* /browse/ 301
+/types /browse/ 301
+/toques/* /browse/ 301
+/toques /browse/ 301
