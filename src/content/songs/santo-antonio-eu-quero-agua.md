@@ -12,6 +12,8 @@ translationReviewed: false
 sources:
   - https://capoeira.cafe/santo-antonio-eu-quero-agua/
 recordings:
+  - youtube: https://www.youtube.com/watch?v=w5t71QK-eqw
+    title: Mestra Jô
   - file: /audio/santo-antonio-eu-quero-agua/santo-antonio-eu-quero-agua.m4a
     title: Class recording
 added: 2026-10-28

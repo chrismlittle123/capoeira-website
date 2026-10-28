@@ -139,7 +139,9 @@ const songs = defineCollection({
       .default([])
       .refine((rs) => rs.filter((r) => r.kind === 'youtube').length <= 1, {
         error: 'only one YouTube video per song — keep the best one',
-      }),
+      })
+      // the YouTube video always comes first, whatever order the file lists them in
+      .transform((rs) => [...rs.filter((r) => r.kind === 'youtube'), ...rs.filter((r) => r.kind !== 'youtube')]),
     added: z.coerce.date(),
     updated: z.coerce.date().optional(),
     draft: z.boolean().default(false),

@@ -1,6 +1,6 @@
 ---
 title: "Saudade Me Bate no Peito"
-alternateTitles: [ "Saudade me bate, me faz chorar" ]
+alternateTitles: [ "Saudade me bate, me faz chorar", Saudade Que Bate ]
 type: corrido
 styles: [ angola ]
 toques: []
@@ -14,9 +14,12 @@ about: |
 translationReviewed: false
 sources: []
 recordings:
-  []
+  - youtube: https://www.youtube.com/watch?v=C0lKbCfHWis
+    title: Contramestre Barata
 added: 2026-10-28
 draft: false
+origin: composed
+composer: Contramestre Barata (attributed)
 ---
 
 ## Coro

@@ -12,10 +12,10 @@ summary: "Some days the singer sits on the veranda; other days he goes out to
 translationReviewed: false
 sources: []
 recordings:
-  - file: /audio/tem-dias-que-eu-vou-vadiar/tem-dias.m4a
-    title: Class recording
   - youtube: https://www.youtube.com/watch?v=V6W-I0muSqc
     title: Tony, Pitoco e Formiga
+  - file: /audio/tem-dias-que-eu-vou-vadiar/tem-dias.m4a
+    title: Class recording
 added: 2026-10-28
 draft: false
 origin: composed

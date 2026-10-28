@@ -13,10 +13,10 @@ translationReviewed: false
 sources:
   - https://dendearts.com/blog/quem-nunca-andou-de-canoa/
 recordings:
-  - file: /audio/quem-nunca-andou-de-canoa/quem-nunca-andou-de-canoa.m4a
-    title: Class recording
   - youtube: https://www.youtube.com/watch?v=sSw4qDrdPPQ
     title: Learning video
+  - file: /audio/quem-nunca-andou-de-canoa/quem-nunca-andou-de-canoa.m4a
+    title: Class recording
 added: 2026-10-28
 draft: false
 ---

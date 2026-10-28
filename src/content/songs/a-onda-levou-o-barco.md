@@ -14,6 +14,8 @@ translationReviewed: false
 sources:
   - https://capoeiraliberdade.wordpress.com/2011/05/02/a-onda-levou-o-barco/
 recordings:
+  - youtube: https://www.youtube.com/watch?v=Q_5wMrMrjC0
+    title: Reference video
   - file: /audio/a-onda-levou-o-barco/levou-o-barco.m4a
     title: Class recording
 added: 2026-10-28

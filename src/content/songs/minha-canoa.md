@@ -1,16 +1,18 @@
 ---
 title: "Minha Canoa"
-alternateTitles: ["Ela é boa de vela"]
+alternateTitles: [ "Ela é boa de vela" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [the-sea]
+themes: [ the-sea ]
 people: []
 places: []
 summary: "The singer's canoe sails well."
 translationReviewed: false
 sources: []
 recordings:
+  - youtube: https://www.youtube.com/watch?v=wpcpHLAPCjE
+    title: Mestre Pernalonga
   - file: /audio/minha-canoa/audio-2024-04-03-21-37-47.m4a
     title: Class recording
 added: 2026-10-28

@@ -16,7 +16,7 @@ translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/sobe-mare.html
 recordings:
-  - youtube: https://www.youtube.com/watch?v=ZoogAgPTy3Y
+  - youtube: https://www.youtube.com/watch?v=kiU0MLbdcKI
     title: Reference video
   - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
     title: Roda recording

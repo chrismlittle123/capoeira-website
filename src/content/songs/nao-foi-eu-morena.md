@@ -2,15 +2,18 @@
 title: "Não Foi Eu, Morena"
 alternateTitles: []
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [love, everyday]
+themes: [ love, everyday ]
 people: []
 places: []
-summary: "The singer tells his sweetheart he wasn't the one who stirred up trouble with her father."
+summary: "The singer tells his sweetheart he wasn't the one who stirred up
+  trouble with her father."
 translationReviewed: false
 sources: []
 recordings:
+  - youtube: https://www.youtube.com/watch?v=vTcFGbzTlz8
+    title: Casa de Tapera
   - file: /audio/nao-foi-eu-morena/audio-2024-04-03-21-39-23.m4a
     title: Class recording
 added: 2026-10-28

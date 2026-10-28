@@ -15,10 +15,10 @@ translationReviewed: false
 sources:
   - https://capoeira.cafe/mandei-fazer-meu-terreiro/
 recordings:
+  - youtube: https://www.youtube.com/watch?v=e_1kTM3896g
+    title: Capoeira Café (short clip)
   - file: /audio/mandei-fazer-meu-terreiro/meu-terreiro.m4a
     title: Class recording
-  - youtube: https://youtu.be/ndX_faw01Mg
-    title: Reference video
 added: 2026-10-28
 draft: false
 ---

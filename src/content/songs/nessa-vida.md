@@ -12,10 +12,10 @@ summary: "The singer can't walk through life alone, so he brings capoeira along
 translationReviewed: false
 sources: []
 recordings:
-  - file: /audio/nessa-vida/nessa-vida.m4a
-    title: Class recording
   - youtube: https://www.youtube.com/watch?v=V2ZWhc5Pjak
     title: Contramestre Fubuia
+  - file: /audio/nessa-vida/nessa-vida.m4a
+    title: Class recording
 added: 2026-10-28
 draft: false
 origin: composed

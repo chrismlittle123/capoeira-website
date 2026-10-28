@@ -14,10 +14,10 @@ about: |
 translationReviewed: false
 sources: []
 recordings:
-  - file: /audio/vim-no-navio-de-aruanda/vim-no-navio.m4a
-    title: Class recording
   - youtube: https://www.youtube.com/watch?v=tZe6VaEJbBg
     title: "Mestre Salgado"
+  - file: /audio/vim-no-navio-de-aruanda/vim-no-navio.m4a
+    title: Class recording
 added: 2026-10-28
 draft: false
 origin: composed

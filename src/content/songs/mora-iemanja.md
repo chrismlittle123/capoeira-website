@@ -9,7 +9,8 @@ people: [ iemanja ]
 places: [ guine ]
 origin: composed
 composer: Marquinho Coreba (attributed)
-summary: "Iemanjá lives in the sea: the tears of enslaved Africans touched her heart, and she could turn the slave ship back to Guinea."
+summary: "Iemanjá lives in the sea: the tears of enslaved Africans touched her
+  heart, and she could turn the slave ship back to Guinea."
 about: |
   Published as "Rainha do Mar (Mora Iemanjá)", recorded by Carolina Soares (2008).
   In the class notes it appeared as the "long version" of Quando a Maré Baixar —

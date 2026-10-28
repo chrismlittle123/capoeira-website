@@ -12,6 +12,8 @@ translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/e-de-iaia-e-de-ioio.html
 recordings:
+  - youtube: https://www.youtube.com/watch?v=KmyhSWyTX3o
+    title: La Laue
   - file: /audio/e-de-ioio-e-de-iaia/roda-recording.m4a
     title: Roda recording
     end: "2:13"

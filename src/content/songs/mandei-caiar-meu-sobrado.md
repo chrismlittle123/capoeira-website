@@ -13,10 +13,10 @@ sources:
   - https://dendearts.com/mandei-caiar-meu-sobrado/
   - https://capoeiralyrics.info/songs/mandei-caia-meu-sobrado.html
 recordings:
+  - youtube: https://www.youtube.com/watch?v=3ozx3C_D3WQ
+    title: Mestre Boa Voz
   - file: /audio/mandei-caiar-meu-sobrado/mandei-caiar-meu-sobrado.m4a
     title: Class recording
-  - youtube: https://www.youtube.com/watch?v=fNCKUz_kaf0
-    title: Mestre Casquinha
 added: 2026-10-28
 draft: false
 ---

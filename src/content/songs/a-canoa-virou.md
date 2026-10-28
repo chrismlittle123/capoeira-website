@@ -12,10 +12,10 @@ translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/a-canoa-virou-marinheiro.html
 recordings:
-  - file: /audio/a-canoa-virou/audio-2024-04-03-21-38-10.m4a
-    title: Class recording
   - youtube: https://www.youtube.com/watch?v=BIemkZYQHlg
     title: Mestre Boca Rica
+  - file: /audio/a-canoa-virou/audio-2024-04-03-21-38-10.m4a
+    title: Class recording
 added: 2026-10-28
 draft: false
 ---

@@ -12,11 +12,10 @@ summary: "The singer sends word to his love — and to his viola — that he is
 translationReviewed: false
 sources: []
 recordings:
+  - youtube: https://www.youtube.com/watch?v=rVv-xRLF74M
+    title: Reference video
   - file: /audio/vou-voltar-para-angola/vai-la.m4a
     title: Class recording
-  - file: /audio/vou-voltar-para-angola/roda-recording.m4a
-    title: Roda recording
-    start: "2:12"
 added: 2026-10-28
 draft: false
 origin: composed

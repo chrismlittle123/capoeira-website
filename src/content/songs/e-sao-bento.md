@@ -11,6 +11,8 @@ summary: "A plea to São Bento to put the singer's boat into the wind so it can 
 translationReviewed: false
 sources: []
 recordings:
+  - youtube: https://www.youtube.com/watch?v=kcbDi0F5g9w
+    title: Reference video
   - file: /audio/e-sao-bento/e-sao-bento.m4a
     title: Class recording
 added: 2026-10-28

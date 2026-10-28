@@ -17,10 +17,10 @@ translationReviewed: false
 sources:
   - https://www.lalaue.com/capoeira-music/meu-patua/
 recordings:
-  - file: /audio/meu-patua/meu-patua-meu-pai.m4a
-    title: Class recording
   - youtube: https://www.youtube.com/watch?v=mXJ18orD5KY
     title: Mestre Casquinha
+  - file: /audio/meu-patua/meu-patua-meu-pai.m4a
+    title: Class recording
   - file: /audio/vou-voltar-para-angola/roda-recording.m4a
     title: Roda recording
     end: "1:12"
