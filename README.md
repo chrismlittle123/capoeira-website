@@ -126,12 +126,19 @@ GlossaryTerm (linked into lyrics automatically)
 
 Schemas: `src/content.config.ts`. Lyrics parser: `src/lib/lyrics.ts`.
 
-## Deploying
+## Deploying — Cloudflare Pages
 
-Any static host works. Cloudflare Pages, Netlify and Vercel all have free tiers that
-build straight from GitHub:
+Static site, so hosting is free and there's no server to run (same setup as Brasil
+Seis, minus Cloudflare Access — this songbook is public).
 
-- Build command: `npm run build`
-- Output directory: `dist`
+1. Push this repo to GitHub.
+2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** →
+   pick `capoeira-website`.
+3. Build settings: framework preset **Astro**, **Build command** `npm run build`,
+   **Output directory** `dist`. Node comes from `.node-version`.
+4. Deploy. You get a `*.pages.dev` URL — put it (or your custom domain) in `site:` in
+   `astro.config.mjs` so canonical links, the sitemap and JSON-LD point at the right
+   place, then push again.
 
-Push a new song to `main` and the site rebuilds itself.
+Every push to `main` redeploys; pull requests get preview URLs. Cache headers live in
+`public/_headers`.

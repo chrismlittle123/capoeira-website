@@ -1,0 +1,11 @@
+# Cloudflare Pages headers
+# Hashed build assets never change.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The service worker must always be re-checked so new songs reach phones.
+/sw.js
+  Cache-Control: no-cache
+
+/audio/*
+  Cache-Control: public, max-age=604800
