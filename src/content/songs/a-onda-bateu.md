@@ -7,7 +7,7 @@ toques: []
 themes: [ the-sea, the-game ]
 people: []
 places: []
-summary: "A wave breaks on a rock out at sea, and a good angoleiro is known by
+summary: "A wave crashes on a rock out at sea, and a good angoleiro is known by
   the way he moves."
 translationReviewed: false
 sources: []
@@ -22,20 +22,20 @@ draft: false
 Angoleiro quando é bom
 > When an angoleiro is good
 Se conhece no gingar, mas bateu
-> You can tell by his ginga — but it broke
+> You can tell by his ginga — and then it crashed
 + A onda bateu numa pedra por cima do mar
-> The wave broke on a rock out over the sea
+> The wave crashed on a rock out at sea
 
 Angoleiro quando é bom
 > When an angoleiro is good
 Se conhece no andar, mas bateu
-> You can tell by the way he walks — but it broke
+> You can tell by the way he walks — and then it crashed
 + A onda bateu numa pedra por cima do mar
-> The wave broke on a rock out over the sea
+> The wave crashed on a rock out at sea
 
 Angoleiro quando é bom
 > When an angoleiro is good
 Se conhece no vadiar, mas bateu
-> You can tell by the way he plays — but it broke
+> You can tell by the way he plays — and then it crashed
 + A onda bateu numa pedra por cima do mar
-> The wave broke on a rock out over the sea
+> The wave crashed on a rock out at sea

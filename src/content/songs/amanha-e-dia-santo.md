@@ -36,15 +36,6 @@ Quem não tem faz como eu
 + Nove e três, doze
 > Nine and three, twelve
 
-Um, dois, três
-> One, two, three
-Três e três, seis
-> Three and three, six
-Seis e três, nove
-> Six and three, nine
-Nove e três, doze
-> Nine and three, twelve
-
 ## Coro
 Um, dois, três
 > One, two, three

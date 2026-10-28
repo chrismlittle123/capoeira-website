@@ -7,8 +7,7 @@ toques: []
 themes: [ outlaws, praise ]
 people: [ besouro-manganga ]
 places: []
-summary: "A lament for the legendary capoeirista Besouro, who after his death
-  became known as Cordão de Ouro."
+summary: "A lament for the legendary capoeirista Besouro, also remembered as Besouro Cordão de Ouro."
 about: |
   Besouro Mangangá is a legendary capoeirista from Santo Amaro, Bahia, often
   said to have had a "corpo fechado" (a body protected from blades and bullets)

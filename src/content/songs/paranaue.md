@@ -12,24 +12,19 @@ about: |
   sent to fight. "Capoeira me venceu" is usually read as "capoeira has won me
   over" or "got the better of me". Expect many local variations of the solo
   verses.
-recordings:
-  # DEMO ONLY — a synthesized berimbau loop to show the player. Replace with a real recording.
-  - file: /audio/paranaue/demo-berimbau.m4a
-    title: Demo berimbau (synthesized)
-    sync: true
 added: 2026-10-28
 ---
 
 ## Coro
-[0:01] Paranauê, paranauê, paraná
+Paranauê, paranauê, paraná
 > Paranauê, paranauê, Paraná
 
 ## Solo
-[0:04] Vou dizer a minha mulher, paraná
+Vou dizer a minha mulher, paraná
 > I'm going to tell my wife, Paraná
-[0:07] Capoeira me venceu, paraná
+Capoeira me venceu, paraná
 > Capoeira has won me over, Paraná
-[0:10] Paraná ê, paraná ê, paraná
+Paraná ê, paraná ê, paraná
 > Paraná eh, Paraná eh, Paraná
-[0:13] Eu vou-me embora pro Paraná
+Eu vou-me embora pro Paraná
 > I'm going away to Paraná

@@ -4,7 +4,7 @@ alternateTitles: []
 type: corrido
 styles: [ angola ]
 toques: []
-themes: [ praise ]
+themes: [ bateria ]
 people: []
 places: []
 summary: "A song naming the simple parts of the berimbau: a gourd, a wire and a

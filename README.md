@@ -94,10 +94,6 @@ Export clips as `.m4a` (AAC) or `.mp3` at ~96–128 kbps — a 1-minute clip is 
 collection grows past a few hundred MB, move them to object storage (e.g. Cloudflare
 R2) and use full `https://` URLs in `file:` — everything else keeps working.
 
-> `public/audio/paranaue/demo-berimbau.m4a` is a **synthesized placeholder** used to
-> demo the player and lyric sync. Delete it (and its `recordings:` entry and the
-> `[m:ss]` stamps in `paranaue.md`) once you have a real recording.
-
 ## Features
 
 - **Search** (`/` or ⌘K anywhere): accent-insensitive (`sao bento` → São Bento),

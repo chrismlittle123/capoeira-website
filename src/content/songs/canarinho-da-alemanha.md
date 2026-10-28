@@ -21,7 +21,7 @@ draft: false
 ## Coro
 Canarinho da Alemanha
 > Little canary from Germany
-Quem matou meu curió
+Quem matou meu curió?
 > Who killed my curió (songbird)?
 
 ## Solo

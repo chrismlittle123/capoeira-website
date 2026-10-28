@@ -12,7 +12,8 @@ about: |
   A song shared with samba de roda and the wider Bahian tradition. The "lonely
   sailor" answers that it was the tumbling of the ship or the swaying of the sea
   that taught him to swim — learned by living it, like capoeira itself. The
-  verses can be repeated in any order; end on "Marinheiro só".
+  verses can be repeated in any order; end on "Marinheiro só". Some sing
+  "a navegar" (to sail) instead of "a nadar" (to swim).
 translationReviewed: false
 recordings:
   - youtube: https://www.youtube.com/watch?v=mjqG0UlpTb8
@@ -44,8 +45,8 @@ E de São Salvador
 > Oh sailor, sailor
 + Marinheiro só
 > Lonely sailor
-Quem te ensinou a nadar? (or: a navegar?)
-> Who taught you to swim? (or: to sail?)
+Quem te ensinou a nadar?
+> Who taught you to swim?
 + Marinheiro só
 > Lonely sailor
 Foi o tombo do navio

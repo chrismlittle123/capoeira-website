@@ -20,9 +20,9 @@ draft: false
 
 ## Solo
 Pensamento
-> Thought,
+> Thought —
 Vá na frente que eu chego depois
-> go on ahead, I'll get there later
+> Go on ahead, I'll get there later
 Porque trago na lembrança
 > Because I carry in my memory
 Os olhos brilham
@@ -33,7 +33,7 @@ Quando de novo se encontram
 > Eyes shine when they meet again
 
 Sentimento
-> Feeling,
+> Feeling —
 Olho pro céu e vejo as estrelas
 > I look at the sky and see the stars
 Na folhagem sinto o vento
@@ -46,9 +46,9 @@ Me guardo por dentro
 > A rainy day, a dark forest, I keep myself inside
 
 Caxixi
-> Caxixi,
+> Caxixi —
 Cadê berimbau que estava aqui?
-> where's the berimbau that was here?
+> Where's the berimbau that was here?
 Assentado nesse chão
 > Sitting on this ground
 Parecendo um pé de milho
