@@ -1,17 +1,18 @@
 ---
 title: "Vou pra Bahia"
-alternateTitles: [Vou pra Bahia só pra ver vapor correr no mar]
+alternateTitles: [ Vou pra Bahia só pra ver vapor correr no mar ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [the-sea, bahia]
+themes: [ the-sea, bahia ]
 people: []
-places: [bahia]
+places: [ bahia ]
 summary: "The singer is off to Bahia just to watch the steamboats sail the sea."
 translationReviewed: false
 sources:
   - https://www.facebook.com/CapoeiraSpinaceto/videos/vou-pra-bahia-s%C3%B3-pra-ver-vapor-correr-no-mar/365069974521232/
-recordings: []
+recordings:
+  []
 added: 2026-10-28
 draft: false
 ---

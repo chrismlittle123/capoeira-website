@@ -13,7 +13,8 @@ translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/quem-te-ensinou-a-nadar.html
   - https://capoeira.cafe/quem-me-ensinou-a-nadar/
-recordings: []
+recordings:
+  []
 added: 2026-10-28
 draft: false
 ---

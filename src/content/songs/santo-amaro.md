@@ -1,19 +1,20 @@
 ---
 title: "Santo Amaro"
-alternateTitles: ["Santo Amaro é terra boa"]
+alternateTitles: [ "Santo Amaro é terra boa" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [bahia]
+themes: [ bahia ]
 people: []
-places: [santo-amaro]
+places: [ santo-amaro ]
 summary: "Santo Amaro is good land — good for playing capoeira."
 about: |
   Santo Amaro da Purificação, in the Recôncavo of Bahia, is often celebrated as
   a cradle of capoeira and the home town of Besouro Mangangá.
 translationReviewed: false
 sources: []
-recordings: []
+recordings:
+  []
 added: 2026-10-28
 draft: false
 ---

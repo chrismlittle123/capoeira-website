@@ -11,7 +11,8 @@ summary: "The capoeirista announces himself as the berimbau starts to play."
 translationReviewed: false
 sources:
   - https://capoeira.cafe/quem-vem-la-sou-eu/
-recordings: []
+recordings:
+  []
 added: 2026-10-28
 draft: false
 ---
