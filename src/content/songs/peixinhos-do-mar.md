@@ -1,16 +1,18 @@
 ---
 title: "Peixinhos do Mar"
-alternateTitles: ["Quem te ensinou a nadar"]
+alternateTitles: [ "Quem te ensinou a nadar" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [the-sea, nature]
+themes: [ the-sea, nature ]
 people: []
 places: []
-related: [marinheiro-so]
+related: [ marinheiro-so ]
 summary: "Who taught you to swim? The sailor — the little fish of the sea."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/quem-te-ensinou-a-nadar.html
+  - https://capoeira.cafe/quem-me-ensinou-a-nadar/
 recordings: []
 added: 2026-10-28
 draft: false

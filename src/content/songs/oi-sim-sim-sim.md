@@ -1,17 +1,23 @@
 ---
 title: Oi Sim Sim Sim
-alternateTitles: [Olha a pisada de Lampião]
+alternateTitles: [ Olha a pisada de Lampião ]
 type: corrido
-styles: [regional, contemporanea, angola]
-toques: [sao-bento-grande-regional, sao-bento-grande-de-angola]
-themes: [outlaws, the-game]
-people: [lampiao]
-summary: Yes, yes, yes — no, no, no. Today there is, tomorrow there isn't. Look at Lampião's footsteps!
+styles: [ regional, contemporanea, angola ]
+toques: [ sao-bento-grande-regional, sao-bento-grande-de-angola ]
+themes: [ outlaws, the-game ]
+people: [ lampiao ]
+summary: Yes, yes, yes — no, no, no. Today there is, tomorrow there isn't. Look
+  at Lampião's footsteps!
 about: |
   The "pisada" (footstep, stomp) of Lampião, the legendary cangaceiro of the
   sertão. The song plays with opposites — yes/no, today/tomorrow — like the
   feints and changes of direction in the game.
 added: 2026-10-28
+recordings:
+  - youtube: https://www.youtube.com/watch?v=B06bR4_ZnSI
+    title: La Laue
+sources:
+  - https://capoeiralyrics.info/songs/sim-sim-sim-nao-nao-nao.html
 ---
 
 ## Coro

@@ -12,7 +12,9 @@ summary: "A farewell to the good people: the singer came on the waves of the sea
 about: |
   A farewell song, often sung to close a roda.
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeira.cafe/adeus-povo-bom/
+  - https://www.lalaue.com/capoeira-music/adeus-povo-bom-adeus/
 recordings:
   - youtube: https://www.youtube.com/watch?v=4K2T-a63haE
     title: Reference video

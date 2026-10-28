@@ -14,14 +14,19 @@ about: |
   associated with Afro-Brazilian religious practice. Capoeiristas of old were often
   said to wear one for protection.
 translationReviewed: false
-sources: []
+sources:
+  - https://www.lalaue.com/capoeira-music/meu-patua/
 recordings:
   - file: /audio/meu-patua/meu-patua-meu-pai.m4a
     title: Class recording
   - youtube: https://www.youtube.com/watch?v=fD4IkHDrZX0
     title: Reference video
+  - youtube: https://www.youtube.com/watch?v=mXJ18orD5KY
+    title: Mestre Casquinha (tutorial)
 added: 2026-10-28
 draft: false
+origin: composed
+composer: Mestre Casquinha
 ---
 
 ## Solo

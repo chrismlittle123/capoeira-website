@@ -10,7 +10,9 @@ places: [ bahia, maceio, cachoeira ]
 summary: "A singer asks the little canary who killed his curió, between verses
   about the roda, Pastinha and Bahia."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/canarinho-da-alemanha.html
+  - https://capoeira.cafe/canarinho-da-alemanha/
 recordings:
   - youtube: https://www.youtube.com/watch?v=hUjd4rBXxcE
     title: Reference video

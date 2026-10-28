@@ -17,6 +17,7 @@ recordings:
     title: Reference video
 added: 2026-10-28
 draft: true
+composer: Mestre Barrão
 ---
 
 ## Coro

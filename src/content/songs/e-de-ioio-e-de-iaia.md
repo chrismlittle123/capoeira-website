@@ -2,19 +2,21 @@
 title: "É de Ioiô, É de Iaiá"
 alternateTitles: []
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [the-game, the-sea]
+themes: [ the-game, the-sea ]
 people: []
 places: []
 summary: "Capoeira Angola played on the seashore — it belongs to ioiô and to iaiá."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/e-de-iaia-e-de-ioio.html
 recordings:
   - file: /audio/e-de-ioio-e-de-iaia/roda-recording.m4a
     title: Roda recording
     end: "2:13"
-    notes: "This roda video continues into another song; the first half is this one (approximate cut)."
+    notes: "This roda video continues into another song; the first half is this one
+      (approximate cut)."
 added: 2026-10-28
 draft: false
 ---

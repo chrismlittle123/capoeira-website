@@ -1,10 +1,10 @@
 ---
 title: Ai Ai Aidê
-alternateTitles: [Joga bonito que eu quero ver]
+alternateTitles: [ Joga bonito que eu quero ver ]
 type: corrido
-styles: [angola, regional, contemporanea]
-toques: [sao-bento-grande-regional, benguela]
-themes: [the-game, resistance, love]
+styles: [ angola, regional, contemporanea ]
+toques: [ sao-bento-grande-regional, benguela ]
+themes: [ the-game, resistance, love ]
 summary: Play beautifully, I want to see — and learn.
 about: |
   A favourite for encouraging a beautiful game. Aidê is often explained as an
@@ -13,6 +13,11 @@ about: |
   these, make up your own, or just call "ai, ai, Aidê" in its variations.
 translationReviewed: false
 added: 2026-10-28
+recordings:
+  - youtube: https://www.youtube.com/watch?v=uiYy4tw3nDg
+    title: Learning video
+sources:
+  - https://capoeira.cafe/ai-ai-aide/
 ---
 
 ## Coro
@@ -40,7 +45,7 @@ Eu estou aqui pra ver você
 > I'm here to see you
 + Ai, ai, Aidê
 > Oh, oh, Aidê
-Como vai, como passou, como vai vosmicê?
+Como vai, como passou, como vai vosmecê?
 > How are you, how have you been, how are you, sir?
 + Ai, ai, Aidê
 > Oh, oh, Aidê

@@ -16,6 +16,8 @@ recordings:
     title: Reference video
 added: 2026-10-28
 draft: false
+origin: composed
+composer: Pernã (attributed)
 ---
 
 ## Solo

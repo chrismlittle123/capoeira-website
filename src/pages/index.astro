@@ -158,16 +158,12 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
   .stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 14px;
+    gap: 6px 22px;
     margin: 16px 0 0;
     font-size: 0.68rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--muted);
-  }
-  .stats span + span::before {
-    content: '·';
-    margin-right: 14px;
   }
   .search-slot {
     margin-top: 28px;

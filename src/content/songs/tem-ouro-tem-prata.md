@@ -5,18 +5,21 @@ type: corrido
 styles: [ angola ]
 toques: []
 themes: [ the-sea, faith ]
-people: [ iemanja ]
+people: [ oxum, iemanja ]
 places: []
 summary: "Mother's house lies under the water, full of gold, silver and diamonds
   that light the way."
 about: |
-  The "mamãe" whose house lies under the water is often understood as Iemanjá,
-  the orixá of the sea.
+  Often sung for Oxum, the orixá of gold and fresh water — the "mamãe" whose
+  house lies under the water, full of gold, silver and diamonds. Some singers
+  hear Iemanjá, the orixá of the sea, instead.
 translationReviewed: false
 sources: []
 recordings:
   - file: /audio/tem-ouro-tem-prata/roda-recording.m4a
     title: Roda recording
+  - youtube: https://www.youtube.com/watch?v=RStFUB7Ybro
+    title: Mestre Marrom
 added: 2026-10-28
 draft: false
 ---

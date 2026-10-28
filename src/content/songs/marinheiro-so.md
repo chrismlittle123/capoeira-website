@@ -21,6 +21,9 @@ recordings:
   - youtube: https://www.youtube.com/watch?v=zbij5B2i-GE
     title: Reference video
 added: 2026-10-28
+sources:
+  - https://capoeira.cafe/marinheiro-so/
+  - https://www.lalaue.com/capoeira-music/marinheiro-so/
 ---
 
 ## Solo & coro

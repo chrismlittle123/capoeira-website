@@ -1,15 +1,16 @@
 ---
 title: "Quem Vem Lá, Sou Eu"
-alternateTitles: ["Berimbau bateu, capoeira sou eu"]
+alternateTitles: [ "Berimbau bateu, capoeira sou eu" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [the-game]
+themes: [ the-game ]
 people: []
 places: []
 summary: "The capoeirista announces himself as the berimbau starts to play."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeira.cafe/quem-vem-la-sou-eu/
 recordings: []
 added: 2026-10-28
 draft: false
@@ -23,6 +24,11 @@ Berimbau bateu
 Capoeira sou eu
 > I am capoeira
 
-## Coro
-Mas sou eu, sou eu, quem vem lá (x2)
-> But it's me, it's me who's coming
+Mas sou eu, sou eu
+> But it's me, it's me
++ Quem vem lá
+> Who's coming
+Mas sou eu, sou eu
+> But it's me, it's me
++ Quem vem lá
+> Who's coming

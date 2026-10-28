@@ -56,6 +56,16 @@ const allFacts: Fact[] = [
 ];
 const facts = allFacts.filter((f) => f.items.length);
 
+const originText =
+  d.origin === 'traditional'
+    ? 'Traditional'
+    : d.origin === 'composed'
+      ? d.composer
+        ? `By ${d.composer}`
+        : 'Composed (author unknown)'
+      : d.composer
+        ? `By ${d.composer}`
+        : 'Origin unknown';
 const nonEmpty = <T,>(a: T[]) => (a.length ? a : undefined);
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -105,9 +115,7 @@ const translated = hasTranslation(sections);
         <span aria-current="page">{d.title}</span>
       </nav>
       <p class="meta mono">
-        {[toques.map((t) => t.data.name).join(' · '), d.origin === 'traditional' ? 'Traditional' : d.composer]
-          .filter(Boolean)
-          .join(' · ')}
+        {[toques.map((t) => t.data.name).join(' · '), originText].filter(Boolean).join(' · ')}
       </p>
       {d.alternateTitles.length > 0 && <p class="alt">also sung as {d.alternateTitles.map((t) => `“${t}”`).join(', ')}</p>}
       {d.summary && <p class="summary">{d.summary}</p>}
@@ -165,7 +173,7 @@ const translated = hasTranslation(sections);
         {
           d.sources.length > 0 && (
             <aside class="sources">
-              <h2>Sources</h2>
+              <h2>Other versions</h2>
               <ul>
                 {d.sources.map((u) => (
                   <li>
@@ -198,7 +206,7 @@ const translated = hasTranslation(sections);
           }
           <div>
             <dt>Origin</dt>
-            <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : (d.composer ?? d.origin)}</dd>
+            <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : originText}</dd>
           </div>
         </dl>
         {
@@ -518,6 +526,11 @@ const translated = hasTranslation(sections);
   .facts {
     position: sticky;
     top: 150px;
+  }
+  @media (max-width: 860px) {
+    .facts {
+      position: static;
+    }
   }
   dl {
     margin: 0;

@@ -8,7 +8,7 @@ themes: [ malandragem, love ]
 people: []
 places: []
 related: [ ie-viva-meu-deus ]
-origin: unknown
+origin: composed
 summary: "A ladainha of warnings: not everything that glitters is gold, and not
   every outstretched hand wants to help."
 translationReviewed: false
@@ -18,6 +18,7 @@ recordings:
     title: Reference video
 added: 2026-10-28
 draft: true
+composer: Contramestre Barata (attributed)
 ---
 
 ## Ladainha

@@ -2,18 +2,21 @@
 title: "Mandei Caiar Meu Sobrado"
 alternateTitles: []
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [everyday]
+themes: [ everyday ]
 people: []
 places: []
 summary: "The singer had his house whitewashed — in yellow."
 translationReviewed: false
 sources:
   - https://dendearts.com/mandei-caiar-meu-sobrado/
+  - https://capoeiralyrics.info/songs/mandei-caia-meu-sobrado.html
 recordings:
   - file: /audio/mandei-caiar-meu-sobrado/mandei-caiar-meu-sobrado.m4a
     title: Class recording
+  - youtube: https://www.youtube.com/watch?v=fNCKUz_kaf0
+    title: Mestre Casquinha
 added: 2026-10-28
 draft: false
 ---

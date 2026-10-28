@@ -7,7 +7,7 @@ toques: []
 themes: [ nature, the-game ]
 people: []
 places: []
-origin: unknown
+origin: composed
 summary: "A song thrush sings under the orange tree while the singer plays
   berimbau and capoeira."
 translationReviewed: false
@@ -17,6 +17,7 @@ recordings:
     title: Reference video
 added: 2026-10-28
 draft: true
+composer: Mestre Suassuna
 ---
 
 ## Coro

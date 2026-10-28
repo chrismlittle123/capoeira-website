@@ -1,13 +1,14 @@
 ---
 title: "Vou Voltar pra Angola"
-alternateTitles: ["Vai lá, vai lá"]
+alternateTitles: [ "Vai lá, vai lá" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [love]
+themes: [ love ]
 people: []
-places: [angola]
-summary: "The singer sends word to his love — and to his viola — that he is going back to Angola."
+places: [ angola ]
+summary: "The singer sends word to his love — and to his viola — that he is
+  going back to Angola."
 translationReviewed: false
 sources: []
 recordings:
@@ -17,6 +18,8 @@ recordings:
     title: Roda recording
 added: 2026-10-28
 draft: false
+origin: composed
+composer: Fala Manso (attributed)
 ---
 
 ## Solo

@@ -3,16 +3,18 @@ title: "Oxalá Que Me Guie"
 alternateTitles: []
 type: corrido
 origin: composed
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [faith, resistance]
-people: [oxala]
+themes: [ faith, resistance ]
+people: [ oxala ]
 places: []
-summary: "A prayer to Oxalá for guidance and faith in the roda, and capoeira as a people's fight for freedom."
+summary: "A prayer to Oxalá for guidance and faith in the roda, and capoeira as
+  a people's fight for freedom."
 translationReviewed: false
 sources: []
 added: 2026-10-28
 draft: true
+composer: Olho de Gato (Abadá-Capoeira)
 ---
 
 ## Coro

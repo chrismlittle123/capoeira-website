@@ -1,18 +1,20 @@
 ---
 title: Viola Lê Lê
-alternateTitles: [Lê lê ô]
+alternateTitles: [ Lê lê ô ]
 type: corrido
-styles: [angola]
-themes: [bateria, the-game]
-places: [angola]
-origin: unknown
-summary: The instruments of the roda arrive one by one — berimbau, pandeiro, atabaque, reco-reco, agogô — calling the viola to play.
+styles: [ angola ]
+themes: [ bateria, the-game ]
+places: [ angola ]
+origin: composed
+summary: The instruments of the roda arrive one by one — berimbau, pandeiro,
+  atabaque, reco-reco, agogô — calling the viola to play.
 about: |
   "Viola" here is most likely the viola berimbau, the highest of the three
   berimbaus, which the song calls to play as each instrument of the bateria
   joins in.
 translationReviewed: false
 added: 2026-10-28
+composer: Mestre Mandela (attributed)
 ---
 
 ## Solo

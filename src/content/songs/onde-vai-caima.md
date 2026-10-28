@@ -7,19 +7,22 @@ toques: []
 themes: [ the-game, the-sea ]
 people: []
 places: [ ilha-de-mare, abaete ]
-origin: composed
+origin: traditional
 summary: "A song following the capoeirista Caimã as he travels the world taking
   his art with him."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/onde-vai-caiman.html
 recordings:
   - file: /audio/e-de-ioio-e-de-iaia/roda-recording.m4a
     title: Roda recording
     start: "2:13"
     notes: "Same roda recording as another song; this song is in the second half
       (approximate start)."
+  - youtube: https://www.youtube.com/watch?v=fiveJ2PUSBU
+    title: Mestre Toni Vargas
 added: 2026-10-28
-draft: true
+draft: false
 ---
 
 ## Solo

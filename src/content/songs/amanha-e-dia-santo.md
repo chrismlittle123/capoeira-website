@@ -9,8 +9,13 @@ people: []
 places: []
 summary: "Tomorrow is a holy day: those with good clothes go to Mass, the rest
   do as the singer does — counted out in threes."
+about: |
+  Some sources sing "Dia do Corpo de Deus" (Corpus Christi, a holy day) instead
+  of "Dia de povo de Deus".
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeira.cafe/amanha-e-dia-santo/
+  - https://www.lalaue.com/capoeira-music/amanha-e-dia-santo/
 recordings:
   - youtube: https://www.youtube.com/watch?v=7ulazEnFJLE
     title: Reference video

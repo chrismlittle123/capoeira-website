@@ -13,7 +13,8 @@ about: |
   Ilha de Maré is an island in the Bay of All Saints (Baía de Todos os Santos),
   near Salvador, so the song plays on the word "maré" (tide).
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/sobe-mare.html
 recordings:
   - youtube: https://www.youtube.com/watch?v=ZoogAgPTy3Y
     title: Reference video

@@ -9,7 +9,9 @@ people: []
 places: []
 summary: "The singer learned to play Capoeira Angola by the seashore."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/foi-na-beira-do-mar.html
+  - https://capoeira.cafe/foi-na-beira-do-mar/
 recordings:
   - youtube: https://www.youtube.com/watch?v=6sJs6uAJWgc
     title: Reference video

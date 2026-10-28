@@ -1,20 +1,22 @@
 ---
 title: "Não Vi Capoeira Nascer"
-alternateTitles: ["Eu não vi capoeira nascer"]
+alternateTitles: [ "Eu não vi capoeira nascer" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 origin: composed
 toques: []
-themes: [resistance, bahia]
+themes: [ resistance, bahia ]
 people: []
-places: [bahia, santo-amaro]
-summary: "A song retelling, as the elders tell it, how capoeira was born among enslaved Africans in Santo Amaro, Bahia."
+places: [ bahia, santo-amaro ]
+summary: "A song retelling, as the elders tell it, how capoeira was born among
+  enslaved Africans in Santo Amaro, Bahia."
 translationReviewed: false
 sources:
   - https://open.spotify.com/track/6LVpMfe5mdP4rI6QLU2vE1
 recordings: []
 added: 2026-10-28
 draft: true
+composer: Mestre Felipe & Mestre Claudio (attributed)
 ---
 
 ## Coro

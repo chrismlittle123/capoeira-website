@@ -81,6 +81,15 @@ for (const s of songs) {
   section {
     scroll-margin-top: 160px; /* header + letter bar */
   }
+  @media (max-width: 560px) {
+    /* the header scrolls away on phones, so the letter bar pins to the top */
+    .letters {
+      top: 0;
+    }
+    section {
+      scroll-margin-top: 72px;
+    }
+  }
   .letter {
     margin: 32px 0 12px;
     font-size: 40px;

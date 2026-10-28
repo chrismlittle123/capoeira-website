@@ -51,3 +51,7 @@ sao-joao:
   name: São João
   kind: religious
   description: Saint John the Baptist, celebrated with bonfires in the June festivals (festas juninas).
+oxum:
+  name: Oxum
+  kind: religious
+  description: The orixá of fresh water, rivers, gold and love, associated with yellow.

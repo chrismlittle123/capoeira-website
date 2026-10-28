@@ -2,14 +2,15 @@
 title: "Santo Antônio, Eu Quero Água"
 alternateTitles: []
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [faith]
-people: [santo-antonio]
+themes: [ faith ]
+people: [ santo-antonio ]
 places: []
 summary: "A plea to Saint Anthony for water to drink, to wash with and to bless."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeira.cafe/santo-antonio-eu-quero-agua/
 recordings:
   - file: /audio/santo-antonio-eu-quero-agua/santo-antonio-eu-quero-agua.m4a
     title: Class recording

@@ -12,7 +12,8 @@ about: |
   A terreiro is a yard or open ground, and also the sacred space of a Candomblé
   house — a double meaning often heard in capoeira songs.
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeira.cafe/mandei-fazer-meu-terreiro/
 recordings:
   - file: /audio/mandei-fazer-meu-terreiro/meu-terreiro.m4a
     title: Class recording
@@ -31,5 +32,7 @@ Mandei fazer meu terreiro
 > I had my terreiro made
 Pra ver meu amor vadiar
 > To watch my love play
-+ Aruanda, Aruanda, Aruanda
-> Aruanda, Aruanda, Aruanda
++ Aruanda, Aruanda, Aruanda, Aruanda ê
+> Aruanda, Aruanda, Aruanda, Aruanda, eh
++ Aruanda, Aruanda, Aruanda, Aruanda á
+> Aruanda, Aruanda, Aruanda, Aruanda, ah

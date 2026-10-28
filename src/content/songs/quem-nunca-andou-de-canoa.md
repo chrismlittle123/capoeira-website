@@ -2,17 +2,21 @@
 title: "Quem Nunca Andou de Canoa"
 alternateTitles: []
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [the-sea, the-game]
+themes: [ the-sea, the-game ]
 people: []
 places: []
-summary: "Whoever has never been in a canoe doesn't know the sea, and whoever has never played Capoeira Angola doesn't know what it is to vadiar."
+summary: "Whoever has never been in a canoe doesn't know the sea, and whoever
+  has never played Capoeira Angola doesn't know what it is to vadiar."
 translationReviewed: false
-sources: []
+sources:
+  - https://dendearts.com/blog/quem-nunca-andou-de-canoa/
 recordings:
   - file: /audio/quem-nunca-andou-de-canoa/quem-nunca-andou-de-canoa.m4a
     title: Class recording
+  - youtube: https://www.youtube.com/watch?v=sSw4qDrdPPQ
+    title: Learning video
 added: 2026-10-28
 draft: false
 ---

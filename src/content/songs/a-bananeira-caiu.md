@@ -1,20 +1,23 @@
 ---
 title: "A Bananeira Caiu"
-alternateTitles: ["Cai, cai, cai bananeira"]
+alternateTitles: [ "Cai, cai, cai bananeira" ]
 type: corrido
-styles: [angola]
+styles: [ angola ]
 toques: []
-themes: [nature, everyday]
+themes: [ nature, everyday ]
 people: []
 places: []
 summary: "The machete struck low, and the banana tree came down."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeira.cafe/a-bananeira-caiu/
+  - https://www.lalaue.com/capoeira-music/a-bananeira-caiu/
 recordings:
   - file: /audio/a-bananeira-caiu/roda-recording.m4a
     title: Roda recording
     end: "1:49"
-    notes: "This roda video continues into another song; the first half is this one (approximate cut)."
+    notes: "This roda video continues into another song; the first half is this one
+      (approximate cut)."
 added: 2026-10-28
 draft: false
 ---

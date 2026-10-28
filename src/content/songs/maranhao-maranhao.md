@@ -9,7 +9,8 @@ people: []
 places: [ maranhao ]
 summary: "The singer longs for his home state of Maranhão."
 translationReviewed: false
-sources: []
+sources:
+  - https://capoeiralyrics.info/songs/maranhao.html
 recordings:
   - youtube: https://www.youtube.com/watch?v=YkpEimi5Ozo
     title: "Reference video"

@@ -131,7 +131,7 @@ const nav = [
     padding-top: env(safe-area-inset-top);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s;
     view-transition-name: site-header;
@@ -191,6 +191,10 @@ const nav = [
     cursor: pointer;
   }
   @media (max-width: 560px) {
+    /* on a phone the two-row header would permanently cover the lyrics — let it scroll away */
+    .site-header {
+      position: static;
+    }
     .bar {
       padding-block: 12px 10px;
     }
