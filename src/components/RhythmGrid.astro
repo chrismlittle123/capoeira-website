@@ -1,0 +1,131 @@
+---
+/*
+ * The berimbau's basic phrase — tch tch · dom · dim — drawn as a step grid, the one
+ * bold graphic (after Brasil Seis's rhythm grid). A playhead sweeps the steps and each
+ * hit lights as it passes. Decorative: a stylised phrase, not a transcription of any
+ * one toque.
+ */
+interface Props {
+  /** seconds per 8th-note step */
+  step?: number;
+  class?: string;
+}
+const { step = 0.24, class: cls = '' } = Astro.props;
+
+const STEPS = 16; // two cycles of 8 eighth-notes
+const ROWS = [
+  { label: 'dim', hint: 'closed — coin pressed on the wire', hits: [4, 12] },
+  { label: 'dom', hint: 'open — the free wire', hits: [2, 10] },
+  { label: 'tch', hint: 'chiado — the buzz, coin resting', hits: [0, 1, 8, 9] },
+];
+const cells = Array.from({ length: STEPS }, (_, i) => i);
+---
+
+<figure class:list={['rhythm', cls]} style={`--step:${step}s; --steps:${STEPS}`}>
+  <div class="grid" role="img" aria-label="Berimbau phrase: two buzzes, an open note, a closed note — repeated">
+    {
+      ROWS.map((row) => (
+        <div class="row">
+          <span class="label" title={row.hint}>
+            {row.label}
+          </span>
+          <div class="cells">
+            {cells.map((i) => (
+              <span
+                class:list={['cell', row.hits.includes(i) && 'on', i % 4 === 0 && i > 0 && 'beat']}
+                style={`--s:${i}`}
+              />
+            ))}
+          </div>
+        </div>
+      ))
+    }
+    <span class="playhead" aria-hidden="true"></span>
+  </div>
+  <figcaption class="eyebrow sage">berimbau · tch tch dom dim</figcaption>
+</figure>
+
+<style>
+  .rhythm {
+    margin: 0;
+  }
+  .grid {
+    position: relative;
+    display: grid;
+    gap: 4px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+  .label {
+    font: 400 0.62rem/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: help;
+  }
+  .cells {
+    display: flex;
+    gap: 3px;
+  }
+  .cell {
+    flex: 1;
+    height: 22px;
+    border-radius: 2px;
+    border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+    background: var(--bg);
+  }
+  .cell.beat {
+    margin-left: 5px;
+    border-color: var(--line);
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+  }
+  .cell.on {
+    border: 0;
+    background: var(--gold);
+    opacity: 0.55;
+    animation: hit calc(var(--step) * var(--steps)) linear infinite;
+    animation-delay: calc(var(--step) * var(--s));
+  }
+  /* each hit flashes as the playhead reaches it */
+  @keyframes hit {
+    0% {
+      opacity: 1;
+      filter: brightness(1.35);
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 12px 2px color-mix(in srgb, var(--gold) 55%, transparent);
+    }
+    10%,
+    100% {
+      opacity: 0.55;
+      filter: none;
+      box-shadow: none;
+    }
+  }
+  .playhead {
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: 42px;
+    width: 2px;
+    background: var(--terra);
+    animation: sweep calc(var(--step) * var(--steps)) steps(16) infinite;
+  }
+  @keyframes sweep {
+    to {
+      left: calc(100% + 2px);
+    }
+  }
+  figcaption {
+    margin-top: 12px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .playhead {
+      display: none;
+    }
+  }
+</style>

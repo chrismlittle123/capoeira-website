@@ -58,7 +58,7 @@ function serviceWorker() {
 
 export default defineConfig({
   // Set this to your real domain once deployed (used for canonical URLs, sitemap, JSON-LD).
-  site: 'https://example.com',
+  site: 'https://capoeira-songs.pages.dev',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },

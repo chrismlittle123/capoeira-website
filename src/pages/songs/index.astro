@@ -29,7 +29,7 @@ for (const s of songs) {
           <h2 class="letter">{letter}</h2>
           <ul class="song-grid stagger">
             {list.map((s, i) => (
-              <SongCard song={s} typeName={names.songTypes[s.data.type.id]} i={i} />
+              <SongCard song={s} i={i} />
             ))}
           </ul>
         </section>
@@ -48,7 +48,7 @@ for (const s of songs) {
   }
   .letters {
     position: sticky;
-    top: 64px;
+    top: 88px;
     z-index: 5;
     display: flex;
     gap: 4px;
@@ -65,20 +65,21 @@ for (const s of songs) {
     place-items: center;
     width: 44px;
     height: 44px;
-    border-radius: 50%;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
     text-decoration: none;
-    font-family: var(--font-display);
-    font-weight: 600;
-    transition: transform 0.3s var(--ease-ginga), background 0.2s;
+    font: 700 0.8rem/1 var(--font-mono);
+    color: var(--muted);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
   }
   .letters a:hover {
     background: var(--gold);
+    border-color: var(--gold);
     color: var(--gold-ink);
-    transform: translateY(-3px) rotate(-8deg);
   }
   section {
-    scroll-margin-top: 136px; /* header + letter bar */
+    scroll-margin-top: 160px; /* header + letter bar */
   }
   .letter {
     margin: 32px 0 12px;

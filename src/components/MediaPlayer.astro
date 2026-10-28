@@ -140,10 +140,9 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     width: 100%;
     max-width: 760px;
     aspect-ratio: 16 / 9;
-    border-radius: 20px;
+    border-radius: var(--radius);
     overflow: hidden;
-    background: #000;
-    box-shadow: var(--shadow);
+    background: var(--text);
   }
   .video[hidden] {
     display: none;
@@ -177,16 +176,16 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     height: 76px;
     translate: -50% -50%;
     border-radius: 50%;
-    color: #f6cf86;
-    background: radial-gradient(circle at 50% 40%, #3a210c, #1d0f04);
-    box-shadow: 0 0 0 10px rgba(201, 133, 53, 0.85), 0 12px 30px rgba(0, 0, 0, 0.5);
+    color: var(--gold-ink);
+    background: var(--gold);
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--bg) 35%, transparent);
     transition: transform 0.35s var(--ease-ginga);
   }
   .poster-play :global(svg) {
     translate: 2px 0;
   }
   .poster:hover .poster-play {
-    transform: scale(1.08) rotate(-6deg);
+    transform: scale(1.08);
   }
   .frame {
     position: absolute;
@@ -200,11 +199,12 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
   .yt-badge {
     margin-right: 6px;
     padding: 1px 6px;
-    border-radius: 4px;
-    background: #c4302b;
+    border-radius: var(--radius-sm);
+    background: var(--terra);
     color: #fff;
-    font-size: 11px;
-    font-weight: 600;
+    font: 700 0.6rem/1.4 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     vertical-align: 1px;
   }
 
@@ -218,9 +218,11 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     translate: -50% 0;
     padding: 10px 14px;
     gap: 12px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    background: color-mix(in srgb, var(--surface-2) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    border-color: var(--gold);
+    box-shadow: 0 10px 30px -14px rgba(22, 48, 41, 0.45);
     animation: dock 0.45s var(--ease-ginga);
   }
   .player:global(.docked) .gourd {
@@ -247,13 +249,10 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     display: flex;
     gap: 18px;
     align-items: center;
-    padding: 16px 18px;
-    border-radius: 24px;
-    background:
-      radial-gradient(120% 140% at 0% 50%, color-mix(in srgb, var(--gold) 14%, transparent), transparent 60%),
-      color-mix(in srgb, var(--surface) 90%, transparent);
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
     border: 1px solid var(--line);
-    box-shadow: var(--shadow);
   }
 
   /* the cabaça */
@@ -279,22 +278,20 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: radial-gradient(circle at 34% 30%, #f6cf86, #c98535 55%, #6b3c13);
-    box-shadow: inset -6px -8px 14px rgba(0, 0, 0, 0.35), 0 8px 18px -6px rgba(0, 0, 0, 0.5);
+    background: var(--gold);
   }
   .gourd-mouth {
     position: absolute;
     inset: 16px;
     border-radius: 50%;
-    background: radial-gradient(circle at 50% 40%, #3a210c, #1d0f04);
-    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.6);
+    background: var(--text);
   }
   .ico {
     position: absolute;
     inset: 0;
     display: grid;
     place-items: center;
-    color: #f6cf86;
+    color: var(--bg);
   }
   .ico-play :global(svg) {
     translate: 2px 0;
@@ -329,9 +326,10 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    font-size: 14px;
+    font-size: 15px;
   }
   .now-label {
+    font-family: var(--font-display);
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -339,6 +337,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
   }
   .time {
     color: var(--muted);
+    font: 400 0.75rem/1.6 var(--font-mono);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -356,15 +355,14 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     top: 50%;
     height: 2px;
     translate: 0 -50%;
-    background: color-mix(in srgb, var(--text) 25%, transparent);
-    border-radius: 2px;
+    background: var(--line);
+    border-radius: 0;
   }
   .wire-fill {
     position: absolute;
     inset: 0;
     width: calc(var(--p, 0) * 100%);
-    background: linear-gradient(90deg, var(--terra), var(--gold));
-    border-radius: 2px;
+    background: var(--gold);
   }
   .wire-buzz {
     position: absolute;
@@ -402,15 +400,15 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     height: 20px;
     margin-top: 5px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #fbe7a6, #c9a33f 60%, #8a6a1b);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    background: var(--gold);
+    box-shadow: 0 0 0 3px var(--bg);
   }
   input[type='range']::-moz-range-thumb {
     width: 20px;
     height: 20px;
     border: none;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #fbe7a6, #c9a33f 60%, #8a6a1b);
+    background: var(--gold);
   }
 
   .controls {

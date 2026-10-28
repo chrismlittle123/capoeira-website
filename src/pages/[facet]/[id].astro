@@ -42,7 +42,7 @@ const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).
       matching.length ? (
         <ul class="song-grid stagger list">
           {matching.map((s, i) => (
-            <SongCard song={s} typeName={names.songTypes[s.data.type.id]} i={i} />
+            <SongCard song={s} i={i} />
           ))}
         </ul>
       ) : (

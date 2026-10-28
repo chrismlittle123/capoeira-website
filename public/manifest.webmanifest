@@ -1,11 +1,11 @@
 {
-  "name": "Cantigas — Capoeira Songbook",
-  "short_name": "Cantigas",
+  "name": "Capoeira Songs",
+  "short_name": "Capoeira Songs",
   "description": "Capoeira song lyrics, translations and recordings.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#150e09",
-  "theme_color": "#150e09",
+  "background_color": "#f8f6ee",
+  "theme_color": "#f8f6ee",
   "icons": [
     { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },

@@ -82,7 +82,8 @@ function audioEngine(audio: HTMLAudioElement, on: Events): Engine & { load(src: 
     play() {
       ensureAnalyser();
       audio.play().catch((e: DOMException) => {
-        if (e.name !== 'AbortError') on.error("Couldn't play this recording.");
+        // AbortError: superseded by pause/seek. NotAllowedError: autoplay blocked — just stay paused.
+        if (e.name !== 'AbortError' && e.name !== 'NotAllowedError') on.error("Couldn't play this recording.");
       });
     },
     pause: () => audio.pause(),

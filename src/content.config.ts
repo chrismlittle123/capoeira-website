@@ -33,6 +33,8 @@ const taxonomy = <T extends z.ZodRawShape>(path: string, extra: T = {} as T) =>
 const songTypes = taxonomy('src/data/song-types.yaml', {
   plural: z.string(),
   order: z.number(),
+  // tag colour, like the instrument colours in Brasil Seis
+  color: z.string().regex(/^#[0-9a-f]{6}$/i),
 });
 
 const toques = taxonomy('src/data/toques.yaml', {

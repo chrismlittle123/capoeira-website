@@ -116,7 +116,7 @@ function snippet(doc: SearchDoc, terms: string[]) {
 function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
   return `<li style="--i:${i}"><a class="card" href="/songs/${doc.id}/">
-    <div class="meta"><span class="chip chip-type">${esc(doc.typeName)}</span>${
+    <div class="meta"><span class="chip chip-type" style="--type-color:${esc(doc.typeColor)}">${esc(doc.typeName)}</span>${
       doc.media ? `<span class="has-audio">${doc.media.icon} ${doc.media.label}</span>` : ''
     }</div>
     <h3>${highlight(doc.title, terms)}</h3>

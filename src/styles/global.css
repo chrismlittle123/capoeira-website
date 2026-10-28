@@ -1,88 +1,50 @@
 @import '@fontsource-variable/fraunces/soft.css';
 @import '@fontsource-variable/fraunces/wght-italic.css';
-@import '@fontsource-variable/outfit';
+@import '@fontsource-variable/hanken-grotesk';
+@import '@fontsource/space-mono/400.css';
+@import '@fontsource/space-mono/700.css';
+
+/*
+ * Capoeira Songs — in the visual language of Brasil Seis ("Batida"):
+ * bright paper ground, deep petrol-green ink, brass + tropical green + coral as
+ * spot colours. The graphic discipline of 1960s Elenco Records sleeves — geometric
+ * type, square cards, hairlines — with the berimbau's rhythm as the one bold graphic.
+ * Light, always.
+ */
 
 /* ───────────────────────── Tokens ───────────────────────── */
 
 :root {
-  color-scheme: light dark;
-  --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
-  --font-ui: 'Outfit Variable', system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
+  --font-ui: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Noite de roda — firelight on dark wood */
-  --bg: #150e09;
-  --bg-glow-1: rgba(240, 160, 60, 0.16);
-  --bg-glow-2: rgba(63, 154, 99, 0.1);
-  --surface: #20160e;
-  --surface-2: #2b1e13;
-  --surface-3: #3a2919;
-  --text: #f6ecdc;
-  --muted: #bda78a;
-  --faint: #a48c70;
-  --line: rgba(246, 236, 220, 0.11);
-  --gold: #f2b54b;
-  --gold-ink: #241505;
-  --green: #48a56d;
-  --terra: #e06c43;
-  --coro: #f2b54b;
-  --solo: #f6ecdc;
-  --mark: rgba(242, 181, 75, 0.32);
-  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  --bg: #f8f6ee; /* bright warm paper */
+  --surface: #ffffff; /* cards */
+  --surface-2: #efe9d8; /* chips / hover / input */
+  --surface-3: #e5ddc9;
+  --text: #163029; /* deep petrol-green ink */
+  --muted: #5d7167; /* sage — secondary text (4.8:1 on paper) */
+  --faint: #5d7167;
+  --line: #e5ddc9; /* hairlines */
+  --gold: #8c5f0e; /* brass — the accent (5.2:1 on paper) */
+  --gold-deep: #79520a;
+  --gold-ink: #f8f6ee; /* text on brass */
+  --green: #1c7a4a; /* tropical green */
+  --terra: #c23a54; /* coral — "now" / live only */
+  --coro: #8c5f0e;
+  --solo: #163029;
+  --mark: color-mix(in srgb, #8c5f0e 20%, transparent);
+  --shadow: 0 1px 0 rgba(22, 48, 41, 0.04);
 
-  --radius: 18px;
-  --radius-sm: 10px;
-  --gutter: clamp(16px, 4vw, 32px);
-  --max: 1080px;
+  --radius: 4px; /* Elenco sleeves are square — minimal rounding */
+  --radius-sm: 2px;
+  --gutter: clamp(16px, 5vw, 40px);
+  --max: 1040px;
   --ease-ginga: cubic-bezier(0.45, 0.05, 0.25, 1.3);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --lyric-scale: 1;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) {
-    --bg: #f7efe1;
-    --bg-glow-1: rgba(242, 160, 50, 0.22);
-    --bg-glow-2: rgba(42, 122, 75, 0.12);
-    --surface: #fffaf1;
-    --surface-2: #f1e5d1;
-    --surface-3: #e6d4b8;
-    --text: #2a1b0e;
-    --muted: #5f4a35;
-    --faint: #735c43;
-    --line: rgba(42, 27, 14, 0.12);
-    --gold: #8a5800;
-    --gold-ink: #fffaf1;
-    --green: #237347;
-    --terra: #a33c18;
-    --coro: #8a5300;
-    --solo: #2a1b0e;
-    --mark: rgba(242, 170, 50, 0.38);
-    --shadow: 0 10px 30px -14px rgba(80, 50, 20, 0.35);
-  }
-}
-:root[data-theme='light'] {
-  --bg: #f7efe1;
-  --bg-glow-1: rgba(242, 160, 50, 0.22);
-  --bg-glow-2: rgba(42, 122, 75, 0.12);
-  --surface: #fffaf1;
-  --surface-2: #f1e5d1;
-  --surface-3: #e6d4b8;
-  --text: #2a1b0e;
-  --muted: #5f4a35;
-  --faint: #735c43;
-  --line: rgba(42, 27, 14, 0.12);
-  --gold: #8a5800;
-  --gold-ink: #fffaf1;
-  --green: #237347;
-  --terra: #a33c18;
-  --coro: #8a5300;
-  --solo: #2a1b0e;
-  --mark: rgba(242, 170, 50, 0.38);
-  --shadow: 0 10px 30px -14px rgba(80, 50, 20, 0.35);
-}
-:root[data-theme='light'],
-:root[data-theme='dark'] {
-  color-scheme: normal;
 }
 
 /* ───────────────────────── Base ───────────────────────── */
@@ -95,45 +57,23 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-padding-top: 80px;
+  background: var(--bg);
 }
 body {
   margin: 0;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1100px 600px at 88% -8%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 70%),
+    radial-gradient(900px 700px at -5% 108%, color-mix(in srgb, var(--green) 9%, transparent), transparent 70%);
+  background-attachment: fixed;
   color: var(--text);
-  font: 400 17px/1.55 var(--font-ui);
+  font: 400 17px/1.6 var(--font-ui);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-/* firelight */
-body::before {
-  content: '';
-  position: fixed;
-  inset: -20vmax;
-  z-index: -2;
-  background:
-    radial-gradient(40vmax 30vmax at 15% 0%, var(--bg-glow-1), transparent 70%),
-    radial-gradient(35vmax 30vmax at 100% 30%, var(--bg-glow-2), transparent 70%),
-    radial-gradient(30vmax 25vmax at 50% 110%, var(--bg-glow-1), transparent 70%);
-  animation: firelight 14s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-/* grain */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.07;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none;
-}
-@keyframes firelight {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(2vmax, -1vmax, 0) scale(1.05); }
-  100% { transform: translate3d(-2vmax, 1vmax, 0) scale(1.02); }
+  /* `clip` (unlike `hidden`) doesn't create a scroll container, so sticky still works */
+  overflow-x: clip;
 }
 
 a {
@@ -146,8 +86,8 @@ a:hover {
 }
 :focus-visible {
   outline: 2px solid var(--gold);
-  outline-offset: 3px;
-  border-radius: 6px;
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 button {
   font: inherit;
@@ -162,10 +102,10 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-optical-sizing: auto;
   font-weight: 600;
   line-height: 1.08;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   margin: 0;
   text-wrap: balance;
 }
@@ -199,47 +139,66 @@ p {
   height: auto;
   padding: 10px 16px;
   clip-path: none;
-  border-radius: 99px;
+  border-radius: var(--radius-sm);
   background: var(--gold);
   color: var(--gold-ink);
-  font-weight: 600;
+  font: 700 12px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
+
+/* Utility face for eyebrows, data, labels. */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+/* The small mono, uppercase, wide-tracked kicker used above sections. */
 .eyebrow {
-  font: 600 12px/1 var(--font-ui);
-  letter-spacing: 0.16em;
+  margin: 0;
+  font: 400 0.62rem/1.4 var(--font-mono);
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--gold);
+}
+.eyebrow.sage {
+  color: var(--muted);
+}
+.eyebrow a {
+  text-decoration: none;
 }
 .muted {
   color: var(--muted);
 }
 
-/* ───────────────────────── Corda (graduation-cord divider) ───────────────────────── */
+/* Page title block: big Fraunces title over a hairline. */
+.page-head {
+  padding: 8px 0 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+}
+.page-head h1 {
+  margin: 10px 0 0;
+  font-size: clamp(40px, 8vw, 56px);
+}
+.page-head p:not(.eyebrow) {
+  max-width: 640px;
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+/* ───────────────────────── Corda — a three-colour keyline ───────────────────────── */
 
 .corda {
-  height: 8px;
-  border-radius: 99px;
-  background: repeating-linear-gradient(
-    -55deg,
-    var(--gold) 0 7px,
-    var(--green) 7px 14px,
-    var(--terra) 14px 21px
-  );
-  background-size: 200% 100%;
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  animation: corda-twist 6s linear infinite;
-  opacity: 0.9;
-}
-@keyframes corda-twist {
-  to { background-position: -120px 0; }
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold) 0 33.3%, var(--green) 33.3% 66.6%, var(--terra) 66.6%);
 }
 
-/* ───────────────────────── Chips, buttons, cards ───────────────────────── */
+/* ───────────────────────── Tags, buttons, cards ───────────────────────── */
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -248,22 +207,22 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
-  padding: 6px 12px;
-  border-radius: 99px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.2;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--muted);
+  font: 400 0.7rem/1.2 var(--font-mono);
+  letter-spacing: 0.04em;
   text-decoration: none;
   white-space: nowrap;
-  transition: transform 0.25s var(--ease-ginga), border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 a.chip:hover,
 button.chip:hover {
-  transform: translateY(-2px) rotate(-1.5deg);
   border-color: var(--gold);
+  color: var(--text);
 }
 .chip[aria-pressed='true'] {
   background: var(--gold);
@@ -271,18 +230,25 @@ button.chip:hover {
   border-color: var(--gold);
 }
 .chip .count {
-  color: var(--faint);
-  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  opacity: 0.8;
 }
 .chip[aria-pressed='true'] .count {
   color: inherit;
-  opacity: 0.7;
 }
+/* Song type: coloured mono text, like Brasil Seis's instrument tags. */
 .chip-type {
-  background: color-mix(in srgb, var(--gold) 11%, transparent);
-  border-color: color-mix(in srgb, var(--gold) 40%, transparent);
-  color: var(--gold);
-  font-weight: 600;
+  border: 0;
+  background: none;
+  padding: 0;
+  min-height: 0;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--type-color, var(--gold));
+}
+a.chip-type:hover {
+  color: var(--text);
 }
 
 .btn {
@@ -292,55 +258,63 @@ button.chip:hover {
   gap: 8px;
   min-height: 44px;
   padding: 10px 18px;
-  border-radius: 99px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--muted);
   cursor: pointer;
-  font-weight: 500;
+  font: 400 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition: transform 0.25s var(--ease-ginga), background 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
 }
 .btn:hover {
   border-color: var(--gold);
+  color: var(--text);
 }
 .btn:active {
-  transform: scale(0.96);
+  transform: translateY(1px);
 }
 .btn-gold {
   background: var(--gold);
+  border-color: var(--gold);
   color: var(--gold-ink);
-  border-color: transparent;
+  font-weight: 700;
+}
+.btn-gold:hover {
+  background: var(--gold-deep);
+  color: var(--gold-ink);
 }
 .icon-btn {
   display: inline-grid;
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: transparent;
+  color: var(--muted);
   cursor: pointer;
-  transition: background 0.2s, transform 0.25s var(--ease-ginga);
+  transition: background 0.2s, color 0.2s;
 }
 .icon-btn:hover {
   background: var(--surface-2);
-}
-.icon-btn:active {
-  transform: scale(0.9) rotate(-8deg);
+  color: var(--text);
 }
 .icon-btn[aria-pressed='true'] {
-  background: color-mix(in srgb, var(--gold) 20%, transparent);
-  color: var(--gold);
+  background: var(--gold);
+  color: var(--gold-ink);
 }
 .icon-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .song-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -349,66 +323,62 @@ button.chip:hover {
   position: relative;
   display: block;
   height: 100%;
-  padding: 18px 18px 16px;
+  padding: 18px 20px 16px;
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
   border: 1px solid var(--line);
   text-decoration: none;
   overflow: hidden;
-  transition: transform 0.35s var(--ease-ginga), border-color 0.25s, box-shadow 0.35s;
+  transition: border-color 0.2s, background 0.2s;
 }
-.card::after {
-  /* a sliver of corda that slides in on hover */
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 4px;
-  background: repeating-linear-gradient(-55deg, var(--gold) 0 6px, var(--green) 6px 12px, var(--terra) 12px 18px);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.45s var(--ease-out);
-}
-.card:hover {
-  transform: translateY(-4px) rotate(-0.6deg);
-  border-color: color-mix(in srgb, var(--gold) 45%, var(--line));
-  box-shadow: var(--shadow);
-}
-.card:hover::after {
-  transform: scaleX(1);
+a.card:hover {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
 }
 .card h3 {
-  font-size: 22px;
+  font-size: 26px;
   margin: 8px 0 6px;
 }
 .card .hook {
   margin: 0;
   color: var(--muted);
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 16px;
-  line-height: 1.35;
+  font-size: 15px;
+  line-height: 1.45;
 }
 .card .meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--faint);
+  gap: 10px;
+  font: 400 0.68rem/1.3 var(--font-mono);
+  color: var(--muted);
 }
 .card .meta .has-audio {
   margin-left: auto;
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
   color: var(--green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .card mark {
   background: var(--mark);
   color: inherit;
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 0 2px;
+}
+/* a brass keyline sweeps along the bottom on hover — the card "plays" */
+a.card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease-out);
+}
+a.card:hover::after {
+  transform: scaleX(1);
 }
 
 .section-head {
@@ -417,23 +387,34 @@ button.chip:hover {
   justify-content: space-between;
   gap: 12px;
   margin: 48px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
 }
 .section-head h2 {
-  font-size: clamp(26px, 5vw, 34px);
+  font-size: clamp(24px, 4vw, 30px);
 }
 .section-head a {
   color: var(--muted);
-  font-size: 15px;
+  font: 400 0.68rem/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
   white-space: nowrap;
+}
+.section-head a:hover {
+  color: var(--gold);
 }
 
 /* staggered entrance for lists */
 .stagger > * {
-  animation: rise 0.6s var(--ease-out) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
+  animation: rise 0.55s var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 40ms);
 }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(14px) rotate(1deg); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
 
 /* ───────────────────────── View transitions ───────────────────────── */
@@ -442,13 +423,27 @@ button.chip:hover {
   navigation: auto;
 }
 ::view-transition-old(root) {
-  animation: 0.25s ease both vt-out;
+  animation: 0.2s ease both vt-out;
 }
 ::view-transition-new(root) {
-  animation: 0.4s var(--ease-out) both vt-in;
+  animation: 0.35s var(--ease-out) both vt-in;
 }
-@keyframes vt-out { to { opacity: 0; transform: translateX(-12px); } }
-@keyframes vt-in { from { opacity: 0; transform: translateX(16px); } }
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* room for the docked mini-player */
+body:has(.player.docked) {
+  padding-bottom: 110px;
+}
 
 /* ───────────────────────── Reduced motion ───────────────────────── */
 
@@ -469,9 +464,4 @@ button.chip:hover {
   ::view-transition-new(*) {
     animation: none !important;
   }
-}
-
-/* room for the docked mini-player */
-body:has(.player.docked) {
-  padding-bottom: 110px;
 }

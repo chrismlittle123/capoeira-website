@@ -1,4 +1,6 @@
-# Cantigas — capoeira songbook
+# Capoeira Songs
+
+Live at **https://capoeira-songs.pages.dev** — redeploys on every push to `main`.
 
 A fast, phone-first website of capoeira songs: lyrics, translations and audio, with
 instant search. Static site built with [Astro](https://astro.build) — no server, no
@@ -113,7 +115,8 @@ R2) and use full `https://` URLs in `file:` — everything else keeps working.
 - **Open data**: `/api/songs.json` (all songs with structured lyrics) and
   `/api/ontology.json` (all taxonomies); schema.org `MusicComposition` JSON-LD on every
   song; `sitemap.xml` and `robots.txt`.
-- Light/dark themes, view-transition animations, respects reduced-motion.
+- Visual language shared with Brasil Seis (paper, petrol ink, brass; Fraunces, Hanken
+  Grotesk, Space Mono), with an animated berimbau rhythm grid. Respects reduced-motion.
 
 ## Data model
 
@@ -128,8 +131,10 @@ Schemas: `src/content.config.ts`. Lyrics parser: `src/lib/lyrics.ts`.
 
 ## Deploying — Cloudflare Pages
 
-Static site, so hosting is free and there's no server to run (same setup as Brasil
-Seis, minus Cloudflare Access — this songbook is public).
+Static site, so hosting is free and there's no server to run. Cloudflare Pages project
+**`capoeira-songs`**, connected to this GitHub repo (the Cloudflare GitHub app has
+access to this repo only). Unlike Brasil Seis it isn't behind Cloudflare Access — the
+songbook is public.
 
 1. Push this repo to GitHub.
 2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** →

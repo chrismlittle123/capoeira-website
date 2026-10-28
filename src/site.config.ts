@@ -1,8 +1,8 @@
 // Edit these to make the site yours.
 export const SITE = {
   groupName: 'Grupo Axé',
-  title: 'Cantigas — Capoeira Songbook',
-  shortTitle: 'Cantigas',
+  title: 'Capoeira Songs',
+  shortTitle: 'Capoeira Songs',
   description:
     'Lyrics, translations and recordings of capoeira songs — ladainhas, chulas and corridos — searchable from your phone in the middle of the roda.',
   // Licence that applies to transcriptions/translations published here.
