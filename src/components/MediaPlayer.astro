@@ -189,6 +189,17 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     position: absolute;
     inset: 0;
   }
+  /* until a video is loaded the (empty) frame must not sit on top of the poster
+     and swallow taps — the poster is what starts playback */
+  .frame:empty {
+    display: none;
+  }
+  .poster {
+    z-index: 1;
+  }
+  .poster[hidden] {
+    display: none;
+  }
   .frame :global(iframe) {
     width: 100%;
     height: 100%;

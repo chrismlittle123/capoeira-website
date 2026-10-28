@@ -152,29 +152,40 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
   let pendingSeek: number | undefined;
 
   const create = (t: Take, autoplay: boolean) => {
+    // Insert the embed straight away, inside the user's tap, so the video starts even
+    // before YouTube's control script has loaded (iOS only autoplays from a gesture).
+    const params = new URLSearchParams({
+      autoplay: autoplay ? '1' : '0',
+      start: String(Math.floor(pendingSeek ?? t.start)),
+      playsinline: '1',
+      rel: '0',
+      enablejsapi: '1',
+      origin: location.origin,
+    });
+    if (t.end) params.set('end', String(Math.ceil(t.end)));
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube-nocookie.com/embed/${t.videoId}?${params}`;
+    iframe.title = t.label;
+    iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    iframe.allowFullscreen = true;
+    frame.replaceChildren(iframe);
+    poster?.setAttribute('hidden', '');
+    pendingSeek = undefined;
+
+    // Then attach the API for our controls (speed, loop, seek, lyric sync).
     ready = loadYouTubeApi().then(
       (YT) =>
         new Promise<void>((resolve) => {
-          frame.innerHTML = '<div></div>';
-          player = new YT.Player(frame.firstElementChild, {
-            host: 'https://www.youtube-nocookie.com',
-            videoId: t.videoId,
-            playerVars: {
-              start: Math.floor(t.start),
-              ...(t.end && { end: Math.ceil(t.end) }),
-              autoplay: autoplay ? 1 : 0,
-              playsinline: 1,
-              rel: 0,
-              modestbranding: 1,
-            },
+          player = new YT.Player(iframe, {
             events: {
               onReady: () => {
-                poster?.setAttribute('hidden', '');
                 player.setPlaybackRate(rate);
-                if (pendingSeek != null) player.seekTo(pendingSeek, true);
-                pendingSeek = undefined;
-                if (autoplay) player.playVideo();
                 on.meta();
+                // autoplay may already be running before the API attached
+                if (player.getPlayerState?.() === 1) {
+                  state = 1;
+                  on.play();
+                }
                 resolve();
               },
               onStateChange: (e: { data: number }) => {
@@ -188,7 +199,8 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
           });
         }),
     );
-    ready.catch(() => on.error("Couldn't reach YouTube — are you offline?"));
+    // The video itself still plays without the API; only our extra controls need it.
+    ready.catch(() => {});
   };
 
   const engine: Engine & { load(t: Take): void } = {
@@ -213,12 +225,12 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
     },
     seek(t) {
       if (!take) return;
-      if (!player) {
+      if (!ready) {
         pendingSeek = t;
-        if (!ready) create(take, true);
+        create(take, true);
         return;
       }
-      player.seekTo(t, true);
+      ready.then(() => player.seekTo(t, true));
     },
     get time() {
       return player?.getCurrentTime?.() ?? take?.start ?? 0;
@@ -328,6 +340,9 @@ export function initPlayer(root: HTMLElement) {
   const audioE = audioEngine(audio, events);
   const ytE = video ? youtubeEngine(video.querySelector('[data-frame]')!, video.querySelector('[data-poster]'), events) : undefined;
   const engine = (): Engine => (takes[index].kind === 'youtube' ? ytE! : audioE);
+  // The engine only knows its video once a take is loaded — do it for the first take now,
+  // otherwise a song whose first recording is a YouTube video can't be played.
+  if (takes[0].kind === 'youtube') ytE?.load(takes[0]);
 
   /** The playable window of the current take: [start, end]. */
   const range = (): [number, number] => {
