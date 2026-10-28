@@ -15,9 +15,9 @@ translationReviewed: false
 sources: []
 recordings:
   - youtube: https://www.youtube.com/watch?v=WJ-aZ5YxmDc
-    title: Reference video
+    title: Contramestre Barata
 added: 2026-10-28
-draft: true
+draft: false
 composer: Contramestre Barata (attributed)
 ---
 

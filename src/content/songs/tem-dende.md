@@ -15,9 +15,13 @@ sources: []
 recordings:
   - youtube: https://www.youtube.com/watch?v=X-8mKyz-wNs
     title: Reference video
+  - youtube: https://www.youtube.com/watch?v=m_2y7279iBg
+    title: Mestre Barrão
 added: 2026-10-28
-draft: true
+draft: false
 composer: Mestre Barrão
+about: |
+  Mestre Barrão's "Grupo Axé Tem Dendê", recorded on Axé Capoeira Vol. 4.
 ---
 
 ## Coro

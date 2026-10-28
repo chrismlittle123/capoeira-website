@@ -15,7 +15,7 @@ recordings:
   - file: /audio/tem-dias-que-eu-vou-vadiar/tem-dias.m4a
     title: Class recording
   - youtube: https://www.youtube.com/watch?v=V6W-I0muSqc
-    title: Reference video
+    title: Tony, Pitoco e Formiga
 added: 2026-10-28
 draft: false
 origin: composed

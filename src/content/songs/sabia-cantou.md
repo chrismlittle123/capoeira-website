@@ -14,10 +14,13 @@ translationReviewed: false
 sources: []
 recordings:
   - youtube: https://www.youtube.com/watch?v=XZp3C-BNJZM
-    title: Reference video
+    title: Mestre Suassuna
 added: 2026-10-28
-draft: true
+draft: false
 composer: Mestre Suassuna
+about: >
+  By Mestre Suassuna (Cordão de Ouro). The closing couplet ("Que povo é esse…")
+  is a verse added in class and isn't in the published version.
 ---
 
 ## Coro

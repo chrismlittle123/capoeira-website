@@ -17,9 +17,15 @@ recordings:
     title: Reference video
   - youtube: https://www.youtube.com/watch?v=n_el-86nctY
     title: Reference video
+  - youtube: https://www.youtube.com/watch?v=bG6Dh4RiCck
+    title: Carolina Soares
 added: 2026-10-28
-draft: true
+draft: false
 composer: Marquinho Coreba (attributed)
+about: >
+  Published as "Rainha do Mar (Mora Iemanjá)", where the chorus is "No mar, mora
+  Iemanjá". The "Oi, quando a maré baixar" coro here is the version sung in
+  class.
 ---
 
 ## Coro

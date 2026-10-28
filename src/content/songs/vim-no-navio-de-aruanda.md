@@ -17,7 +17,7 @@ recordings:
   - file: /audio/vim-no-navio-de-aruanda/vim-no-navio.m4a
     title: Class recording
   - youtube: https://www.youtube.com/watch?v=tZe6VaEJbBg
-    title: "Reference video"
+    title: "Mestre Salgado"
 added: 2026-10-28
 draft: false
 origin: composed

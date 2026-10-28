@@ -1,23 +1,31 @@
 ---
-title: "Oxalá Que Me Guie"
-alternateTitles: []
+title: "Aruanda Ê"
+alternateTitles: [ Oxalá que me guie ]
 type: corrido
 origin: composed
 styles: [ angola ]
 toques: []
 themes: [ faith, resistance ]
 people: [ oxala ]
-places: []
-summary: "A prayer to Oxalá for guidance and faith in the roda, and capoeira as
-  a people's fight for freedom."
+places: [ aruanda ]
+summary: "A prayer to Oxalá to guide the singer all the way, and not let faith
+  fail in the roda — \"I am the wind that blows, I am capoeira\"."
 translationReviewed: false
 sources: []
 added: 2026-10-28
-draft: true
+draft: false
 composer: Olho de Gato (Abadá-Capoeira)
 ---
 
 ## Coro
+Aruanda ê
+> Aruanda, eh
+Aruanda ê, Aruanda
+> Aruanda, eh, Aruanda
+Aruanda ê, camará
+> Aruanda, eh, comrade
+
+## Solo
 Oxalá que me guie
 > Oxalá, guide me
 Por todo caminho

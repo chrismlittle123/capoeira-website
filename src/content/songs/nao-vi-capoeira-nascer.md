@@ -13,9 +13,12 @@ summary: "A song retelling, as the elders tell it, how capoeira was born among
 translationReviewed: false
 sources:
   - https://open.spotify.com/track/6LVpMfe5mdP4rI6QLU2vE1
-recordings: []
+recordings:
+  [
+    { youtube: https://www.youtube.com/watch?v=eKuvWMd1jtY, title: Mestre Felipe }
+  ]
 added: 2026-10-28
-draft: true
+draft: false
 composer: Mestre Felipe & Mestre Claudio (attributed)
 ---
 
