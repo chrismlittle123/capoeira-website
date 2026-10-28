@@ -1,9 +1,7 @@
 ---
 title: "A Onda Levou o Barco"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea ]
 people: []
 places: [ ilha-de-mare ]

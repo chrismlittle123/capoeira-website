@@ -1,9 +1,7 @@
 ---
 title: "Sambalelê"
 alternateTitles: [ Sambalelê bateu na porta ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ love, everyday ]
 people: []
 places: []

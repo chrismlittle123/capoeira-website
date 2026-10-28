@@ -1,9 +1,7 @@
 ---
 title: "Eu Vou Botar Minha Rede na Varanda"
 alternateTitles: [ "Balança a rede" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ everyday ]
 people: []
 places: []

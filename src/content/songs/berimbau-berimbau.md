@@ -1,9 +1,7 @@
 ---
 title: "Berimbau, Berimbau"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ bateria ]
 people: []
 places: []

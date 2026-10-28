@@ -1,10 +1,8 @@
 ---
 title: "Aruanda Ê"
 alternateTitles: [ Oxalá que me guie ]
-type: corrido
 origin: composed
 styles: [ angola ]
-toques: []
 themes: [ faith, resistance ]
 people: [ oxala ]
 places: [ aruanda ]

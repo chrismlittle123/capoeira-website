@@ -1,9 +1,7 @@
 ---
 title: "Mandei Fazer Meu Terreiro"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, love, faith ]
 people: []
 places: [ aruanda ]

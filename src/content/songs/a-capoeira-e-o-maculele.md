@@ -1,9 +1,7 @@
 ---
 title: "A Capoeira e o Maculelê"
 alternateTitles: [ "Samba de roda e o maculelê" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ bahia, the-game ]
 people: []
 places: []

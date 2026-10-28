@@ -38,7 +38,7 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
     </section>
 
     <div data-browse>
-      <section class="toque-strip" aria-label="The berimbau">
+      <section class="berimbau-strip" aria-label="The berimbau">
         <div class="bw" aria-hidden="true"><Berimbau height={150} /></div>
         <RhythmGrid class="strip-grid" />
         <div class="quick">
@@ -153,7 +153,7 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
     max-width: 760px;
   }
 
-  .toque-strip {
+  .berimbau-strip {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: 'bw grid' 'bw quick';
@@ -168,7 +168,7 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
   .bw {
     grid-area: bw;
   }
-  .toque-strip :global(.strip-grid) {
+  .berimbau-strip :global(.strip-grid) {
     grid-area: grid;
   }
   .quick {
@@ -178,7 +178,7 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
     gap: 8px;
   }
   @media (max-width: 640px) {
-    .toque-strip {
+    .berimbau-strip {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas: 'grid' 'quick';
       padding: 18px 16px;

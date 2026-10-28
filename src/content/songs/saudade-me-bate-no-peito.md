@@ -1,9 +1,7 @@
 ---
 title: "Saudade Me Bate no Peito"
 alternateTitles: [ "Saudade me bate, me faz chorar", Saudade Que Bate ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ love, saudade ]
 people: []
 places: []

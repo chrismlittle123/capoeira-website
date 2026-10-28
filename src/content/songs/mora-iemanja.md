@@ -1,9 +1,7 @@
 ---
 title: "Mora Iemanjá"
 alternateTitles: [ "Rainha do Mar", "No mar mora Iemanjá" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, faith, resistance ]
 people: [ iemanja ]
 places: [ guine ]

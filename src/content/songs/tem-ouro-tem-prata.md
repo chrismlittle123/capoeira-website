@@ -1,9 +1,7 @@
 ---
 title: "Tem Ouro, Tem Prata"
 alternateTitles: [ "O Sobrado de Mamãe" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, faith ]
 people: [ oxum, iemanja ]
 places: []

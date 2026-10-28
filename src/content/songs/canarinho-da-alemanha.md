@@ -1,9 +1,7 @@
 ---
 title: "Canarinho da Alemanha"
 alternateTitles: [ "Quem matou meu curió" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ nature, the-game, praise ]
 people: [ mestre-pastinha ]
 places: [ bahia, maceio, cachoeira ]

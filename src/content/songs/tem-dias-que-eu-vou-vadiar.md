@@ -1,9 +1,7 @@
 ---
 title: "Tem Dias Que Eu Vou Vadiar"
 alternateTitles: [ "Tem dias que eu tô na varanda" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-game, everyday ]
 people: []
 places: [ angola ]

@@ -1,9 +1,7 @@
 ---
 title: "Quem Vem Lá, Sou Eu"
 alternateTitles: [ "Berimbau bateu, capoeira sou eu" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-game ]
 people: []
 places: []

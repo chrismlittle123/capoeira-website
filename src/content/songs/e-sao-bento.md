@@ -1,9 +1,7 @@
 ---
 title: "Ê São Bento"
 alternateTitles: [ Bota meu barco no vento ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, faith ]
 people: [ sao-bento ]
 places: []

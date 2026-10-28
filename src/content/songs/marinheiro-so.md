@@ -1,9 +1,7 @@
 ---
 title: Marinheiro Só
 alternateTitles: [ Eu não sou daqui ]
-type: corrido
 styles: [ angola, regional, contemporanea ]
-toques: [ sao-bento-grande-regional, sao-bento-pequeno ]
 themes: [ the-sea, bahia ]
 related: [ sai-sai-catarina ]
 places: [ bahia, salvador ]

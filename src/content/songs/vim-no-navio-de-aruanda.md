@@ -1,9 +1,7 @@
 ---
 title: "Vim no Navio de Aruanda"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ resistance, faith, the-sea ]
 people: []
 places: [ aruanda ]

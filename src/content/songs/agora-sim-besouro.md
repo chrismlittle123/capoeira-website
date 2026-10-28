@@ -1,9 +1,7 @@
 ---
 title: "Agora Sim (Besouro)"
 alternateTitles: [ "Agora sim, que mataram o meu Besouro", "Besouro Besourinho" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ outlaws, praise ]
 people: [ besouro-manganga ]
 places: []

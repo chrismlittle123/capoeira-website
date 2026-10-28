@@ -1,9 +1,7 @@
 ---
 title: Ai Ai Aidê
 alternateTitles: [ Joga bonito que eu quero ver ]
-type: corrido
 styles: [ angola, regional, contemporanea ]
-toques: [ sao-bento-grande-regional, benguela ]
 themes: [ the-game, resistance, love ]
 summary: Play beautifully, I want to see — and learn.
 about: |

@@ -1,7 +1,6 @@
 ---
 title: Viola Lê Lê
 alternateTitles: [ Lê lê ô ]
-type: corrido
 styles: [ angola ]
 themes: [ bateria, the-game ]
 places: [ angola ]

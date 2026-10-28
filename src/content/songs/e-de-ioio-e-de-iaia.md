@@ -1,9 +1,7 @@
 ---
 title: "É de Ioiô, É de Iaiá"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-game, the-sea ]
 people: []
 places: []

@@ -1,18 +1,17 @@
 ---
 title: "Quando a Maré Baixar"
 alternateTitles: [ "Vou encontrar dendê", "Maré Baixa" ]
-type: corrido
 styles: [ contemporanea, angola ]
-toques: [ benguela ]
 themes: [ the-sea, faith ]
 people: []
 places: []
 origin: composed
 composer: Mestre Charm (Abadá-Capoeira)
-summary: "When the tide goes out the singer will cross the sea to find dendê — rowing through high tide, never giving up."
+summary: "When the tide goes out the singer will cross the sea to find dendê —
+  rowing through high tide, never giving up."
 about: |
-  By Mestre Charm (Abadá-Capoeira), who also sings the recording below, played
-  over the Benguela toque. Dendê is palm oil — in capoeira, the spice and flavour
+  By Mestre Charm (Abadá-Capoeira), who also sings the recording below. Dendê is
+  palm oil — in capoeira, the spice and flavour
   a player brings to the game. Lyrics follow the recording; on the last line some
   hear "também tem que entender" (also has to understand) instead of "ter dendê".
   Another, different song starts "Quando a maré baixar, manda me chamar que eu vou".

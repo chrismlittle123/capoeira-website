@@ -131,8 +131,8 @@ R2) and use full `https://` URLs in `file:` — everything else keeps working.
 ## Data model
 
 ```
-Song ──type──▶ SongType   ──toques──▶ Toque   ──themes──▶ Theme
-     ──people─▶ Person    ──places──▶ Place   ──related─▶ Song
+Song ──themes──▶ Theme   ──people──▶ Person   ──places──▶ Place
+     ──related─▶ Song
      ──recordings (audio, optionally time-synced)
 GlossaryTerm (linked into lyrics automatically)
 ```

@@ -1,9 +1,7 @@
 ---
 title: "Vou Voltar pra Angola"
 alternateTitles: [ "Vai lá, vai lá" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ love ]
 people: []
 places: [ angola ]

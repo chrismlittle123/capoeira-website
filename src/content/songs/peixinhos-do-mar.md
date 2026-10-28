@@ -1,9 +1,7 @@
 ---
 title: "Peixinhos do Mar"
 alternateTitles: [ "Quem te ensinou a nadar" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, nature ]
 people: []
 places: []

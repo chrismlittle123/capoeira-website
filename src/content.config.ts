@@ -7,9 +7,7 @@ import { toSeconds, youtubeId, youtubeStart } from './lib/media';
 /*
  * The songbook ontology.
  *
- *   Song ──type──────▶ SongType      (ladainha, corrido, …)
- *        ──toques────▶ Toque         (berimbau rhythms it is sung over)
- *        ──themes────▶ Theme         (the sea, resistance, malandragem, …)
+ *   Song ──themes────▶ Theme         (the sea, resistance, malandragem, …)
  *        ──people────▶ Person        (mestres & figures sung about / composers)
  *        ──places────▶ Place
  *        ──related───▶ Song
@@ -29,19 +27,6 @@ const taxonomy = <T extends z.ZodRawShape>(path: string, extra: T = {} as T) =>
       ...extra,
     }),
   });
-
-const songTypes = taxonomy('src/data/song-types.yaml', {
-  plural: z.string(),
-  order: z.number(),
-  // tag colour, like the instrument colours in Brasil Seis
-  color: z.string().regex(/^#[0-9a-f]{6}$/i),
-});
-
-const toques = taxonomy('src/data/toques.yaml', {
-  order: z.number().optional(),
-  tempo: z.enum(['slow', 'medium', 'fast']).optional(),
-  associatedWith: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
-});
 
 const themes = taxonomy('src/data/themes.yaml', { emoji: z.string().optional() });
 
@@ -118,9 +103,7 @@ const songs = defineCollection({
   schema: z.object({
     title: z.string(),
     alternateTitles: z.array(z.string()).default([]),
-    type: reference('songTypes').optional(), // not shown on the site
     styles: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
-    toques: z.array(reference('toques')).default([]),
     themes: z.array(reference('themes')).default([]),
     people: z.array(reference('people')).default([]),
     places: z.array(reference('places')).default([]),
@@ -148,4 +131,4 @@ const songs = defineCollection({
   }),
 });
 
-export const collections = { songs, songTypes, toques, themes, people, places, glossary };
+export const collections = { songs, themes, people, places, glossary };

@@ -1,9 +1,7 @@
 ---
 title: "Quem Nunca Andou de Canoa"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, the-game ]
 people: []
 places: []

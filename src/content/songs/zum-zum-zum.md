@@ -1,9 +1,7 @@
 ---
 title: Zum Zum Zum
 alternateTitles: [ Capoeira mata um ]
-type: corrido
 styles: [ regional, contemporanea ]
-toques: [ sao-bento-grande-regional ]
 themes: [ the-game, malandragem ]
 summary: The buzzing of the wasps' nest — capoeira can kill.
 about: |

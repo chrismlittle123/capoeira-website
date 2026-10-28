@@ -1,8 +1,6 @@
 ---
 title: Sai Sai Catarina
-type: corrido
 styles: [ regional, contemporanea, angola ]
-toques: [ sao-bento-grande-regional ]
 themes: [ the-sea, love ]
 related: [ marinheiro-so ]
 summary: Come out of the sea, Catarina, come and see Idalina.

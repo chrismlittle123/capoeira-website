@@ -1,9 +1,7 @@
 ---
 title: "Santo Antônio, Eu Quero Água"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ faith ]
 people: [ santo-antonio ]
 places: []

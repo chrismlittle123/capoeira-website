@@ -1,9 +1,7 @@
 ---
 title: "Adeus, Povo Bom"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea ]
 people: []
 places: []

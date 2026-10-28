@@ -1,9 +1,7 @@
 ---
 title: "Vou Mandar Lecô Cajuê"
 alternateTitles: [ "Vou mandar lecô cajueiro" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ nature ]
 people: []
 places: []

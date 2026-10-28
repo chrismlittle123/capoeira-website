@@ -1,9 +1,7 @@
 ---
 title: "Maracangalha"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ bahia ]
 people: []
 places: [ bahia ]

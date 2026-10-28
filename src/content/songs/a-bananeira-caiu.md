@@ -1,9 +1,7 @@
 ---
 title: "A Bananeira Caiu"
 alternateTitles: [ "Cai, cai, cai bananeira" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ nature, everyday ]
 people: []
 places: []

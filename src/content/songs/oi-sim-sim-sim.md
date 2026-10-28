@@ -1,9 +1,7 @@
 ---
 title: Oi Sim Sim Sim
 alternateTitles: [ Olha a pisada de Lampião ]
-type: corrido
 styles: [ regional, contemporanea, angola ]
-toques: [ sao-bento-grande-regional, sao-bento-grande-de-angola ]
 themes: [ outlaws, the-game ]
 people: [ lampiao ]
 summary: Yes, yes, yes — no, no, no. Today there is, tomorrow there isn't. Look

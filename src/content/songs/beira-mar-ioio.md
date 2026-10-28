@@ -1,9 +1,7 @@
 ---
 title: "Beira-Mar, Ioiô"
 alternateTitles: [ "Beira-mar, iaiá" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea ]
 people: []
 places: []

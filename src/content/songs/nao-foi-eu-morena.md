@@ -1,9 +1,7 @@
 ---
 title: "Não Foi Eu, Morena"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ love, everyday ]
 people: []
 places: []

@@ -1,9 +1,7 @@
 ---
 title: "Pensamento"
 alternateTitles: [ "Pensamento, vá na frente que eu chego depois" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ nature, faith, love ]
 people: [ xango, sao-joao ]
 places: []

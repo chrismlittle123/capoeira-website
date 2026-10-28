@@ -1,9 +1,7 @@
 ---
 title: "Meu Patuá"
 alternateTitles: [ Foi na Bahia que eu mandei fazer ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ faith, bahia ]
 people: []
 places: [ bahia ]

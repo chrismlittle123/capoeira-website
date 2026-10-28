@@ -2,7 +2,6 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { parseLyrics, hookLine } from './lyrics';
 
 export type Song = CollectionEntry<'songs'>;
-// Song type and toque are still accepted in song files but no longer shown or browsable.
 export type TaxonomyKey = 'themes' | 'people' | 'places';
 
 /** URL segment for each browsable facet of the ontology. */
@@ -21,10 +20,10 @@ let validated: Promise<void> | undefined;
 async function validateReferences() {
   const songs = await getCollection('songs');
   const known = new Set<string>(songs.map((s) => `songs:${s.id}`));
-  const keys = ['songTypes', 'toques', 'themes', 'people', 'places'] as const;
+  const keys = ['themes', 'people', 'places'] as const;
   for (const key of keys) for (const e of await getCollection(key)) known.add(`${key}:${e.id}`);
   const problems = songs.flatMap((s) =>
-    [...(s.data.type ? [s.data.type] : []), ...s.data.toques, ...s.data.themes, ...s.data.people, ...s.data.places, ...s.data.related]
+    [...s.data.themes, ...s.data.people, ...s.data.places, ...s.data.related]
       .filter((r) => !known.has(`${r.collection}:${r.id}`))
       .map((r) => `  ${s.id}: unknown ${r.collection} "${r.id}"`),
   );
@@ -59,7 +58,6 @@ export async function getNames() {
 
 export const lyricsOf = (song: Song) => parseLyrics(song.body ?? '');
 export const hookOf = (song: Song) => hookLine(lyricsOf(song));
-const STYLE_NAMES: Record<string, string> = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' };
 const KIND_NAMES: Record<string, string> = {
   mestre: 'Mestre',
   historical: 'Historical figure',
@@ -68,14 +66,11 @@ const KIND_NAMES: Record<string, string> = {
   other: '',
 };
 
-/** Short facts about a taxonomy entry (tempo, style, dates…) for its cards and page. */
+/** Short facts about a taxonomy entry (kind, dates, region) for its cards and page. */
 export function entryFacts(data: Record<string, unknown>): string[] {
   const out: string[] = [];
   if (typeof data.kind === 'string' && KIND_NAMES[data.kind]) out.push(KIND_NAMES[data.kind]);
   if (typeof data.lived === 'string') out.push(data.lived);
-  if (typeof data.tempo === 'string') out.push(`${data.tempo} tempo`);
-  if (Array.isArray(data.associatedWith) && data.associatedWith.length)
-    out.push(data.associatedWith.map((s) => STYLE_NAMES[s] ?? s).join(' · '));
   if (typeof data.region === 'string') out.push(data.region);
   return out;
 }

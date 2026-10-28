@@ -1,9 +1,7 @@
 ---
 title: "A Maré Tá Cheia"
 alternateTitles: [ "A maré subiu" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea, bahia ]
 people: []
 places: [ ilha-de-mare ]

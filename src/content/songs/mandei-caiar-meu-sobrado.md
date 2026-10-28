@@ -1,9 +1,7 @@
 ---
 title: "Mandei Caiar Meu Sobrado"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ everyday ]
 people: []
 places: []

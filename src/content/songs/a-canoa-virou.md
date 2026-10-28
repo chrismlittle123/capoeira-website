@@ -1,9 +1,7 @@
 ---
 title: "A Canoa Virou"
 alternateTitles: []
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea ]
 people: []
 places: []

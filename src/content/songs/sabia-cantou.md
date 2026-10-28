@@ -1,9 +1,7 @@
 ---
 title: "Sabiá Cantou"
 alternateTitles: [ "Sabiá cantou no pé da laranjeira" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ nature, the-game ]
 people: []
 places: []

@@ -1,9 +1,7 @@
 ---
 title: "Minha Canoa"
 alternateTitles: [ "Ela é boa de vela" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-sea ]
 people: []
 places: []

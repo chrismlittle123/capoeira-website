@@ -46,7 +46,7 @@ xango:
 sao-bento:
   name: São Bento
   kind: religious
-  description: Saint Benedict — protector against snakes and evil, and the saint the São Bento toques are named after.
+  description: Saint Benedict — protector against snakes and evil.
 sao-joao:
   name: São João
   kind: religious

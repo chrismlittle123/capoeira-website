@@ -1,9 +1,7 @@
 ---
 title: "Maranhão, Maranhão"
 alternateTitles: [ "Que saudades do meu Maranhão" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ love, saudade ]
 people: []
 places: [ maranhao ]

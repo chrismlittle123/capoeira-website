@@ -1,9 +1,7 @@
 ---
 title: Iê Viva Meu Deus
 alternateTitles: [ Louvação, Chula ]
-type: louvacao
 styles: [ angola, contemporanea ]
-toques: [ angola, sao-bento-pequeno ]
 themes: [ praise ]
 summary: The traditional louvação that follows the ladainha, thanking God, the
   mestre and capoeira.

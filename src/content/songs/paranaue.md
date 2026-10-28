@@ -1,8 +1,6 @@
 ---
 title: Paranauê
-type: corrido
 styles: [ regional, contemporanea ]
-toques: [ sao-bento-grande-regional ]
 themes: [ war, love ]
 places: [ parana ]
 summary: A capoeirista says goodbye to his wife before leaving for the Paraná.

@@ -1,10 +1,8 @@
 ---
 title: "Não Vi Capoeira Nascer"
 alternateTitles: [ "Eu não vi capoeira nascer" ]
-type: corrido
 styles: [ angola ]
 origin: composed
-toques: []
 themes: [ resistance, bahia ]
 people: []
 places: [ bahia, santo-amaro ]

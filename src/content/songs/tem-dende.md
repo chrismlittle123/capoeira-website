@@ -1,10 +1,8 @@
 ---
 title: "Tem Dendê"
 alternateTitles: [ Ponho um sorriso no rosto ]
-type: corrido
 styles: [ angola ]
 origin: composed
-toques: []
 themes: [ the-game, praise ]
 people: []
 places: []

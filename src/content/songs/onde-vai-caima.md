@@ -1,9 +1,7 @@
 ---
 title: "Onde Vai Caimã"
 alternateTitles: [ "Caimã é capoeira" ]
-type: corrido
 styles: [ angola ]
-toques: []
 themes: [ the-game, the-sea ]
 people: []
 places: [ ilha-de-mare, abaete ]
