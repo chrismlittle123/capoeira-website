@@ -18,6 +18,10 @@ sources:
 recordings:
   - youtube: https://www.youtube.com/watch?v=ZoogAgPTy3Y
     title: Reference video
+  - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
+    title: Roda recording
+    start: "2:45"
+    end: "4:30"
 added: 2026-10-28
 draft: false
 ---

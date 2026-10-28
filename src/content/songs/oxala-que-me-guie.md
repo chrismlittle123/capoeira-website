@@ -15,6 +15,11 @@ sources: []
 added: 2026-10-28
 draft: false
 composer: Olho de Gato (Abadá-Capoeira)
+recordings:
+  - youtube: https://www.youtube.com/watch?v=m8-UmhvqUZA
+    title: Mestre Boa Voz
+  - youtube: https://www.youtube.com/watch?v=FBIMHlnAc6U
+    title: La Laue
 ---
 
 ## Coro

@@ -12,7 +12,8 @@ translationReviewed: false
 sources:
   - https://capoeira.cafe/quem-vem-la-sou-eu/
 recordings:
-  []
+  - youtube: https://www.youtube.com/watch?v=08hh4h1zrKg
+    title: Mestre Suassuna
 added: 2026-10-28
 draft: false
 ---

@@ -23,6 +23,9 @@ recordings:
     title: Reference video
   - youtube: https://www.youtube.com/watch?v=mXJ18orD5KY
     title: Mestre Casquinha (tutorial)
+  - file: /audio/vou-voltar-para-angola/roda-recording.m4a
+    title: Roda recording
+    end: "1:12"
 added: 2026-10-28
 draft: false
 origin: composed

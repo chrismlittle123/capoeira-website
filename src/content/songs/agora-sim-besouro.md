@@ -20,8 +20,6 @@ sources:
 recordings:
   - youtube: https://www.youtube.com/watch?v=LPhEZAlTs9s
     title: "Reference video"
-  - youtube: https://www.youtube.com/watch?v=YRe9t2OFaXU
-    title: Learning video
 added: 2026-10-28
 draft: false
 ---

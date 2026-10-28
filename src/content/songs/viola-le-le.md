@@ -15,6 +15,9 @@ about: |
 translationReviewed: false
 added: 2026-10-28
 composer: Mestre Mandela (attributed)
+recordings:
+  - youtube: https://www.youtube.com/watch?v=fLTwYlpMNv8
+    title: Capoeira Café (short clip)
 ---
 
 ## Solo

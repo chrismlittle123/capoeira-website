@@ -14,7 +14,8 @@ sources:
   - https://capoeiralyrics.info/songs/quem-te-ensinou-a-nadar.html
   - https://capoeira.cafe/quem-me-ensinou-a-nadar/
 recordings:
-  []
+  - youtube: https://www.youtube.com/watch?v=LR_en38MMqw
+    title: Mestre Papaléguas
 added: 2026-10-28
 draft: false
 ---

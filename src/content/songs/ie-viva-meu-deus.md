@@ -1,17 +1,22 @@
 ---
 title: Iê Viva Meu Deus
-alternateTitles: [Louvação, Chula]
+alternateTitles: [ Louvação, Chula ]
 type: louvacao
-styles: [angola, contemporanea]
-toques: [angola, sao-bento-pequeno]
-themes: [praise]
-summary: The traditional louvação that follows the ladainha, thanking God, the mestre and capoeira.
+styles: [ angola, contemporanea ]
+toques: [ angola, sao-bento-pequeno ]
+themes: [ praise ]
+summary: The traditional louvação that follows the ladainha, thanking God, the
+  mestre and capoeira.
 about: |
   Each line is sung by the soloist and repeated by the coro with "camará"
   added. The verses vary from roda to roda — the soloist can praise whatever
   they like. In many rodas a verse such as "Iê, vamos embora" or "Iê, é hora,
   é hora" signals that the louvação is over and the game can begin.
 added: 2026-10-28
+recordings:
+  - youtube: https://www.youtube.com/watch?v=Ya3E2gXgLDc
+    title: Louvação after a ladainha
+    start: "2:28"
 ---
 
 ## Solo & coro

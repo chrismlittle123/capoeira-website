@@ -15,9 +15,7 @@ sources:
 recordings:
   - file: /audio/a-bananeira-caiu/roda-recording.m4a
     title: Roda recording
-    start: "1:49"
-    notes: "Same roda recording as another song; this song is in the second half
-      (approximate start)."
+    start: "2:05"
   - youtube: https://www.youtube.com/watch?v=x8fhR75Pd1A
     title: Mestres Suassuna & Esquilo
 added: 2026-10-28

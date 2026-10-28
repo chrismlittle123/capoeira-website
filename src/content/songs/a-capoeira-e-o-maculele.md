@@ -17,9 +17,7 @@ sources: []
 recordings:
   - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
     title: Roda recording
-    end: "3:25"
-    notes: "This roda video continues into another song; the first half is this one
-      (approximate cut)."
+    end: "0:36"
   - youtube: https://www.youtube.com/watch?v=3qKJZsW8Qs4
     title: Mestre Pernalonga
 added: 2026-10-28

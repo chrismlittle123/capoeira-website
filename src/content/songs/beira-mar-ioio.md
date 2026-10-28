@@ -14,9 +14,8 @@ sources:
 recordings:
   - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
     title: Roda recording
-    start: "3:25"
-    notes: "Same roda recording as another song; this song is in the second half
-      (approximate start)."
+    start: "2:08"
+    end: "2:45"
   - youtube: https://www.youtube.com/watch?v=499py7R8ciw
     title: La Laue
 added: 2026-10-28

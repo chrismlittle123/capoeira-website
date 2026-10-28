@@ -16,6 +16,7 @@ recordings:
     title: Class recording
   - file: /audio/vou-voltar-para-angola/roda-recording.m4a
     title: Roda recording
+    start: "2:12"
 added: 2026-10-28
 draft: false
 origin: composed

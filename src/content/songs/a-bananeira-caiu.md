@@ -8,6 +8,9 @@ themes: [ nature, everyday ]
 people: []
 places: []
 summary: "The machete struck low, and the banana tree came down."
+about: |
+  Sung when someone falls out of a handstand. Many singers (Mestre Boca Rica,
+  La Laue) sing the solo as "Meu facão bateu embaixo" — "my machete struck low".
 translationReviewed: false
 sources:
   - https://capoeira.cafe/a-bananeira-caiu/
@@ -15,9 +18,11 @@ sources:
 recordings:
   - file: /audio/a-bananeira-caiu/roda-recording.m4a
     title: Roda recording
-    end: "1:49"
-    notes: "This roda video continues into another song; the first half is this one
-      (approximate cut)."
+    end: "2:05"
+  - youtube: https://www.youtube.com/watch?v=pBppDkHKTBs
+    title: Mestre Boca Rica
+  - youtube: https://www.youtube.com/watch?v=n3JzM9FrFY8
+    title: La Laue
 added: 2026-10-28
 draft: false
 ---
