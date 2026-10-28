@@ -376,6 +376,17 @@ const translated = hasTranslation(sections);
   .crumbs a {
     text-decoration: none;
   }
+  @media (max-width: 640px) {
+    .crumbs {
+      align-items: center;
+      gap: 0 8px;
+    }
+    .crumbs a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
   .crumbs a:hover {
     color: var(--text);
   }
@@ -451,7 +462,7 @@ const translated = hasTranslation(sections);
     border-radius: var(--radius-sm);
     background: var(--text);
     color: var(--bg);
-    font: 400 0.68rem/1.4 var(--font-mono);
+    font: 400 var(--fs-small)/1.4 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     white-space: nowrap;
@@ -484,7 +495,7 @@ const translated = hasTranslation(sections);
     border-radius: 0 var(--radius) var(--radius) 0;
   }
   .about h2 {
-    font: 400 0.62rem/1.4 var(--font-mono);
+    font: 400 var(--fs-micro)/1.4 var(--font-mono);
     letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--green);
@@ -509,10 +520,15 @@ const translated = hasTranslation(sections);
     margin-top: 20px;
   }
   .sources h2 {
-    font: 400 0.62rem/1.4 var(--font-mono);
+    font: 400 var(--fs-micro)/1.4 var(--font-mono);
     letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--muted);
+  }
+  .sources a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
   .sources ul {
     display: flex;
@@ -539,7 +555,7 @@ const translated = hasTranslation(sections);
   }
   dt {
     margin-bottom: 8px;
-    font: 400 0.62rem/1 var(--font-mono);
+    font: 400 var(--fs-micro)/1 var(--font-mono);
     letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--gold);

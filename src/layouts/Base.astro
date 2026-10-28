@@ -91,7 +91,7 @@ const nav = [
     <footer class="site-footer">
       <div class="wrap foot">
         <p>
-          {SITE.shortTitle} — an open songbook · lyrics &amp; translations
+          {SITE.shortTitle} — an open songbook · lyrics &amp; translations{' '}
           <a href={SITE.licenseUrl}>{SITE.license}</a>
         </p>
         <p class="links">
@@ -186,6 +186,8 @@ const nav = [
     color: var(--gold-ink);
   }
   .search-btn {
+    justify-content: center;
+    min-width: 44px;
     border: 0;
     background: none;
     cursor: pointer;
@@ -223,7 +225,7 @@ const nav = [
     gap: 8px 24px;
     padding-top: 20px;
     border-top: 1px solid var(--line);
-    font: 400 0.62rem/1.6 var(--font-mono);
+    font: 400 var(--fs-micro)/1.6 var(--font-mono);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--muted);
@@ -233,9 +235,15 @@ const nav = [
   }
   .links {
     display: flex;
-    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 16px;
   }
   .foot a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
     text-decoration: none;
   }
   .foot a:hover {

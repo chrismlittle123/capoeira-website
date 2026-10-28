@@ -17,13 +17,19 @@ const label = (r: Recording, i: number) =>
     : r.kind === 'youtube'
       ? `Video ${i + 1}`
       : `Recording ${i + 1}`);
+// "Reference video", "Reference video" → "Reference video 1", "Reference video 2"
+const rawLabels = recordings.map((r, i) => label(r, i));
+const labels = rawLabels.map((l, i) => {
+  const same = rawLabels.filter((x) => x === l);
+  return same.length > 1 ? `${l} ${rawLabels.slice(0, i + 1).filter((x) => x === l).length}` : l;
+});
 const takes = recordings.map((r, i) => ({
   kind: r.kind,
   src: r.kind === 'audio' && !/^https?:/.test(r.src) && !r.src.startsWith('/') ? `/${r.src}` : r.src,
   videoId: r.videoId,
   start: r.start,
   end: r.end,
-  label: label(r, i),
+  label: labels[i],
   performer: r.performer,
 }));
 const first = takes[0];
@@ -211,7 +217,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     border-radius: var(--radius-sm);
     background: var(--terra);
     color: #fff;
-    font: 700 0.6rem/1.4 var(--font-mono);
+    font: 700 var(--fs-micro)/1.4 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     vertical-align: 1px;
@@ -338,6 +344,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     font-size: 15px;
   }
   .now-label {
+    min-width: 0;
     font-family: var(--font-display);
     font-weight: 600;
     overflow: hidden;
@@ -354,7 +361,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
   /* the arame (wire) as progress bar, the dobrão (coin) as thumb */
   .wire-wrap {
     position: relative;
-    height: 30px;
+    height: 44px;
     margin: 4px 0 6px;
   }
   .wire {
@@ -397,7 +404,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     cursor: pointer;
   }
   input[type='range']::-webkit-slider-runnable-track {
-    height: 30px;
+    height: 44px;
     background: transparent;
   }
   input[type='range']::-moz-range-track {
@@ -407,7 +414,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     -webkit-appearance: none;
     width: 20px;
     height: 20px;
-    margin-top: 5px;
+    margin-top: 12px;
     border-radius: 50%;
     background: var(--gold);
     box-shadow: 0 0 0 3px var(--bg);
@@ -450,5 +457,31 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
     margin: 8px 0 0;
     font-size: 14px;
     color: var(--terra);
+  }
+  @media (max-width: 480px) {
+    .player {
+      gap: 12px;
+      padding: 14px;
+    }
+    .gourd {
+      width: 60px;
+      height: 60px;
+    }
+    .gourd-mouth {
+      inset: 12px;
+    }
+    /* let the recording name wrap instead of being cut to "YouTube …" */
+    .now-label {
+      flex: 1;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      line-height: 1.3;
+    }
+    /* name on its own line(s), time underneath — they don't both fit on a phone */
+    .top {
+      flex-direction: column;
+      gap: 2px;
+    }
   }
 </style>
