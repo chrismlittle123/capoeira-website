@@ -19,10 +19,8 @@ sources:
 recordings:
   - file: /audio/meu-patua/meu-patua-meu-pai.m4a
     title: Class recording
-  - youtube: https://www.youtube.com/watch?v=fD4IkHDrZX0
-    title: Reference video
   - youtube: https://www.youtube.com/watch?v=mXJ18orD5KY
-    title: Mestre Casquinha (tutorial)
+    title: Mestre Casquinha
   - file: /audio/vou-voltar-para-angola/roda-recording.m4a
     title: Roda recording
     end: "1:12"

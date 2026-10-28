@@ -11,8 +11,6 @@ summary: "The singer hangs a hammock on the veranda and wants to watch it swing.
 translationReviewed: false
 sources: []
 recordings:
-  - youtube: https://www.youtube.com/watch?v=rCpm1JZmkls
-    title: Reference video
   - youtube: https://www.youtube.com/watch?v=3oAzb1A6vHo
     title: Mestre Marcelo
 added: 2026-10-28

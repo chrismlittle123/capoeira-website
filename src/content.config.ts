@@ -134,7 +134,12 @@ const songs = defineCollection({
     translationReviewed: z.boolean().default(true),
     // reference pages for the lyrics (YouTube links go in recordings instead)
     sources: z.array(z.url()).default([]),
-    recordings: z.array(recording).default([]),
+    recordings: z
+      .array(recording)
+      .default([])
+      .refine((rs) => rs.filter((r) => r.kind === 'youtube').length <= 1, {
+        error: 'only one YouTube video per song — keep the best one',
+      }),
     added: z.coerce.date(),
     updated: z.coerce.date().optional(),
     draft: z.boolean().default(false),

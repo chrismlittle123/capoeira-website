@@ -15,9 +15,7 @@ translationReviewed: false
 sources: []
 recordings:
   - youtube: https://www.youtube.com/watch?v=-D-en8X-Gao
-    title: Reference video
-  - youtube: https://www.youtube.com/watch?v=lpNNyofW-_g
-    title: Mestre Camaleão
+    title: Learning video
 added: 2026-10-28
 draft: false
 origin: traditional

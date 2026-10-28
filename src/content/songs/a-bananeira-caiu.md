@@ -18,8 +18,6 @@ sources:
 recordings:
   - youtube: https://www.youtube.com/watch?v=pBppDkHKTBs
     title: Mestre Boca Rica
-  - youtube: https://www.youtube.com/watch?v=n3JzM9FrFY8
-    title: La Laue
   - file: /audio/a-bananeira-caiu/roda-recording.m4a
     title: Roda recording
     end: "2:05"

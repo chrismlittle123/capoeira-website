@@ -17,9 +17,7 @@ about: |
 translationReviewed: false
 recordings:
   - youtube: https://www.youtube.com/watch?v=mjqG0UlpTb8
-    title: Reference video
-  - youtube: https://www.youtube.com/watch?v=zbij5B2i-GE
-    title: Reference video
+    title: La Laue
 added: 2026-10-28
 sources:
   - https://capoeira.cafe/marinheiro-so/

@@ -13,8 +13,6 @@ summary: "A proud song about smiling, mandinga and swing — capoeira as art,
 translationReviewed: false
 sources: []
 recordings:
-  - youtube: https://www.youtube.com/watch?v=X-8mKyz-wNs
-    title: Reference video
   - youtube: https://www.youtube.com/watch?v=m_2y7279iBg
     title: Mestre Barrão
 added: 2026-10-28

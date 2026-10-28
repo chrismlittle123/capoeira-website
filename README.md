@@ -85,7 +85,9 @@ A recording can be a YouTube link instead of a file (`watch?v=`, `youtu.be/`,
 `shorts/`, `live/` all work). The page shows a lightweight thumbnail and only loads
 YouTube's player (privacy-enhanced, `youtube-nocookie.com`) when someone presses
 play. The same controls — speed, loop, start/end, karaoke sync — work for videos.
-A song can mix audio files and videos; listeners switch between them.
+A song can mix audio files and a video; listeners switch between them. **One YouTube
+video per song at most** — the build fails if a song has two. Videos are listed before
+any roda recording.
 
 ### Audio tips
 
