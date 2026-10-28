@@ -12,12 +12,12 @@ translationReviewed: false
 sources:
   - https://capoeira.cafe/beira-mar-ioio/
 recordings:
+  - youtube: https://www.youtube.com/watch?v=499py7R8ciw
+    title: La Laue
   - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
     title: Roda recording
     start: "2:08"
     end: "2:45"
-  - youtube: https://www.youtube.com/watch?v=499py7R8ciw
-    title: La Laue
 added: 2026-10-28
 draft: false
 ---

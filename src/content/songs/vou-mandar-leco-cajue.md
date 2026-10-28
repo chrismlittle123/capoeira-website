@@ -13,11 +13,11 @@ translationReviewed: false
 sources:
   - https://www.lalaue.com/capoeira-music/cajue/
 recordings:
+  - youtube: https://www.youtube.com/watch?v=x8fhR75Pd1A
+    title: Mestres Suassuna & Esquilo
   - file: /audio/a-bananeira-caiu/roda-recording.m4a
     title: Roda recording
     start: "2:05"
-  - youtube: https://www.youtube.com/watch?v=x8fhR75Pd1A
-    title: Mestres Suassuna & Esquilo
 added: 2026-10-28
 draft: false
 ---

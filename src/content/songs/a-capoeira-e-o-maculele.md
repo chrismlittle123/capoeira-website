@@ -15,11 +15,11 @@ about: |
 translationReviewed: false
 sources: []
 recordings:
+  - youtube: https://www.youtube.com/watch?v=3qKJZsW8Qs4
+    title: Mestre Pernalonga
   - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
     title: Roda recording
     end: "0:36"
-  - youtube: https://www.youtube.com/watch?v=3qKJZsW8Qs4
-    title: Mestre Pernalonga
 added: 2026-10-28
 draft: false
 ---

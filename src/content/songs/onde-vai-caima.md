@@ -14,13 +14,13 @@ translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/onde-vai-caiman.html
 recordings:
+  - youtube: https://www.youtube.com/watch?v=fiveJ2PUSBU
+    title: Mestre Toni Vargas
   - file: /audio/e-de-ioio-e-de-iaia/roda-recording.m4a
     title: Roda recording
     start: "2:13"
     notes: "Same roda recording as another song; this song is in the second half
       (approximate start)."
-  - youtube: https://www.youtube.com/watch?v=fiveJ2PUSBU
-    title: Mestre Toni Vargas
 added: 2026-10-28
 draft: false
 ---

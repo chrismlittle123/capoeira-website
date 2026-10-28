@@ -16,10 +16,10 @@ about: |
 translationReviewed: false
 sources: []
 recordings:
-  - file: /audio/tem-ouro-tem-prata/roda-recording.m4a
-    title: Roda recording
   - youtube: https://www.youtube.com/watch?v=RStFUB7Ybro
     title: Mestre Marrom
+  - file: /audio/tem-ouro-tem-prata/roda-recording.m4a
+    title: Roda recording
 added: 2026-10-28
 draft: false
 ---

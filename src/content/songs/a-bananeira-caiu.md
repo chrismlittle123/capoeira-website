@@ -16,13 +16,13 @@ sources:
   - https://capoeira.cafe/a-bananeira-caiu/
   - https://www.lalaue.com/capoeira-music/a-bananeira-caiu/
 recordings:
-  - file: /audio/a-bananeira-caiu/roda-recording.m4a
-    title: Roda recording
-    end: "2:05"
   - youtube: https://www.youtube.com/watch?v=pBppDkHKTBs
     title: Mestre Boca Rica
   - youtube: https://www.youtube.com/watch?v=n3JzM9FrFY8
     title: La Laue
+  - file: /audio/a-bananeira-caiu/roda-recording.m4a
+    title: Roda recording
+    end: "2:05"
 added: 2026-10-28
 draft: false
 ---
