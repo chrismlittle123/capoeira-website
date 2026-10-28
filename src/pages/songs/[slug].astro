@@ -140,6 +140,14 @@ const translated = hasTranslation(sections);
 
     <div class="layout">
       <div class="main-col">
+        {
+          translated && !d.translationReviewed && (
+            <p class="draft-note">
+              <span class="eyebrow">Draft translation</span> The English is a first pass and hasn't been checked yet —
+              corrections welcome.
+            </p>
+          )
+        }
         <Lyrics sections={sections} />
         {
           d.about && (
@@ -151,6 +159,22 @@ const translated = hasTranslation(sections);
                 .map((p) => (
                   <p>{p.replace(/\s*\n\s*/g, ' ')}</p>
                 ))}
+            </aside>
+          )
+        }
+        {
+          d.sources.length > 0 && (
+            <aside class="sources">
+              <h2>Sources</h2>
+              <ul>
+                {d.sources.map((u) => (
+                  <li>
+                    <a href={u} rel="noopener" target="_blank">
+                      {new URL(u).hostname.replace(/^www\./, '')}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </aside>
           )
         }
@@ -460,6 +484,36 @@ const translated = hasTranslation(sections);
   .about p {
     margin: 10px 0 0;
     line-height: 1.7;
+  }
+  .draft-note {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border: 1px dashed color-mix(in srgb, var(--gold) 50%, var(--line));
+    border-radius: var(--radius);
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .draft-note .eyebrow {
+    display: inline;
+    margin-right: 8px;
+  }
+  .sources {
+    margin-top: 20px;
+  }
+  .sources h2 {
+    font: 400 0.62rem/1.4 var(--font-mono);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sources ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    font: 400 0.75rem/1.5 var(--font-mono);
   }
   .facts {
     position: sticky;

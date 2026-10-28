@@ -13,14 +13,14 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
     <p class="eyebrow kicker">Sobre</p>
     <h1>An open songbook for the roda</h1>
     <p>
-      This songbook is kept by <strong>{SITE.groupName}</strong> so that anyone — a new student, a visiting capoeirista, or
+      This songbook exists so that anyone — a new student, a visiting capoeirista, or
       a mestre who forgot the second verse — can find a song in seconds on their phone, read the words, understand them,
       and hear how it goes.
     </p>
     <p>
       It currently holds <strong>{plural(songs.length, 'song', 'songs')}</strong> and
       <strong>{plural(recordings, 'recording', 'recordings')}</strong> (audio and video). Songs vary
-      from roda to roda: these are the versions we sing.
+      from roda to roda: these are common versions, not the only ones.
     </p>
 
     <h2>Works offline</h2>
@@ -42,8 +42,8 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 
     <h2>Corrections</h2>
     <p>
-      Heard a verse differently? Spotted a mistranslation? Tell us after training — songs are living things and we love
-      learning other versions.
+      Heard a verse differently? Spotted a mistranslation? Songs are living things — corrections and other versions are
+      always welcome.
     </p>
   </div>
 </Base>

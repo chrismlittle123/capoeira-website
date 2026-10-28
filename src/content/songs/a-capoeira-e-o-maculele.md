@@ -1,0 +1,33 @@
+---
+title: "A Capoeira e o Maculelê"
+alternateTitles: [ "Samba de roda e o maculelê" ]
+type: corrido
+styles: [ angola ]
+toques: []
+themes: [ bahia, the-game ]
+people: []
+places: []
+summary: "A short corrido naming capoeira alongside its sister traditions,
+  maculelê and samba de roda."
+about: |
+  Capoeira, maculelê and samba de roda are often presented together as
+  Afro-Bahian traditions, and many capoeira groups practise all three.
+translationReviewed: false
+sources: []
+recordings:
+  - file: /audio/a-capoeira-e-o-maculele/roda-recording.m4a
+    title: Roda recording
+    end: "3:25"
+    notes: "This roda video continues into another song; the first half is this one
+      (approximate cut)."
+  - youtube: https://www.youtube.com/watch?v=iYt-_kd3RU8
+    title: "Reference video"
+added: 2026-10-28
+draft: false
+---
+
+## Coro
+A capoeira e o maculelê (x2)
+> Capoeira and maculelê
+Samba de roda e o maculelê (x2)
+> Samba de roda and maculelê

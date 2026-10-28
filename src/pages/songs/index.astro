@@ -1,10 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
-import { getSongs, getNames } from '../../lib/songs';
+import { getSongs } from '../../lib/songs';
 import { fold } from '../../lib/normalize';
 
-const [songs, names] = await Promise.all([getSongs(), getNames()]);
+const songs = await getSongs();
 const groups = new Map<string, typeof songs>();
 for (const s of songs) {
   const letter = fold(s.data.title)[0]?.toUpperCase() ?? '#';

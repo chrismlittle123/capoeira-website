@@ -38,3 +38,19 @@ nature:
   name: Nature & Animals
   emoji: 🐦
   description: Birds, snakes, rivers and the natural world as metaphor for the game.
+faith:
+  name: Faith & the Sacred
+  emoji: ✨
+  description: Saints, orixás, Aruanda and the sacred side of the roda.
+everyday:
+  name: Everyday Life
+  emoji: 🏠
+  description: Houses, work, food, festivals and the small things of daily life.
+bateria:
+  name: The Bateria
+  emoji: 🪘
+  description: Songs about the instruments of the roda — berimbau, pandeiro, atabaque, agogô and reco-reco.
+saudade:
+  name: Saudade & Longing
+  emoji: 🌙
+  description: Homesickness and longing for a person or place far away.

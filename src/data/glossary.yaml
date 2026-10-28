@@ -44,3 +44,27 @@ marinheiro:
 paranaue:
   term: Paranauê
   definition: A sung exclamation built on "Paraná" — the great river on Brazil's border with Paraguay and Argentina.
+viola:
+  term: Viola
+  definition: The highest-pitched of the three berimbaus (gunga, médio, viola), which improvises over the others. Also a name for a guitar.
+gunga:
+  term: Gunga
+  definition: The deepest berimbau, played by whoever leads the roda.
+vadiar:
+  term: Vadiar
+  forms: [vadiação, vadiando]
+  definition: To loaf, to play around — the old word for playing capoeira, from the days when capoeiristas were called "vadios" (idlers).
+atabaque:
+  term: Atabaque
+  forms: [atabaques]
+  definition: The tall hand drum of the bateria.
+pandeiro:
+  term: Pandeiro
+  forms: [pandeiros]
+  definition: The Brazilian frame drum with jingles.
+agogo:
+  term: Agogô
+  definition: A double bell struck with a stick.
+reco-reco:
+  term: Reco-reco
+  definition: A scraper — a notched piece of bamboo or wood rubbed with a stick.

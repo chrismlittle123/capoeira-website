@@ -28,6 +28,8 @@ export const GET: APIRoute = async ({ site }) => {
       language: d.language,
       summary: d.summary,
       about: d.about,
+      translationReviewed: d.translationReviewed,
+      sources: d.sources,
       lyrics: lyricsOf({ id, data: d, ...song }),
       recordings: d.recordings.map(({ src, videoId, ...r }) =>
         r.kind === 'youtube'

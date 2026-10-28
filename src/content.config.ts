@@ -130,6 +130,10 @@ const songs = defineCollection({
     language: z.string().default('pt-BR'),
     summary: z.string().optional(),
     about: z.string().optional(),
+    // false = machine/rough translation, shown with a "draft" note until someone checks it
+    translationReviewed: z.boolean().default(true),
+    // reference pages for the lyrics (YouTube links go in recordings instead)
+    sources: z.array(z.url()).default([]),
     recordings: z.array(recording).default([]),
     added: z.coerce.date(),
     updated: z.coerce.date().optional(),

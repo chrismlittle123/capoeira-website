@@ -27,3 +27,27 @@ zumbi-dos-palmares:
   kind: historical
   lived: 1655–1695
   description: Leader of the Quilombo dos Palmares and a symbol of Black resistance in Brazil.
+oxala:
+  name: Oxalá
+  kind: religious
+  description: The orixá of creation and peace in Candomblé, associated with white and with Jesus/Senhor do Bonfim in Bahia.
+santo-antonio:
+  name: Santo Antônio
+  kind: religious
+  description: Saint Anthony, a much-loved popular saint in Brazil, celebrated in the June festivals.
+iemanja:
+  name: Iemanjá
+  kind: religious
+  description: The orixá of the sea, mother of the waters, honoured in Salvador every 2 February.
+xango:
+  name: Xangô
+  kind: religious
+  description: The orixá of thunder, fire and justice.
+sao-bento:
+  name: São Bento
+  kind: religious
+  description: Saint Benedict — protector against snakes and evil, and the saint the São Bento toques are named after.
+sao-joao:
+  name: São João
+  kind: religious
+  description: Saint John the Baptist, celebrated with bonfires in the June festivals (festas juninas).

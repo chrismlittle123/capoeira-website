@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
-import { FACETS, getSongs, getNames, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 }
 const { key, entry } = Astro.props as { key: TaxonomyKey; entry: Awaited<ReturnType<typeof getTaxonomy>>[number] };
 const facet = FACETS[key];
-const [songs, names] = await Promise.all([getSongs(), getNames()]);
+const songs = await getSongs();
 const matching = songs.filter((s) => facetIds(s, key).includes(entry.id));
 const data = entry.data as Record<string, unknown> & { name: string; description?: string };
 const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).join(', ') : undefined;

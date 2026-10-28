@@ -1,6 +1,5 @@
 // Edit these to make the site yours.
 export const SITE = {
-  groupName: 'Grupo Axé',
   title: 'Capoeira Songs',
   shortTitle: 'Capoeira Songs',
   description:

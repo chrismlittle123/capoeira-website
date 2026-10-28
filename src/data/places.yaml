@@ -14,3 +14,35 @@ parana:
   name: Paraná
   region: River through Brazil, Paraguay & Argentina
   description: The Paraná river, often linked in song to the Paraguayan War (1864–1870), whose battles were fought along its waters.
+aruanda:
+  name: Aruanda
+  region: Afro-Brazilian cosmology
+  description: The mythical homeland of the ancestors in Afro-Brazilian religion — often a memory of Luanda, Angola.
+angola:
+  name: Angola
+  region: West-central Africa
+  description: Homeland of many enslaved Africans brought to Bahia, and the root that Capoeira Angola names itself after.
+maranhao:
+  name: Maranhão
+  region: Northeast Brazil
+  description: A northeastern state, home of tambor de crioula and bumba-meu-boi.
+ilha-de-mare:
+  name: Ilha de Maré
+  region: Bay of All Saints, Bahia
+  description: An island of fishing communities in the Bay of All Saints, near Salvador.
+abaete:
+  name: Abaeté
+  region: Salvador, Bahia
+  description: The Lagoa do Abaeté, a dark-water lagoon among white dunes in Salvador, sung about in Bahian songs.
+guine:
+  name: Guiné
+  region: West Africa
+  description: Guinea — in song, the West African homeland of many enslaved people.
+cachoeira:
+  name: Cachoeira
+  region: Recôncavo, Bahia
+  description: A historic town on the Paraguaçu river in the Recôncavo, a centre of Afro-Brazilian culture.
+maceio:
+  name: Maceió
+  region: Alagoas
+  description: The capital of the state of Alagoas, in Brazil's northeast.

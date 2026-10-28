@@ -484,7 +484,7 @@ export function initPlayer(root: HTMLElement) {
       t.kind === 'audio'
         ? new MediaMetadata({
             title: root.dataset.title,
-            artist: t.performer ?? root.dataset.artist,
+            artist: t.performer ?? 'Capoeira Songs',
             album: t.label,
             artwork: [{ src: '/icon-512.png', sizes: '512x512', type: 'image/png' }],
           })

@@ -1,3 +1,4 @@
+// @ts-nocheck — plain service worker; placeholders are filled in at build time
 // Offline support: the whole songbook (pages, styles, scripts, fonts, search index) is
 // cached on install, so lyrics load in the roda even without signal. Audio isn't cached.
 //

@@ -1,6 +1,5 @@
 ---
 import Icon from './Icon.astro';
-import { SITE } from '../site.config';
 import type { Song } from '../lib/songs';
 
 type Recording = Song['data']['recordings'][number];
@@ -57,7 +56,6 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
       data-player
       data-sync-index={syncIndex}
       data-title={songTitle}
-      data-artist={SITE.groupName}
     >
       <audio preload="metadata" src={first.kind === 'audio' ? first.src : undefined}></audio>
       <script is:inline type="application/json" data-takes set:html={JSON.stringify(takes).replace(/</g, '\\u003c')} />
