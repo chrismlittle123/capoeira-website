@@ -1,0 +1,85 @@
+---
+import Base from '../../layouts/Base.astro';
+import SongCard from '../../components/SongCard.astro';
+import { getSongs, getNames } from '../../lib/songs';
+import { fold } from '../../lib/normalize';
+
+const [songs, names] = await Promise.all([getSongs(), getNames()]);
+const groups = new Map<string, typeof songs>();
+for (const s of songs) {
+  const letter = fold(s.data.title)[0]?.toUpperCase() ?? '#';
+  const key = /[A-Z]/.test(letter) ? letter : '#';
+  groups.set(key, [...(groups.get(key) ?? []), s]);
+}
+---
+
+<Base title="All songs" description={`All ${songs.length} songs in the songbook, A to Z.`}>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">A–Z</p>
+      <h1>All songs</h1>
+      <p class="muted">{songs.length} songs. Tap a letter to jump.</p>
+    </header>
+    <nav class="letters" aria-label="Jump to letter">
+      {[...groups.keys()].map((l) => <a href={`#letter-${l}`}>{l}</a>)}
+    </nav>
+    {
+      [...groups].map(([letter, list]) => (
+        <section id={`letter-${letter}`}>
+          <h2 class="letter">{letter}</h2>
+          <ul class="song-grid stagger">
+            {list.map((s, i) => (
+              <SongCard song={s} typeName={names.songTypes[s.data.type.id]} i={i} />
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    padding: 40px 0 8px;
+  }
+  .page-head h1 {
+    font-size: clamp(44px, 9vw, 72px);
+    margin: 10px 0 6px;
+  }
+  .letters {
+    position: sticky;
+    top: 64px;
+    z-index: 5;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin: 0 calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    background: linear-gradient(var(--bg) 70%, transparent);
+    scrollbar-width: none;
+  }
+  .letters a {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 600;
+    transition: transform 0.3s var(--ease-ginga), background 0.2s;
+  }
+  .letters a:hover {
+    background: var(--gold);
+    color: var(--gold-ink);
+    transform: translateY(-3px) rotate(-8deg);
+  }
+  .letter {
+    margin: 32px 0 12px;
+    font-size: 40px;
+    color: var(--gold);
+  }
+</style>

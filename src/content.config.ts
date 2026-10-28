@@ -1,0 +1,104 @@
+import { defineCollection, reference } from 'astro:content';
+import { file, glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+import { existsSync } from 'node:fs';
+
+/*
+ * The songbook ontology.
+ *
+ *   Song ──type──────▶ SongType      (ladainha, corrido, …)
+ *        ──toques────▶ Toque         (berimbau rhythms it is sung over)
+ *        ──themes────▶ Theme         (the sea, resistance, malandragem, …)
+ *        ──people────▶ Person        (mestres & figures sung about / composers)
+ *        ──places────▶ Place
+ *        ──related───▶ Song
+ *        ──recordings  (audio clips, optionally time-synced to lyric lines)
+ *   GlossaryTerm  (Portuguese words explained inline in lyrics)
+ *
+ * Every reference is checked at build time: a typo in an id fails the build
+ * instead of shipping a broken link.
+ */
+
+const taxonomy = <T extends z.ZodRawShape>(path: string, extra: T = {} as T) =>
+  defineCollection({
+    loader: file(path),
+    schema: z.object({
+      name: z.string(),
+      description: z.string().optional(),
+      ...extra,
+    }),
+  });
+
+const songTypes = taxonomy('src/data/song-types.yaml', {
+  plural: z.string(),
+  order: z.number(),
+});
+
+const toques = taxonomy('src/data/toques.yaml', {
+  tempo: z.enum(['slow', 'medium', 'fast']).optional(),
+  associatedWith: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
+});
+
+const themes = taxonomy('src/data/themes.yaml', { emoji: z.string().optional() });
+
+const people = taxonomy('src/data/people.yaml', {
+  kind: z.enum(['mestre', 'historical', 'legendary', 'religious', 'other']),
+  aka: z.array(z.string()).default([]),
+  lived: z.string().optional(),
+});
+
+const places = taxonomy('src/data/places.yaml', { region: z.string().optional() });
+
+const glossary = defineCollection({
+  loader: file('src/data/glossary.yaml'),
+  schema: z.object({
+    term: z.string(),
+    // Other spellings/inflections that should also be linked in lyrics.
+    forms: z.array(z.string()).default([]),
+    definition: z.string(),
+  }),
+});
+
+const audioPath = z
+  .string()
+  .refine(
+    (p) => /^https?:\/\//.test(p) || existsSync(`public${p.startsWith('/') ? '' : '/'}${p}`),
+    { error: (iss) => `audio file not found in public/: ${String(iss.input)}` },
+  );
+
+const recording = z.object({
+  file: audioPath,
+  title: z.string().optional(),
+  performer: z.string().optional(),
+  recordedAt: z.coerce.date().optional(),
+  source: z.string().optional(),
+  notes: z.string().optional(),
+  // Line timestamps written as [m:ss] in the lyrics refer to the recording with sync: true.
+  sync: z.boolean().default(false),
+});
+
+const songs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: 'src/content/songs' }),
+  schema: z.object({
+    title: z.string(),
+    alternateTitles: z.array(z.string()).default([]),
+    type: reference('songTypes'),
+    styles: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
+    toques: z.array(reference('toques')).default([]),
+    themes: z.array(reference('themes')).default([]),
+    people: z.array(reference('people')).default([]),
+    places: z.array(reference('places')).default([]),
+    related: z.array(reference('songs')).default([]),
+    origin: z.enum(['traditional', 'composed', 'unknown']).default('traditional'),
+    composer: z.string().optional(),
+    language: z.string().default('pt-BR'),
+    summary: z.string().optional(),
+    about: z.string().optional(),
+    recordings: z.array(recording).default([]),
+    added: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { songs, songTypes, toques, themes, people, places, glossary };

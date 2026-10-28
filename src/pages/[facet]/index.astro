@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import { FACETS, getSongs, getTaxonomy, facetIds, facetUrl, type TaxonomyKey } from '../../lib/songs';
+
+export function getStaticPaths() {
+  return (Object.keys(FACETS) as TaxonomyKey[]).map((key) => ({ params: { facet: FACETS[key].path }, props: { key } }));
+}
+const { key } = Astro.props as { key: TaxonomyKey };
+const facet = FACETS[key];
+const [songs, entries] = await Promise.all([getSongs(), getTaxonomy(key)]);
+const items = entries.map((e) => ({ e, n: songs.filter((s) => facetIds(s, key).includes(e.id)).length }));
+---
+
+<Base title={facet.label} description={facet.blurb}>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><a href="/browse/">Browse</a></p>
+      <h1>{facet.label}</h1>
+      <p class="muted">{facet.blurb}</p>
+    </header>
+    <ul class="entries stagger">
+      {
+        items.map(({ e, n }, i) => (
+          <li style={`--i:${i}`}>
+            <a class="card" href={facetUrl(key, e.id)}>
+              <div class="meta">
+                {'emoji' in e.data && e.data.emoji && <span aria-hidden="true">{e.data.emoji}</span>}
+                {'lived' in e.data && e.data.lived && <span>{e.data.lived}</span>}
+                {'tempo' in e.data && e.data.tempo && <span>{e.data.tempo} tempo</span>}
+                <span class="n">{n === 0 ? 'no songs yet' : `${n} ${n === 1 ? 'song' : 'songs'}`}</span>
+              </div>
+              <h3>{e.data.name}</h3>
+              {e.data.description && <p class="desc">{e.data.description}</p>}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    padding: 40px 0 24px;
+  }
+  .page-head h1 {
+    font-size: clamp(40px, 8vw, 64px);
+    margin: 10px 0 8px;
+  }
+  .eyebrow a {
+    text-decoration: none;
+  }
+  .entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 14px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .n {
+    margin-left: auto;
+  }
+</style>

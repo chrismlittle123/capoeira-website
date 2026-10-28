@@ -1,0 +1,38 @@
+import type { APIRoute } from 'astro';
+import { getSongs, lyricsOf, songUrl } from '../../lib/songs';
+import { SITE } from '../../site.config';
+
+export const GET: APIRoute = async ({ site }) => {
+  const songs = await getSongs();
+  const abs = (p: string) => new URL(p, site).href;
+  const body = {
+    name: SITE.title,
+    license: SITE.license,
+    licenseUrl: SITE.licenseUrl,
+    generated: new Date().toISOString(),
+    count: songs.length,
+    songs: songs.map(({ id, data: d, ...song }) => ({
+      id,
+      url: abs(songUrl(id)),
+      title: d.title,
+      alternateTitles: d.alternateTitles,
+      type: d.type.id,
+      styles: d.styles,
+      toques: d.toques.map((r) => r.id),
+      themes: d.themes.map((r) => r.id),
+      people: d.people.map((r) => r.id),
+      places: d.places.map((r) => r.id),
+      related: d.related.map((r) => r.id),
+      origin: d.origin,
+      composer: d.composer,
+      language: d.language,
+      summary: d.summary,
+      about: d.about,
+      lyrics: lyricsOf({ id, data: d, ...song }),
+      recordings: d.recordings.map((r) => ({ ...r, file: abs(r.file) })),
+      added: d.added,
+      updated: d.updated,
+    })),
+  };
+  return new Response(JSON.stringify(body, null, 2), { headers: { 'Content-Type': 'application/json' } });
+};

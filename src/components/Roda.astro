@@ -1,0 +1,117 @@
+---
+/*
+ * The roda: a ring of people clapping (palmas) around two players doing the ginga.
+ * Purely decorative.
+ */
+const N = 18;
+const R = 150;
+const people = Array.from({ length: N }, (_, i) => {
+  const a = (i / N) * Math.PI * 2;
+  return { x: 200 + Math.cos(a) * R, y: 200 + Math.sin(a) * R, deg: (a * 180) / Math.PI + 90, i };
+});
+// The bateria sits at the "foot" of the roda.
+const bateria = new Set([4, 5, 6]);
+---
+
+<svg class="roda" viewBox="0 0 400 400" aria-hidden="true">
+  <circle cx="200" cy="200" r={R + 22} class="ring" />
+  <circle cx="200" cy="200" r={R - 26} class="ring inner" />
+  <g class="spin">
+    {
+      people.map((p) => (
+        <g transform={`translate(${p.x} ${p.y}) rotate(${p.deg})`}>
+          <g class:list={['person', bateria.has(p.i) && 'bateria']} style={`--d:${(p.i % 4) * 0.12}s`}>
+            <path d="M-11 12 Q -11 1 0 1 Q 11 1 11 12 Z" />
+            <circle cy="-7" r="6" />
+          </g>
+        </g>
+      ))
+    }
+  </g>
+  <!-- two players in the middle -->
+  <g class="players">
+    <g class="player p1">
+      <circle cx="0" cy="-26" r="7" />
+      <path d="M0 -18 L -3 2 M -3 2 L -16 18 M -3 2 L 10 16 M 0 -14 L -14 -4 M 0 -14 L 14 -22" />
+    </g>
+    <g class="player p2">
+      <circle cx="0" cy="-26" r="7" />
+      <path d="M0 -18 L -3 2 M -3 2 L -16 18 M -3 2 L 10 16 M 0 -14 L -14 -4 M 0 -14 L 14 -22" />
+    </g>
+  </g>
+</svg>
+
+<style>
+  .roda {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .ring {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 7;
+  }
+  .ring.inner {
+    stroke-dasharray: none;
+    stroke: color-mix(in srgb, var(--gold) 18%, transparent);
+  }
+  .spin {
+    transform-origin: 200px 200px;
+    animation: spin 160s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .person {
+    fill: color-mix(in srgb, var(--text) 30%, transparent);
+    animation: palmas 1.1s ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+  .person.bateria {
+    fill: var(--gold);
+  }
+  @keyframes palmas {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.06); }
+  }
+  .players {
+    transform: translate(200px, 205px);
+  }
+  .player {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 4.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.85;
+  }
+  .player circle {
+    fill: var(--text);
+    stroke: none;
+  }
+  .p1 {
+    animation: ginga 2.4s ease-in-out infinite;
+  }
+  .p2 {
+    animation: ginga-mirror 2.4s ease-in-out infinite;
+    stroke: var(--gold);
+  }
+  .p2 circle {
+    fill: var(--gold);
+  }
+  /* the ginga: rocking side to side, weight shifting, arms guarding */
+  @keyframes ginga {
+    0%, 100% { transform: translate(-34px, 0) rotate(-6deg) scaleX(1); }
+    25% { transform: translate(-26px, 4px) rotate(0deg) scaleX(1); }
+    50% { transform: translate(-36px, 0) rotate(6deg) scaleX(-1); }
+    75% { transform: translate(-28px, 4px) rotate(0deg) scaleX(-1); }
+  }
+  @keyframes ginga-mirror {
+    0%, 100% { transform: translate(34px, 0) rotate(6deg) scaleX(-1); }
+    25% { transform: translate(26px, 4px) rotate(0deg) scaleX(-1); }
+    50% { transform: translate(36px, 0) rotate(-6deg) scaleX(1); }
+    75% { transform: translate(28px, 4px) rotate(0deg) scaleX(1); }
+  }
+</style>

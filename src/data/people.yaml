@@ -1,0 +1,29 @@
+mestre-bimba:
+  name: Mestre Bimba
+  kind: mestre
+  aka: [Manuel dos Reis Machado]
+  lived: 1899–1974
+  description: Creator of Capoeira Regional and founder of the first capoeira academy recognised in Brazil (Salvador, 1930s).
+mestre-pastinha:
+  name: Mestre Pastinha
+  kind: mestre
+  aka: [Vicente Ferreira Pastinha]
+  lived: 1889–1981
+  description: The great guardian of Capoeira Angola, founder of the Centro Esportivo de Capoeira Angola in Salvador.
+besouro-manganga:
+  name: Besouro Mangangá
+  kind: legendary
+  aka: [Besouro Preto, Manoel Henrique Pereira]
+  lived: 1895–1924
+  description: Legendary capoeirista from Santo Amaro, said to have a "corpo fechado" — a body that bullets and blades could not harm.
+lampiao:
+  name: Lampião
+  kind: historical
+  aka: [Virgulino Ferreira da Silva]
+  lived: 1898–1938
+  description: The most famous cangaceiro (bandit) of the Brazilian northeastern backlands.
+zumbi-dos-palmares:
+  name: Zumbi dos Palmares
+  kind: historical
+  lived: 1655–1695
+  description: Leader of the Quilombo dos Palmares and a symbol of Black resistance in Brazil.

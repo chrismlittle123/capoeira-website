@@ -1,0 +1,243 @@
+---
+import Base from '../layouts/Base.astro';
+import Search from '../components/Search.astro';
+import Roda from '../components/Roda.astro';
+import Berimbau from '../components/Berimbau.astro';
+import SongCard from '../components/SongCard.astro';
+import Icon from '../components/Icon.astro';
+import { getSongs, getNames, getTaxonomy, facetIds, facetUrl } from '../lib/songs';
+import { SITE } from '../site.config';
+
+const [songs, names, toques, themes] = await Promise.all([
+  getSongs(),
+  getNames(),
+  getTaxonomy('toques'),
+  getTaxonomy('themes'),
+]);
+const recent = [...songs].sort((a, b) => +b.data.added - +a.data.added).slice(0, 6);
+const count = (key: 'toques' | 'themes', id: string) => songs.filter((s) => facetIds(s, key).includes(id)).length;
+const usedToques = toques.map((t) => ({ t, n: count('toques', t.id) })).filter((x) => x.n);
+const usedThemes = themes.map((t) => ({ t, n: count('themes', t.id) })).filter((x) => x.n);
+const title = 'Cantigas';
+---
+
+<Base bare>
+  <section class="hero">
+    <div class="roda-bg"><Roda /></div>
+    <div class="berimbau-left"><Berimbau height={360} /></div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow">{SITE.groupName} · songbook</p>
+      <h1 class="ginga-title" aria-label={title}>
+        {[...title].map((c, i) => <span aria-hidden="true" style={`--i:${i}`}>{c}</span>)}
+      </h1>
+      <p class="lede">
+        {songs.length} capoeira songs — lyrics, translations &amp; recordings. Forgot the coro? Type any line you remember.
+      </p>
+      <Search inline filters syncUrl />
+    </div>
+  </section>
+
+  <div class="wrap" data-browse>
+    <div class="quick">
+      <button class="btn btn-gold au" type="button" data-random={JSON.stringify(songs.map((s) => s.id))}>
+        <span class="au-icon"><Icon name="shuffle" /></span> Surprise me
+      </button>
+      <a class="btn" href="/songs/"><Icon name="book" /> All songs A–Z</a>
+    </div>
+
+    <div class="section-head">
+      <h2>Recently added</h2>
+      <a href="/songs/">See all →</a>
+    </div>
+    <ul class="song-grid stagger">
+      {recent.map((s, i) => <SongCard song={s} typeName={names.songTypes[s.data.type.id]} i={i} />)}
+    </ul>
+
+    <div class="section-head">
+      <h2>By toque</h2>
+      <a href={facetUrl('toques')}>What's a toque? →</a>
+    </div>
+    <ul class="chips">
+      {
+        usedToques.map(({ t, n }) => (
+          <li>
+            <a class="chip" href={facetUrl('toques', t.id)}>
+              {t.data.name} <span class="count">{n}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="section-head">
+      <h2>By theme</h2>
+      <a href={facetUrl('themes')}>All themes →</a>
+    </div>
+    <ul class="themes">
+      {
+        usedThemes.map(({ t, n }, i) => (
+          <li style={`--i:${i}`}>
+            <a href={facetUrl('themes', t.id)}>
+              <span class="emoji" aria-hidden="true">{t.data.emoji}</span>
+              <span class="name">{t.data.name}</span>
+              <span class="count">{n} {n === 1 ? 'song' : 'songs'}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-random]');
+  btn?.addEventListener('click', () => {
+    const ids: string[] = JSON.parse(btn.dataset.random!);
+    const id = ids[Math.floor(Math.random() * ids.length)];
+    btn.classList.add('spinning');
+    const go = () => (location.href = `/songs/${id}/`);
+    matchMedia('(prefers-reduced-motion: reduce)').matches ? go() : setTimeout(go, 650);
+  });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    padding: clamp(40px, 9vh, 96px) 0 24px;
+    overflow: hidden;
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 760px;
+    text-align: center;
+  }
+  .roda-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(900px, 160vw);
+    translate: -50% -52%;
+    opacity: 0.55;
+    pointer-events: none;
+    mask-image: radial-gradient(closest-side, #000 60%, transparent);
+  }
+  /* keep the two players from fighting the text for attention */
+  .roda-bg :global(.players) {
+    opacity: 0.3;
+  }
+  @media (max-width: 600px) {
+    .roda-bg :global(.players) {
+      display: none;
+    }
+  }
+  .berimbau-left {
+    position: absolute;
+    left: max(-20px, calc(50% - 640px));
+    top: 30px;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  @media (max-width: 900px) {
+    .berimbau-left {
+      display: none;
+    }
+  }
+  .lede {
+    max-width: 520px;
+    margin: 14px auto 28px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+  .ginga-title {
+    margin-top: 14px;
+    font-size: clamp(64px, 17vw, 132px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+  .ginga-title span {
+    display: inline-block;
+    animation: letter-ginga 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -0.18s);
+    transform-origin: 50% 90%;
+  }
+  .ginga-title span:nth-child(odd) {
+    color: var(--gold);
+  }
+  @keyframes letter-ginga {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    25% { transform: translateY(-6px) rotate(0deg); }
+    50% { transform: translateY(0) rotate(3deg); }
+    75% { transform: translateY(3px) rotate(0deg); }
+  }
+  .hero :global(.search .results) {
+    text-align: left;
+  }
+
+  .quick {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .au.spinning .au-icon {
+    animation: au 0.65s var(--ease-ginga) forwards;
+  }
+  .au.spinning {
+    animation: au-btn 0.65s var(--ease-ginga);
+  }
+  /* aú — the cartwheel */
+  @keyframes au {
+    0% { transform: translate(0, 0) rotate(0); }
+    50% { transform: translate(14px, -18px) rotate(200deg); }
+    100% { transform: translate(28px, 0) rotate(360deg); }
+  }
+  @keyframes au-btn {
+    40% { transform: scale(1.06) rotate(-2deg); }
+  }
+
+  .themes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .themes a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    transition: transform 0.35s var(--ease-ginga), border-color 0.2s;
+  }
+  .themes a:hover {
+    transform: translateY(-3px) rotate(0.8deg);
+    border-color: var(--gold);
+  }
+  .themes a:hover .emoji {
+    animation: wobble 0.6s var(--ease-ginga);
+  }
+  @keyframes wobble {
+    30% { transform: rotate(-16deg) scale(1.2); }
+    60% { transform: rotate(10deg) scale(1.1); }
+  }
+  .emoji {
+    grid-row: span 2;
+    font-size: 28px;
+  }
+  .name {
+    font-weight: 600;
+  }
+  .themes .count {
+    color: var(--faint);
+    font-size: 13px;
+  }
+</style>

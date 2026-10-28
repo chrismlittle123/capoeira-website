@@ -1,0 +1,50 @@
+angola:
+  name: Angola
+  tempo: slow
+  associatedWith: [angola]
+  description: The slow, deep toque of the jogo de Angola — a game played low, close and full of mandinga.
+sao-bento-pequeno:
+  name: São Bento Pequeno
+  tempo: medium
+  associatedWith: [angola]
+  description: The "inverted" Angola rhythm, a little quicker; in many rodas the medio berimbau plays it under the gunga.
+sao-bento-grande-de-angola:
+  name: São Bento Grande de Angola
+  tempo: fast
+  associatedWith: [angola, contemporanea]
+  description: A faster, more upright game while keeping the Angola feel.
+sao-bento-grande-regional:
+  name: São Bento Grande (Regional)
+  tempo: fast
+  associatedWith: [regional, contemporanea]
+  description: The fast toque of Mestre Bimba's Capoeira Regional — quick, objective, acrobatic games.
+benguela:
+  name: Benguela
+  tempo: medium
+  associatedWith: [regional, contemporanea]
+  description: A slower, more fluid toque for a close, swinging game with few kicks — "jogo de dentro".
+iuna:
+  name: Iúna
+  tempo: medium
+  associatedWith: [regional]
+  description: Named after a bird. A toque played without singing in Regional, traditionally for graduated students' games; also played at funerals.
+cavalaria:
+  name: Cavalaria
+  tempo: fast
+  associatedWith: [regional, angola]
+  description: Imitates galloping horses — historically a warning that the cavalry (the police) was coming.
+santa-maria:
+  name: Santa Maria
+  tempo: medium
+  associatedWith: [regional, contemporanea]
+  description: A swinging toque often used for games with knives or razors (navalha), or simply a playful jogo.
+idalina:
+  name: Idalina
+  tempo: medium
+  associatedWith: [regional]
+  description: One of Mestre Bimba's Regional toques, used for jogos with blades.
+amazonas:
+  name: Amazonas
+  tempo: medium
+  associatedWith: [regional]
+  description: A Regional toque played to welcome visiting mestres.

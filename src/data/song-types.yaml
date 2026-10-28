@@ -1,0 +1,40 @@
+ladainha:
+  name: Ladainha
+  plural: Ladainhas
+  order: 1
+  description: A long solo sung at the start of the roda (mainly in Angola), opening with "Iê!". Players crouch at the foot of the berimbau and listen — no one plays during the ladainha.
+louvacao:
+  name: Louvação
+  plural: Louvações
+  order: 2
+  description: Call-and-response praise that follows the ladainha — "Iê viva meu Deus… camará". Gives thanks to God, the mestres and the capoeira itself.
+chula:
+  name: Chula
+  plural: Chulas
+  order: 3
+  description: A short solo sung between the ladainha and the corridos, or to change the energy of the roda. Often used interchangeably with "quadra".
+quadra:
+  name: Quadra
+  plural: Quadras
+  order: 4
+  description: A four-line (or short) solo verse typical of Capoeira Regional, sung to open a roda before the corridos begin.
+corrido:
+  name: Corrido
+  plural: Corridos
+  order: 5
+  description: The heart of the roda — a short call-and-response song. The lead sings the solo, everyone answers with the coro, while the game is played.
+samba-de-roda:
+  name: Samba de Roda
+  plural: Sambas de Roda
+  order: 6
+  description: Songs from the Bahian samba de roda, often sung after the capoeira roda closes.
+maculele:
+  name: Maculelê
+  plural: Maculelê
+  order: 7
+  description: Songs for the maculelê stick dance from Santo Amaro, Bahia.
+puxada-de-rede:
+  name: Puxada de Rede
+  plural: Puxada de Rede
+  order: 8
+  description: Songs of the fishermen pulling in the net — performed as a dramatised dance.

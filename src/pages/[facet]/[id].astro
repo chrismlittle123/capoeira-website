@@ -1,0 +1,78 @@
+---
+import Base from '../../layouts/Base.astro';
+import SongCard from '../../components/SongCard.astro';
+import { FACETS, getSongs, getNames, getTaxonomy, facetIds, facetUrl, type TaxonomyKey } from '../../lib/songs';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const key of Object.keys(FACETS) as TaxonomyKey[]) {
+    for (const entry of await getTaxonomy(key)) {
+      paths.push({ params: { facet: FACETS[key].path, id: entry.id }, props: { key, entry } });
+    }
+  }
+  return paths;
+}
+const { key, entry } = Astro.props as { key: TaxonomyKey; entry: Awaited<ReturnType<typeof getTaxonomy>>[number] };
+const facet = FACETS[key];
+const [songs, names] = await Promise.all([getSongs(), getNames()]);
+const matching = songs.filter((s) => facetIds(s, key).includes(entry.id));
+const data = entry.data as Record<string, unknown> & { name: string; description?: string };
+const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).join(', ') : undefined;
+---
+
+<Base title={data.name} description={data.description ?? `Capoeira songs: ${data.name}`}>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><a href={facetUrl(key)}>{facet.label}</a></p>
+      <h1>{typeof data.emoji === 'string' && <span class="emoji" aria-hidden="true">{data.emoji}</span>} {data.name}</h1>
+      {(aka || data.lived) && <p class="muted">{[aka, data.lived].filter(Boolean).join(' · ')}</p>}
+      {data.description && <p class="desc">{data.description}</p>}
+    </header>
+    <div class="corda" aria-hidden="true"></div>
+    {
+      matching.length ? (
+        <ul class="song-grid stagger list">
+          {matching.map((s, i) => (
+            <SongCard song={s} typeName={names.songTypes[s.data.type.id]} i={i} />
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">No songs here yet — vem camará, the roda is still forming.</p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    padding: 40px 0 24px;
+    max-width: 720px;
+  }
+  .page-head h1 {
+    font-size: clamp(40px, 8vw, 64px);
+    margin: 10px 0 8px;
+  }
+  .emoji {
+    display: inline-block;
+    animation: wobble 2.8s ease-in-out infinite;
+  }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-6deg); }
+    50% { transform: rotate(6deg); }
+  }
+  .eyebrow a {
+    text-decoration: none;
+  }
+  .desc {
+    font-size: 18px;
+    color: var(--muted);
+  }
+  .corda {
+    max-width: 160px;
+    margin-bottom: 28px;
+  }
+  .empty {
+    font: italic 20px var(--font-display);
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,298 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import Search from '../components/Search.astro';
+import { SITE } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  jsonLd?: object;
+  /** hide the header search button (the home page has its own) */
+  bare?: boolean;
+}
+const { title, description = SITE.description, jsonLd, bare = false } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.shortTitle}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/songs/', label: 'Songs' },
+  { href: '/browse/', label: 'Browse' },
+  { href: '/glossary/', label: 'Glossary' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/json" href="/api/songs.json" title="Songbook data (JSON)" />
+    <meta name="theme-color" content="#150e09" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7efe1" media="(prefers-color-scheme: light)" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip sr-only" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a href="/" class="logo" aria-label={`${SITE.shortTitle} — home`}>
+          <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+            <path d="M11 3 Q 27 16 11 29" fill="none" stroke="var(--gold)" stroke-width="2.6" stroke-linecap="round" />
+            <line x1="11" y1="3.5" x2="11" y2="28.5" stroke="currentColor" stroke-width="1.2" />
+            <circle cx="22" cy="23" r="6" fill="var(--terra)" />
+          </svg>
+          <span>{SITE.shortTitle}</span>
+        </a>
+        <nav aria-label="Main">
+          {
+            nav.map((n) => (
+              <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>
+                {n.label}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="actions">
+          {
+            !bare && (
+              <button class="icon-btn" type="button" data-open-search aria-label="Search (/)">
+                <Icon name="search" />
+              </button>
+            )
+          }
+          <button class="icon-btn theme-toggle" type="button" aria-label="Toggle light/dark theme">
+            <span class="sun"><Icon name="sun" /></span>
+            <span class="moon"><Icon name="moon" /></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="corda" aria-hidden="true"></div>
+        <div class="foot">
+          <p>
+            <strong>{SITE.groupName}</strong> · {SITE.shortTitle} — an open songbook. Lyrics &amp; translations
+            under <a href={SITE.licenseUrl}>{SITE.license}</a>.
+          </p>
+          <p class="links">
+            <a href="/about/">About &amp; open data</a>
+            <a href="/api/songs.json">JSON</a>
+            <span class="muted">Iê, axé!</span>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    {
+      !bare && (
+        <dialog id="search-dialog" aria-label="Search songs">
+          <div class="dialog-inner">
+            <button class="icon-btn close" type="button" data-close aria-label="Close search">
+              <Icon name="close" />
+            </button>
+            <Search id="dialog-q" />
+          </div>
+        </dialog>
+      )
+    }
+
+    <script>
+      const root = document.documentElement;
+      document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+        const dark =
+          root.dataset.theme === 'dark' ||
+          (!root.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = dark ? 'light' : 'dark';
+        const apply = () => {
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem('theme', next);
+          } catch {}
+        };
+        document.startViewTransition ? document.startViewTransition(apply) : apply();
+      });
+
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding-top: env(safe-area-inset-top);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    border-bottom: 1px solid var(--line);
+    view-transition-name: site-header;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 64px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font: 700 22px/1 var(--font-display);
+    font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  }
+  .logo svg {
+    transition: transform 0.6s var(--ease-ginga);
+  }
+  .logo:hover svg {
+    transform: rotate(-14deg);
+  }
+  nav {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+  nav a {
+    padding: 8px 12px;
+    border-radius: 99px;
+    text-decoration: none;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.2s, background 0.2s;
+  }
+  nav a:hover {
+    color: var(--text);
+  }
+  nav a[aria-current='page'] {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  .actions {
+    display: flex;
+  }
+  .theme-toggle .sun {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle .sun {
+    display: block;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle .moon {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .theme-toggle .moon {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .theme-toggle .sun {
+      display: block;
+    }
+    :global(:root:not([data-theme])) .theme-toggle .moon {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .bar {
+      gap: 4px;
+    }
+    nav a {
+      padding: 8px 8px;
+      font-size: 14px;
+    }
+    .logo span {
+      display: none;
+    }
+  }
+
+  main {
+    flex: 1;
+    padding-bottom: 64px;
+  }
+
+  .site-footer {
+    padding: 0 0 calc(32px + env(safe-area-inset-bottom));
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding-top: 16px;
+  }
+  .foot p {
+    margin: 0;
+  }
+  .links {
+    display: flex;
+    gap: 16px;
+  }
+
+  dialog {
+    width: min(720px, 100vw);
+    max-width: 100vw;
+    max-height: 100dvh;
+    margin: 0 auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text);
+  }
+  dialog::backdrop {
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  dialog[open] {
+    animation: drop 0.4s var(--ease-ginga);
+  }
+  @keyframes drop {
+    from { opacity: 0; transform: translateY(-24px) scale(0.98); }
+  }
+  .dialog-inner {
+    position: relative;
+    margin: calc(12px + env(safe-area-inset-top)) var(--gutter) 24px;
+    padding: 56px 16px 16px;
+    border-radius: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .dialog-inner :global(.song-grid) {
+    grid-template-columns: 1fr;
+    max-height: calc(100dvh - 240px);
+    overflow-y: auto;
+  }
+  .close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+  }
+</style>

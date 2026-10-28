@@ -1,0 +1,457 @@
+@import '@fontsource-variable/fraunces/full.css';
+@import '@fontsource-variable/fraunces/full-italic.css';
+@import '@fontsource-variable/outfit';
+
+/* ───────────────────────── Tokens ───────────────────────── */
+
+:root {
+  color-scheme: light dark;
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
+  --font-ui: 'Outfit Variable', system-ui, -apple-system, sans-serif;
+
+  /* Noite de roda — firelight on dark wood */
+  --bg: #150e09;
+  --bg-glow-1: rgba(240, 160, 60, 0.16);
+  --bg-glow-2: rgba(63, 154, 99, 0.1);
+  --surface: #20160e;
+  --surface-2: #2b1e13;
+  --surface-3: #3a2919;
+  --text: #f6ecdc;
+  --muted: #bda78a;
+  --faint: #8a735a;
+  --line: rgba(246, 236, 220, 0.11);
+  --gold: #f2b54b;
+  --gold-ink: #241505;
+  --green: #48a56d;
+  --terra: #e06c43;
+  --coro: #f2b54b;
+  --solo: #f6ecdc;
+  --mark: rgba(242, 181, 75, 0.32);
+  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+
+  --radius: 18px;
+  --radius-sm: 10px;
+  --gutter: clamp(16px, 4vw, 32px);
+  --max: 1080px;
+  --ease-ginga: cubic-bezier(0.45, 0.05, 0.25, 1.3);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --lyric-scale: 1;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --bg: #f7efe1;
+    --bg-glow-1: rgba(242, 160, 50, 0.22);
+    --bg-glow-2: rgba(42, 122, 75, 0.12);
+    --surface: #fffaf1;
+    --surface-2: #f1e5d1;
+    --surface-3: #e6d4b8;
+    --text: #2a1b0e;
+    --muted: #775e45;
+    --faint: #a08669;
+    --line: rgba(42, 27, 14, 0.12);
+    --gold: #b67710;
+    --gold-ink: #fffaf1;
+    --green: #237347;
+    --terra: #b4441f;
+    --coro: #9a5f05;
+    --solo: #2a1b0e;
+    --mark: rgba(242, 170, 50, 0.38);
+    --shadow: 0 10px 30px -14px rgba(80, 50, 20, 0.35);
+  }
+}
+:root[data-theme='light'] {
+  --bg: #f7efe1;
+  --bg-glow-1: rgba(242, 160, 50, 0.22);
+  --bg-glow-2: rgba(42, 122, 75, 0.12);
+  --surface: #fffaf1;
+  --surface-2: #f1e5d1;
+  --surface-3: #e6d4b8;
+  --text: #2a1b0e;
+  --muted: #775e45;
+  --faint: #a08669;
+  --line: rgba(42, 27, 14, 0.12);
+  --gold: #b67710;
+  --gold-ink: #fffaf1;
+  --green: #237347;
+  --terra: #b4441f;
+  --coro: #9a5f05;
+  --solo: #2a1b0e;
+  --mark: rgba(242, 170, 50, 0.38);
+  --shadow: 0 10px 30px -14px rgba(80, 50, 20, 0.35);
+}
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  color-scheme: normal;
+}
+
+/* ───────────────────────── Base ───────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 80px;
+}
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 17px/1.55 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+/* firelight */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20vmax;
+  z-index: -2;
+  background:
+    radial-gradient(40vmax 30vmax at 15% 0%, var(--bg-glow-1), transparent 70%),
+    radial-gradient(35vmax 30vmax at 100% 30%, var(--bg-glow-2), transparent 70%),
+    radial-gradient(30vmax 25vmax at 50% 110%, var(--bg-glow-1), transparent 70%);
+  animation: firelight 14s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+/* grain */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+@keyframes firelight {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2vmax, -1vmax, 0) scale(1.05); }
+  100% { transform: translate3d(-2vmax, 1vmax, 0) scale(1.02); }
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 0.2em;
+}
+a:hover {
+  text-decoration-color: var(--gold);
+}
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+::selection {
+  background: var(--mark);
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.eyebrow {
+  font: 600 12px/1 var(--font-ui);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.muted {
+  color: var(--muted);
+}
+
+/* ───────────────────────── Corda (graduation-cord divider) ───────────────────────── */
+
+.corda {
+  height: 8px;
+  border-radius: 99px;
+  background: repeating-linear-gradient(
+    -55deg,
+    var(--gold) 0 7px,
+    var(--green) 7px 14px,
+    var(--terra) 14px 21px
+  );
+  background-size: 200% 100%;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: corda-twist 6s linear infinite;
+  opacity: 0.9;
+}
+@keyframes corda-twist {
+  to { background-position: -120px 0; }
+}
+
+/* ───────────────────────── Chips, buttons, cards ───────────────────────── */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.25s var(--ease-ginga), border-color 0.2s, background 0.2s;
+}
+a.chip:hover,
+button.chip:hover {
+  transform: translateY(-2px) rotate(-1.5deg);
+  border-color: var(--gold);
+}
+.chip[aria-pressed='true'] {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-color: var(--gold);
+}
+.chip .count {
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+.chip[aria-pressed='true'] .count {
+  color: inherit;
+  opacity: 0.7;
+}
+.chip-type {
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.25s var(--ease-ginga), background 0.2s, border-color 0.2s;
+}
+.btn:hover {
+  border-color: var(--gold);
+}
+.btn:active {
+  transform: scale(0.96);
+}
+.btn-gold {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-color: transparent;
+}
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.25s var(--ease-ginga);
+}
+.icon-btn:hover {
+  background: var(--surface-2);
+}
+.icon-btn:active {
+  transform: scale(0.9) rotate(-8deg);
+}
+.icon-btn[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--gold) 20%, transparent);
+  color: var(--gold);
+}
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.song-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.card {
+  position: relative;
+  display: block;
+  height: 100%;
+  padding: 18px 18px 16px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.35s var(--ease-ginga), border-color 0.25s, box-shadow 0.35s;
+}
+.card::after {
+  /* a sliver of corda that slides in on hover */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: repeating-linear-gradient(-55deg, var(--gold) 0 6px, var(--green) 6px 12px, var(--terra) 12px 18px);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-out);
+}
+.card:hover {
+  transform: translateY(-4px) rotate(-0.6deg);
+  border-color: color-mix(in srgb, var(--gold) 45%, var(--line));
+  box-shadow: var(--shadow);
+}
+.card:hover::after {
+  transform: scaleX(1);
+}
+.card h3 {
+  font-size: 22px;
+  margin: 8px 0 6px;
+}
+.card .hook {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.35;
+}
+.card .meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--faint);
+}
+.card .meta .has-audio {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  color: var(--green);
+}
+.card mark {
+  background: var(--mark);
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 48px 0 16px;
+}
+.section-head h2 {
+  font-size: clamp(26px, 5vw, 34px);
+}
+.section-head a {
+  color: var(--muted);
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* staggered entrance for lists */
+.stagger > * {
+  animation: rise 0.6s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px) rotate(1deg); }
+}
+
+/* ───────────────────────── View transitions ───────────────────────── */
+
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: 0.25s ease both vt-out;
+}
+::view-transition-new(root) {
+  animation: 0.4s var(--ease-out) both vt-in;
+}
+@keyframes vt-out { to { opacity: 0; transform: translateX(-12px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateX(16px); } }
+
+/* ───────────────────────── Reduced motion ───────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* room for the docked mini-player */
+body:has(.player.docked) main {
+  padding-bottom: 140px;
+}

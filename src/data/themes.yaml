@@ -1,0 +1,40 @@
+praise:
+  name: Praise & Gratitude
+  emoji: 🙏
+  description: Songs that praise God, the mestres, the ancestors and capoeira itself.
+the-game:
+  name: The Game
+  emoji: 🤸
+  description: Songs about the jogo itself — calling people in, commenting on the play, encouraging a beautiful game.
+the-sea:
+  name: The Sea & Sailors
+  emoji: 🌊
+  description: Sailors, fishermen, boats, the ocean and Iemanjá.
+bahia:
+  name: Bahia
+  emoji: 🌴
+  description: The birthplace of capoeira — its towns, ports and people.
+resistance:
+  name: Slavery & Resistance
+  emoji: ⛓️
+  description: Memories of slavery, quilombos and the struggle for freedom.
+war:
+  name: War & Soldiers
+  emoji: ⚔️
+  description: Battles, soldiers and wars Brazilians were sent to fight.
+malandragem:
+  name: Malandragem
+  emoji: 🎩
+  description: Cunning, trickery, street smarts and the art of deceiving your opponent.
+love:
+  name: Love & Women
+  emoji: ❤️
+  description: Sweethearts, wives, mothers and longing.
+outlaws:
+  name: Legends & Outlaws
+  emoji: 🤠
+  description: Famous valentões, cangaceiros and legendary capoeiristas.
+nature:
+  name: Nature & Animals
+  emoji: 🐦
+  description: Birds, snakes, rivers and the natural world as metaphor for the game.

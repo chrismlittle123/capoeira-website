@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'pt'));
+---
+
+<Base title="Glossary" description="Portuguese words you'll hear in capoeira songs, explained.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Vocabulário</p>
+      <h1>Glossary</h1>
+      <p class="muted">Words you'll hear in the roda. They're underlined in the lyrics — tap one to see what it means.</p>
+    </header>
+    <dl class="terms stagger">
+      {
+        terms.map((t, i) => (
+          <div id={t.id} style={`--i:${i}`}>
+            <dt lang="pt-BR">{t.data.term}</dt>
+            <dd>{t.data.definition}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    padding: 40px 0 24px;
+    max-width: 640px;
+  }
+  .page-head h1 {
+    font-size: clamp(40px, 8vw, 64px);
+    margin: 10px 0 8px;
+  }
+  .terms {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 14px;
+    margin: 0;
+  }
+  .terms > div {
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border: 1px solid var(--line);
+  }
+  .terms > div:target {
+    border-color: var(--gold);
+  }
+  dt {
+    font: 600 24px/1.1 var(--font-display);
+    color: var(--gold);
+  }
+  dd {
+    margin: 6px 0 0;
+    color: var(--muted);
+  }
+</style>
