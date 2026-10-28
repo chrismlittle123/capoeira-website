@@ -79,6 +79,19 @@ so a broken song can't reach the live site.
 To add a new toque, theme, person, place, song type or glossary word, add an entry to
 the matching YAML file in `src/data/`.
 
+### Removing a song
+
+Delete its file in `src/content/songs/` (and its folder in `public/audio/`), then add
+two lines to `public/_redirects` so old links go to the song list:
+
+```
+/songs/<slug>/ /songs/ 301
+/songs/<slug> /songs/ 301
+```
+
+Without this, Cloudflare Pages keeps serving its cached copy of the deleted page for
+up to a week.
+
 ### YouTube
 
 A recording can be a YouTube link instead of a file (`watch?v=`, `youtu.be/`,

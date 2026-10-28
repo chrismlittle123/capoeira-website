@@ -1,0 +1,16 @@
+# Songs that were removed — send old links to the song list.
+# (Cloudflare Pages otherwise keeps serving cached copies of deleted pages for up to a week.)
+/songs/amanha-e-dia-santo/ /songs/ 301
+/songs/amanha-e-dia-santo /songs/ 301
+/songs/eu-tenho-um-chapeu-de-palha/ /songs/ 301
+/songs/eu-tenho-um-chapeu-de-palha /songs/ 301
+/songs/eu-tenho-uma-canoa/ /songs/ 301
+/songs/eu-tenho-uma-canoa /songs/ 301
+/songs/pedrinha/ /songs/ 301
+/songs/pedrinha /songs/ 301
+/songs/tava-na-beira-do-mar/ /songs/ 301
+/songs/tava-na-beira-do-mar /songs/ 301
+/songs/santo-amaro/ /songs/ 301
+/songs/santo-amaro /songs/ 301
+/songs/vou-para-bahia/ /songs/ 301
+/songs/vou-para-bahia /songs/ 301
