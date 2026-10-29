@@ -1,3 +1,4 @@
+/** The ontology's browsable facets (themes, people, places) and the facts shown for their entries. */
 import type { CollectionEntry } from 'astro:content';
 
 /** Each browsable facet of the ontology: its key is its collection, its URL segment and the song field that references it. */

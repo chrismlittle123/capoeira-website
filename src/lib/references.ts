@@ -1,4 +1,5 @@
-import type { TaxonomyKey } from './facets';
+/** Finding song references to themes, people, places or songs that don't exist. */
+import type { TaxonomyKey } from './facets.ts';
 
 export interface Ref {
   collection: TaxonomyKey | 'songs';
