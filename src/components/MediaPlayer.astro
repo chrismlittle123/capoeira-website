@@ -1,9 +1,9 @@
 ---
 // A song's recordings behind one set of controls; the behaviour is in src/scripts/player.ts.
 import Icon from './Icon.astro';
-import type { Song } from '../lib/songs';
-import { takesFor } from '../lib/playback';
-import { MEDIA_ICON, youtubeThumbnailUrl } from '../lib/media';
+import type { Song } from '../lib/content/songs';
+import { takesFor } from '../lib/player/playback';
+import { MEDIA_ICON, youtubeThumbnailUrl } from '../lib/player/media';
 
 interface Props {
   recordings: Song['data']['recordings'];

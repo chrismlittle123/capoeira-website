@@ -1,5 +1,5 @@
 /** Text handling for the song search (src/scripts/search.ts): query terms, highlighting, snippets. */
-import { fold } from './normalize.ts';
+import { fold } from '../normalize.ts';
 
 // Filler words that would otherwise make every song match an English query.
 const STOP = new Set(['i', 'a', 'the', 'to', 'of', 'and', 'my', 'is', 'it', 'in', 'on', 'me', 'you', 'im']);

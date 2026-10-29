@@ -1,8 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getSongs, getTaxonomy, songsWith } from '../../lib/songs';
-import { FACETS, TAXONOMY_KEYS } from '../../lib/facets';
-import { facetUrl } from '../../lib/urls';
+import { getSongs, getTaxonomy, songsWith } from '../../lib/content/songs';
+import { FACETS, TAXONOMY_KEYS } from '../../lib/content/facets';
+import { facetUrl } from '../../lib/content/urls';
 
 const songs = await getSongs();
 const facets = await Promise.all(

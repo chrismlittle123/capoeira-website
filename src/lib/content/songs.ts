@@ -1,7 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { parseLyrics, hookLine, type LyricSection } from './lyrics';
+import { parseLyrics, hookLine, type LyricSection } from '../lyrics/lyrics';
 import { TAXONOMY_KEYS, type TaxonomyKey } from './facets';
-import { compareText } from './normalize';
+import { compareText } from '../normalize';
 import { brokenReferences, oncePerBuild, type Ref } from './references';
 
 export type Song = CollectionEntry<'songs'>;

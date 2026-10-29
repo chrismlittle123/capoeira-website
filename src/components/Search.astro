@@ -2,9 +2,9 @@
 // The song search box, with optional difficulty filters; the behaviour is in src/scripts/search.ts.
 import Icon from './Icon.astro';
 import LevelDots from './LevelDots.astro';
-import { PAGES } from '../lib/urls';
-import { getSongs, lyricsOf } from '../lib/songs';
-import { DIFFICULTY, difficulty } from '../lib/lyrics';
+import { PAGES } from '../lib/content/urls';
+import { getSongs, lyricsOf } from '../lib/content/songs';
+import { DIFFICULTY, difficulty } from '../lib/lyrics/lyrics';
 
 interface Props {
   inline?: boolean;

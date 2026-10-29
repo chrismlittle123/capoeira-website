@@ -2,9 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
 import type { CollectionEntry } from 'astro:content';
-import { getSongs, getTaxonomy, songsWith } from '../../lib/songs';
-import { FACETS, TAXONOMY_KEYS, entryFacts, type TaxonomyKey } from '../../lib/facets';
-import { facetUrl } from '../../lib/urls';
+import { getSongs, getTaxonomy, songsWith } from '../../lib/content/songs';
+import { FACETS, TAXONOMY_KEYS, entryFacts, type TaxonomyKey } from '../../lib/content/facets';
+import { facetUrl } from '../../lib/content/urls';
 
 export async function getStaticPaths() {
   const paths = [];

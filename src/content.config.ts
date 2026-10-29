@@ -2,10 +2,10 @@ import { defineCollection, reference } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
-import { toSeconds, youtubeId, youtubeStart } from './lib/media';
+import { toSeconds, youtubeId, youtubeStart } from './lib/player/media';
 import { LOCALE } from './lib/normalize';
-import { PUBLIC_DIR, SONGS_DIR, dataFile } from './lib/paths';
-import { STYLES } from './lib/song-facts';
+import { PUBLIC_DIR, SONGS_DIR, dataFile } from './lib/content/paths';
+import { STYLES } from './lib/content/song-facts';
 
 /*
  * The songbook ontology.

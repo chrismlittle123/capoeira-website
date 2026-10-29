@@ -137,7 +137,7 @@ Song ──themes──▶ Theme   ──people──▶ Person   ──places�
 GlossaryTerm (linked into lyrics automatically)
 ```
 
-Schemas: `src/content.config.ts`. Lyrics parser: `src/lib/lyrics.ts`.
+Schemas: `src/content.config.ts`. Lyrics parser: `src/lib/lyrics/lyrics.ts`.
 
 ## Deploying — Cloudflare Pages
 

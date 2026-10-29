@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
-import { getSongs, lyricsOf } from '../../lib/songs';
-import { songUrl } from '../../lib/urls';
-import { difficulty } from '../../lib/lyrics';
+import { getSongs, lyricsOf } from '../../lib/content/songs';
+import { songUrl } from '../../lib/content/urls';
+import { difficulty } from '../../lib/lyrics/lyrics';
 import { SITE } from '../../site.config';
 
 export const GET: APIRoute = async ({ site }) => {

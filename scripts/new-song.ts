@@ -3,8 +3,8 @@
 import { createInterface } from 'node:readline';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { youtubeId } from '../src/lib/media.ts';
-import { PUBLIC_DIR, dataFile, songFile } from '../src/lib/paths.ts';
+import { youtubeId } from '../src/lib/player/media.ts';
+import { PUBLIC_DIR, dataFile, songFile } from '../src/lib/content/paths.ts';
 import {
   audioUrl,
   dataIds,
@@ -16,7 +16,7 @@ import {
   unescapeDroppedPath,
   unknownIds,
   type NewSong,
-} from '../src/lib/song-scaffold.ts';
+} from '../src/lib/content/song-scaffold.ts';
 
 const rl = createInterface({ input: process.stdin });
 const lines = rl[Symbol.asyncIterator]();

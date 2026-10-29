@@ -5,9 +5,9 @@ import Berimbau from '../components/Berimbau.astro';
 import RhythmGrid from '../components/RhythmGrid.astro';
 import SongCard from '../components/SongCard.astro';
 import Icon from '../components/Icon.astro';
-import { getSongs, getTaxonomy, recordingCount, songsWith } from '../lib/songs';
+import { getSongs, getTaxonomy, recordingCount, songsWith } from '../lib/content/songs';
 import { plural } from '../lib/text';
-import { PAGES, facetUrl } from '../lib/urls';
+import { PAGES, facetUrl } from '../lib/content/urls';
 
 const [songs, themes] = await Promise.all([getSongs(), getTaxonomy('themes')]);
 const recent = [...songs].sort((a, b) => +b.data.added - +a.data.added).slice(0, 6);
@@ -80,7 +80,7 @@ const recordings = recordingCount(songs);
 </Base>
 
 <script>
-  import { songUrl } from '../lib/urls';
+  import { songUrl } from '../lib/content/urls';
 
   const btn = document.querySelector<HTMLButtonElement>('[data-random]');
   btn?.addEventListener('click', () => {

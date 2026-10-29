@@ -1,10 +1,10 @@
 /** The song search box (src/components/Search.astro): the index loaded once, results as you type, an optional difficulty filter. */
 import MiniSearch, { type SearchResult } from 'minisearch';
-import { FACET_LABELS, TEXT_FIELDS, escapeHtml, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from '../lib/search-text';
-import { DIFFICULTY, levelDots } from '../lib/lyrics';
+import { FACET_LABELS, TEXT_FIELDS, escapeHtml, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from '../lib/search/search-text';
+import { DIFFICULTY, levelDots } from '../lib/lyrics/lyrics';
 import { plural } from '../lib/text';
-import { SEARCH_INDEX_URL, songUrl } from '../lib/urls';
-import { parseSearchDocs, type SearchDoc } from '../lib/search-doc';
+import { SEARCH_INDEX_URL, songUrl } from '../lib/content/urls';
+import { parseSearchDocs, type SearchDoc } from '../lib/search/search-doc';
 import { required, setQueryParams } from './dom';
 
 

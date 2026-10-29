@@ -1,9 +1,9 @@
 ---
 // A song in a list: difficulty, recordings badge, title and its hook line.
-import { hookOf, lyricsOf, type Song } from '../lib/songs';
-import { mediaBadge } from '../lib/media';
-import { songUrl } from '../lib/urls';
-import { difficulty } from '../lib/lyrics';
+import { hookOf, lyricsOf, type Song } from '../lib/content/songs';
+import { mediaBadge } from '../lib/player/media';
+import { songUrl } from '../lib/content/urls';
+import { difficulty } from '../lib/lyrics/lyrics';
 import DifficultyBadge from './DifficultyBadge.astro';
 
 interface Props {

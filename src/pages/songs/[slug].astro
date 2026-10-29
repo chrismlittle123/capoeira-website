@@ -5,14 +5,14 @@ import Lyrics from '../../components/Lyrics.astro';
 import MediaPlayer from '../../components/MediaPlayer.astro';
 import SongCard from '../../components/SongCard.astro';
 import Icon from '../../components/Icon.astro';
-import { getSongs, getNames, lyricsOf, facetIds, type Song } from '../../lib/songs';
-import type { TaxonomyKey } from '../../lib/facets';
-import { PAGES, facetUrl, songUrl } from '../../lib/urls';
-import { allLines, difficulty, hasTranslation, plainText } from '../../lib/lyrics';
+import { getSongs, getNames, lyricsOf, facetIds, type Song } from '../../lib/content/songs';
+import type { TaxonomyKey } from '../../lib/content/facets';
+import { PAGES, facetUrl, songUrl } from '../../lib/content/urls';
+import { allLines, difficulty, hasTranslation, plainText } from '../../lib/lyrics/lyrics';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { SITE } from '../../site.config';
-import { STYLE_NAMES, originFact, originText, relatedIds } from '../../lib/song-facts';
-import { youtubeEmbedUrl, youtubeThumbnailUrl } from '../../lib/media';
+import { STYLE_NAMES, originFact, originText, relatedIds } from '../../lib/content/song-facts';
+import { youtubeEmbedUrl, youtubeThumbnailUrl } from '../../lib/player/media';
 
 export async function getStaticPaths() {
   const songs = await getSongs();

@@ -1,6 +1,6 @@
 /** The popover explaining a glossary word linked in the lyrics (src/components/Lyrics.astro). */
-import { parseGlossaryData, type GlossaryEntry } from '../lib/glossary-links';
-import { glossaryUrl } from '../lib/urls';
+import { parseGlossaryData, type GlossaryEntry } from '../lib/lyrics/glossary-links';
+import { glossaryUrl } from '../lib/content/urls';
 import { required } from './dom';
 
 // id → { term, definition } for the glossary words on this page; none when no word is linked

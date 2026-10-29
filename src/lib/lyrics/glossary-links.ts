@@ -1,6 +1,6 @@
 /** Linking glossary words inside lyrics (src/components/Lyrics.astro). */
-import { escapeHtml } from './search-text.ts';
-import { LOCALE } from './normalize.ts';
+import { escapeHtml } from '../search/search-text.ts';
+import { LOCALE } from '../normalize.ts';
 
 export interface GlossaryWord {
   id: string;

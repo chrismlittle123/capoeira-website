@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { TAXONOMY_KEYS } from '../../lib/facets';
-import { facetUrl, glossaryUrl } from '../../lib/urls';
+import { TAXONOMY_KEYS } from '../../lib/content/facets';
+import { facetUrl, glossaryUrl } from '../../lib/content/urls';
 import { SITE } from '../../site.config';
 
 export const GET: APIRoute = async ({ site }) => {

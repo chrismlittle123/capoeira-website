@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
-import { getSongs, getNames, lyricsOf } from '../lib/songs';
-import { mediaBadge } from '../lib/media';
-import { allLines, difficulty, hookLine } from '../lib/lyrics';
-import type { SearchDoc } from '../lib/search-doc';
+import { getSongs, getNames, lyricsOf } from '../lib/content/songs';
+import { mediaBadge } from '../lib/player/media';
+import { allLines, difficulty, hookLine } from '../lib/lyrics/lyrics';
+import type { SearchDoc } from '../lib/search/search-doc';
 
 export const GET: APIRoute = async () => {
   const [songs, names] = await Promise.all([getSongs(), getNames()]);

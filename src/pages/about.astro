@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getSongs, recordingCount } from '../lib/songs';
+import { getSongs, recordingCount } from '../lib/content/songs';
 import { plural } from '../lib/text';
 import { SITE } from '../site.config';
-import { ONTOLOGY_JSON_URL, SONGS_JSON_URL } from '../lib/urls';
+import { ONTOLOGY_JSON_URL, SONGS_JSON_URL } from '../lib/content/urls';
 
 const songs = await getSongs();
 const recordings = recordingCount(songs);

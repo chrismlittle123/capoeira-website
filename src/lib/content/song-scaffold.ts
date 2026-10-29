@@ -1,7 +1,7 @@
 /** The pure parts of `npm run new-song` (scripts/new-song.ts): naming, checking and the new file's text. */
 import { basename, extname } from 'node:path';
 import { Document, isScalar, isSeq, parse } from 'yaml';
-import { fold } from './normalize.ts';
+import { fold } from '../normalize.ts';
 
 /** "São Bento Grande" → "sao-bento-grande" */
 export const slugify = (s: string) =>

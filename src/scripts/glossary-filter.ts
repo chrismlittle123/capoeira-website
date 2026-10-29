@@ -1,5 +1,5 @@
 /** The glossary page's filter box (src/pages/glossary.astro), kept in the URL as ?q=. */
-import { containsAllWords } from '../lib/search-text';
+import { containsAllWords } from '../lib/search/search-text';
 import { required, setQueryParams } from './dom';
 
 const form = required<HTMLFormElement>(document, '[data-glossary-search]');

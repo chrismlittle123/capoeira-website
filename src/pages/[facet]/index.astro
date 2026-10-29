@@ -1,8 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getSongs, getTaxonomy, songsWith } from '../../lib/songs';
-import { FACETS, TAXONOMY_KEYS, entryFacts, type TaxonomyKey } from '../../lib/facets';
-import { PAGES, facetUrl } from '../../lib/urls';
+import { getSongs, getTaxonomy, songsWith } from '../../lib/content/songs';
+import { FACETS, TAXONOMY_KEYS, entryFacts, type TaxonomyKey } from '../../lib/content/facets';
+import { PAGES, facetUrl } from '../../lib/content/urls';
 import { plural } from '../../lib/text';
 
 export function getStaticPaths() {

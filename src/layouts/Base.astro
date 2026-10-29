@@ -3,10 +3,10 @@ import '../styles/global.css';
 import Icon from '../components/Icon.astro';
 import Search from '../components/Search.astro';
 import { SITE } from '../site.config';
-import { checkReferences } from '../lib/songs';
-import { TAXONOMY_KEYS } from '../lib/facets';
+import { checkReferences } from '../lib/content/songs';
+import { TAXONOMY_KEYS } from '../lib/content/facets';
 import { MAX_SCALE, MIN_SCALE, STORAGE_KEYS } from '../lib/reading';
-import { PAGES, SONGS_JSON_URL, facetUrl } from '../lib/urls';
+import { PAGES, SONGS_JSON_URL, facetUrl } from '../lib/content/urls';
 
 // Every page uses this layout, so a broken reference fails the build here.
 await checkReferences();
