@@ -1,11 +1,10 @@
-// @ts-nocheck — plain service worker; placeholders are filled in at build time
 // Offline support: the whole songbook (pages, styles, scripts, fonts, search index) is
 // cached on install, so lyrics load in the roda even without signal. Audio isn't cached.
 //
-// __VERSION__ and __PRECACHE__ are filled in at build time (see astro.config.mjs): the
+// The version and precache list are filled in at build time (see astro.config.mjs): the
 // version is a hash of every cached file, so any new or edited song triggers a refresh.
 const VERSION = '__VERSION__';
-const PRECACHE = __PRECACHE__;
+const PRECACHE = /* __PRECACHE__ */ [];
 const CACHE = `songbook-${VERSION}`;
 const OFFLINE = '/offline/';
 

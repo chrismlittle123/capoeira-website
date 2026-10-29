@@ -5,10 +5,13 @@ import Lyrics from '../../components/Lyrics.astro';
 import MediaPlayer from '../../components/MediaPlayer.astro';
 import SongCard from '../../components/SongCard.astro';
 import Icon from '../../components/Icon.astro';
-import { getSongs, getNames, lyricsOf, facetIds, facetUrl, songUrl, type Song, type TaxonomyKey } from '../../lib/songs';
+import { getSongs, getNames, lyricsOf, facetIds, type Song, type TaxonomyKey } from '../../lib/songs';
+import { PAGES, facetUrl, songUrl } from '../../lib/urls';
 import { allLines, difficulty, hasTranslation, plainText } from '../../lib/lyrics';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { SITE } from '../../site.config';
+import { STYLE_NAMES, originFact, originText, relatedIds } from '../../lib/song-facts';
+import { youtubeEmbedUrl, youtubeThumbnailUrl } from '../../lib/media';
 
 export async function getStaticPaths() {
   const songs = await getSongs();
@@ -30,22 +33,16 @@ const level = difficulty(sections);
 const names = await getNames();
 const people = await getEntries(d.people);
 
-// Related: explicit links first, then shared themes/people/places.
+// Sing next: linked songs first, then ones sharing themes, people and places.
 const all = await getSongs();
-const explicit = new Set(d.related.map((r) => r.id));
-const WEIGHTS: [TaxonomyKey, number][] = [['themes', 3], ['people', 3], ['places', 2]];
-const score = (s: Song) =>
-  (explicit.has(s.id) || s.data.related.some((r) => r.id === song.id) ? 10 : 0) +
-  WEIGHTS.reduce((n, [k, w]) => n + w * facetIds(s, k).filter((id) => facetIds(song, k).includes(id)).length, 0);
-const related = all
-  .filter((s) => s.id !== song.id)
-  .map((s) => ({ s, n: score(s) }))
-  .filter((x) => x.n >= 2)
-  .sort((a, b) => b.n - a.n)
-  .slice(0, 4)
-  .map((x) => x.s);
+const relatable = (s: Song) => ({
+  id: s.id,
+  related: s.data.related.map((r) => r.id),
+  facets: { themes: facetIds(s, 'themes'), people: facetIds(s, 'people'), places: facetIds(s, 'places') },
+});
+const byId = new Map(all.map((s) => [s.id, s]));
+const related = relatedIds(relatable(song), all.map(relatable)).flatMap((id) => byId.get(id) ?? []);
 
-const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
 type Fact = { label: string; key?: TaxonomyKey; items: { id: string; name: string }[] };
 const allFacts: Fact[] = [
   { label: 'Themes', key: 'themes', items: d.themes.map((r) => ({ id: r.id, name: names.themes[r.id] })) },
@@ -55,16 +52,7 @@ const allFacts: Fact[] = [
 ];
 const facts = allFacts.filter((f) => f.items.length);
 
-const originText =
-  d.origin === 'traditional'
-    ? 'Traditional'
-    : d.origin === 'composed'
-      ? d.composer
-        ? `By ${d.composer}`
-        : 'Composed (author unknown)'
-      : d.composer
-        ? `By ${d.composer}`
-        : 'Origin unknown';
+const origin = originText(d);
 const nonEmpty = <T,>(a: T[]) => (a.length ? a : undefined);
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -86,8 +74,8 @@ const jsonLd = {
             video: {
               '@type': 'VideoObject',
               name: r.title ?? d.title,
-              embedUrl: `https://www.youtube-nocookie.com/embed/${r.videoId}`,
-              thumbnailUrl: `https://i.ytimg.com/vi/${r.videoId}/hqdefault.jpg`,
+              embedUrl: youtubeEmbedUrl(r.videoId),
+              thumbnailUrl: youtubeThumbnailUrl(r.videoId),
               url: r.src,
             },
           }
@@ -107,13 +95,13 @@ const translated = hasTranslation(sections);
     <header class="head">
       <h1 style={`view-transition-name: song-${song.id}`}>{d.title}</h1>
       <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/songs/">Songs</a>
+        <a href={PAGES.songs}>Songs</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">{d.title}</span>
       </nav>
       <p class="meta mono">
         <DifficultyBadge difficulty={level} />
-        <span>{originText}</span>
+        <span>{origin}</span>
       </p>
       {d.alternateTitles.length > 0 && <p class="alt">also sung as {d.alternateTitles.map((t) => `“${t}”`).join(', ')}</p>}
       {d.summary && <p class="summary">{d.summary}</p>}
@@ -204,7 +192,7 @@ const translated = hasTranslation(sections);
           }
           <div>
             <dt>Origin</dt>
-            <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : originText}</dd>
+            <dd>{originFact(d)}</dd>
           </div>
         </dl>
       </aside>
@@ -233,115 +221,7 @@ const translated = hasTranslation(sections);
 </Base>
 
 <script>
-  const root = document.documentElement;
-  const toast = document.querySelector<HTMLElement>('[data-toast]')!;
-  const tool = (name: string) => document.querySelector<HTMLButtonElement>(`[data-tool="${name}"]`);
-  const store = {
-    get: (k: string) => {
-      try {
-        return localStorage.getItem(k);
-      } catch {
-        return null;
-      }
-    },
-    set: (k: string, v: string) => {
-      try {
-        localStorage.setItem(k, v);
-      } catch {}
-    },
-  };
-  const say = (msg: string) => {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1800);
-  };
-
-  // translation (the class lives on <html> so it can be applied before first paint)
-  const tr = tool('translation');
-  const setTr = (on: boolean) => {
-    root.classList.toggle('hide-translation', !on);
-    tr?.setAttribute('aria-pressed', String(on));
-    tr?.setAttribute('title', on ? 'Hide translation' : 'Show translation');
-    store.set('translation', on ? '1' : '0');
-  };
-  setTr(store.get('translation') !== '0');
-  tr?.addEventListener('click', () => setTr(tr.getAttribute('aria-pressed') !== 'true'));
-
-  // text size
-  const MIN = 0.8;
-  const MAX = 1.8;
-  const smaller = tool('smaller')!;
-  const bigger = tool('bigger')!;
-  let scale = Number(store.get('lyric-scale') ?? 1) || 1;
-  const setScale = (s: number) => {
-    scale = Math.min(MAX, Math.max(MIN, Math.round(s * 10) / 10));
-    root.style.setProperty('--lyric-scale', String(scale));
-    store.set('lyric-scale', String(scale));
-    smaller.disabled = scale <= MIN;
-    bigger.disabled = scale >= MAX;
-  };
-  setScale(scale);
-  smaller.addEventListener('click', () => setScale(scale - 0.1));
-  bigger.addEventListener('click', () => setScale(scale + 0.1));
-
-  // keep the screen awake while reading in the roda
-  const awake = tool('awake');
-  let lock: WakeLockSentinel | null = null;
-  let wantAwake = false; // the browser drops the lock when the tab is hidden; re-take it on return
-  if ('wakeLock' in navigator && awake) {
-    awake.hidden = false;
-    const request = async () => {
-      try {
-        lock = await navigator.wakeLock.request('screen');
-        return true;
-      } catch {
-        return false;
-      }
-    };
-    awake.addEventListener('click', async () => {
-      if (wantAwake) {
-        wantAwake = false;
-        await lock?.release();
-        lock = null;
-        say('Screen can sleep');
-      } else if (await request()) {
-        wantAwake = true;
-        say('Screen stays on');
-      } else {
-        say("Couldn't keep the screen on");
-      }
-      awake.setAttribute('aria-pressed', String(wantAwake));
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && wantAwake) request();
-    });
-  }
-
-  // share
-  tool('share')?.addEventListener('click', async () => {
-    const data = { title: document.title, url: location.href };
-    if (navigator.share) {
-      try {
-        await navigator.share(data);
-        return;
-      } catch (e) {
-        if ((e as DOMException).name === 'AbortError') return; // user closed the share sheet
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(location.href);
-      say('Link copied');
-    } catch {
-      say(location.href);
-    }
-  });
-
-  // remember recently viewed songs
-  try {
-    const id = location.pathname.split('/').filter(Boolean).pop()!;
-    const seen: string[] = JSON.parse(store.get('recent') ?? '[]').filter((x: string) => x !== id);
-    store.set('recent', JSON.stringify([id, ...seen].slice(0, 12)));
-  } catch {}
+  import '../../scripts/song-page';
 </script>
 
 <style>

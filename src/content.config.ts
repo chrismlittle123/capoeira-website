@@ -3,6 +3,8 @@ import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
 import { toSeconds, youtubeId, youtubeStart } from './lib/media';
+import { PUBLIC_DIR, SONGS_DIR, dataFile } from './lib/paths';
+import { STYLES } from './lib/song-facts';
 
 /*
  * The songbook ontology.
@@ -28,18 +30,18 @@ const taxonomy = <T extends z.ZodRawShape>(path: string, extra: T = {} as T) =>
     }),
   });
 
-const themes = taxonomy('src/data/themes.yaml', { emoji: z.string().optional() });
+const themes = taxonomy(dataFile('themes'), { emoji: z.string().optional() });
 
-const people = taxonomy('src/data/people.yaml', {
+const people = taxonomy(dataFile('people'), {
   kind: z.enum(['mestre', 'historical', 'legendary', 'religious', 'other']),
   aka: z.array(z.string()).default([]),
   lived: z.string().optional(),
 });
 
-const places = taxonomy('src/data/places.yaml', { region: z.string().optional() });
+const places = taxonomy(dataFile('places'), { region: z.string().optional() });
 
 const glossary = defineCollection({
-  loader: file('src/data/glossary.yaml'),
+  loader: file(dataFile('glossary')),
   schema: z.object({
     term: z.string(),
     // Other spellings/inflections that should also be linked in lyrics.
@@ -51,7 +53,7 @@ const glossary = defineCollection({
 const audioPath = z
   .string()
   .refine(
-    (p) => /^https?:\/\//.test(p) || existsSync(`public${p.startsWith('/') ? '' : '/'}${p}`),
+    (p) => /^https?:\/\//.test(p) || existsSync(`${PUBLIC_DIR}${p.startsWith('/') ? '' : '/'}${p}`),
     { error: (iss) => `audio file not found in public/: ${String(iss.input)}` },
   );
 
@@ -88,25 +90,23 @@ const recording = z
     // Line timestamps written as [m:ss] in the lyrics refer to the recording with sync: true.
     sync: z.boolean().default(false),
   })
-  .refine((r) => !r.file !== !r.youtube, { error: 'each recording needs exactly one of `file:` or `youtube:`' })
-  .transform(({ file, youtube, start, ...r }) =>
-    youtube
-      ? {
-          ...r,
-          kind: 'youtube' as const,
-          src: youtube,
-          videoId: youtubeId(youtube)!,
-          start: start ?? youtubeStart(youtube) ?? 0,
-        }
-      : { ...r, kind: 'audio' as const, src: file!, videoId: undefined, start: start ?? 0 },
-  );
+  .transform(({ file, youtube, start, ...r }, ctx) => {
+    // The youtube field's own check guarantees an id whenever a link is given.
+    const videoId = youtube ? youtubeId(youtube) : undefined;
+    if (youtube && videoId && !file) {
+      return { ...r, kind: 'youtube' as const, src: youtube, videoId, start: start ?? youtubeStart(youtube) ?? 0 };
+    }
+    if (file && !youtube) return { ...r, kind: 'audio' as const, src: file, videoId: undefined, start: start ?? 0 };
+    ctx.addIssue({ code: 'custom', message: 'each recording needs exactly one of `file:` or `youtube:`' });
+    return z.NEVER;
+  });
 
 const songs = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: 'src/content/songs' }),
+  loader: glob({ pattern: '**/*.md', base: SONGS_DIR }),
   schema: z.object({
     title: z.string(),
     alternateTitles: z.array(z.string()).default([]),
-    styles: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
+    styles: z.array(z.enum(STYLES)).default([]),
     themes: z.array(reference('themes')).default([]),
     people: z.array(reference('people')).default([]),
     places: z.array(reference('places')).default([]),

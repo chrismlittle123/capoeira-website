@@ -49,15 +49,17 @@ const cells = Array.from({ length: STEPS }, (_, i) => i);
     margin: 0;
   }
   .grid {
+    --label-w: 34px;
+    --label-gap: 8px;
     position: relative;
     display: grid;
     gap: 4px;
   }
   .row {
     display: grid;
-    grid-template-columns: 34px 1fr;
+    grid-template-columns: var(--label-w) 1fr;
     align-items: center;
-    gap: 8px;
+    gap: var(--label-gap);
   }
   .label {
     font: 400 var(--fs-micro)/1 var(--font-mono);
@@ -109,10 +111,10 @@ const cells = Array.from({ length: STEPS }, (_, i) => i);
     position: absolute;
     top: -4px;
     bottom: -4px;
-    left: 42px;
+    left: calc(var(--label-w) + var(--label-gap)); /* where the cells start */
     width: 2px;
     background: var(--terra);
-    animation: sweep calc(var(--step) * var(--steps)) steps(16) infinite;
+    animation: sweep calc(var(--step) * var(--steps)) steps(var(--steps)) infinite;
   }
   @keyframes sweep {
     to {

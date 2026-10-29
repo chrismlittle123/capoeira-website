@@ -1,11 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getSongs } from '../lib/songs';
+import { getSongs, recordingCount } from '../lib/songs';
+import { plural } from '../lib/text';
 import { SITE } from '../site.config';
+import { ONTOLOGY_JSON_URL, SONGS_JSON_URL } from '../lib/urls';
 
 const songs = await getSongs();
-const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const recordings = recordingCount(songs);
 ---
 
 <Base title="About & open data" description="About this songbook and how to use its open data.">
@@ -35,8 +36,8 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
       something with it — flashcards, a printed songbook, a berimbau trainer.
     </p>
     <ul>
-      <li><a href="/api/songs.json"><code>/api/songs.json</code></a> — every song with structured lyrics (sections, lines, translations, timestamps), recordings and references</li>
-      <li><a href="/api/ontology.json"><code>/api/ontology.json</code></a> — themes, people, places and glossary</li>
+      <li><a href={SONGS_JSON_URL}><code>{SONGS_JSON_URL}</code></a> — every song with structured lyrics (sections, lines, translations, timestamps), recordings and references</li>
+      <li><a href={ONTOLOGY_JSON_URL}><code>{ONTOLOGY_JSON_URL}</code></a> — themes, people, places and glossary</li>
       <li>Each song page also embeds <a href="https://schema.org/MusicComposition">schema.org</a> JSON-LD.</li>
     </ul>
 

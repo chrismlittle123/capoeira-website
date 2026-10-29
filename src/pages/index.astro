@@ -5,13 +5,14 @@ import Berimbau from '../components/Berimbau.astro';
 import RhythmGrid from '../components/RhythmGrid.astro';
 import SongCard from '../components/SongCard.astro';
 import Icon from '../components/Icon.astro';
-import { getSongs, getTaxonomy, facetIds, facetUrl } from '../lib/songs';
+import { getSongs, getTaxonomy, recordingCount, songsWith } from '../lib/songs';
+import { plural } from '../lib/text';
+import { PAGES, facetUrl } from '../lib/urls';
 
 const [songs, themes] = await Promise.all([getSongs(), getTaxonomy('themes')]);
 const recent = [...songs].sort((a, b) => +b.data.added - +a.data.added).slice(0, 6);
-const count = (key: 'themes', id: string) => songs.filter((s) => facetIds(s, key).includes(id)).length;
-const usedThemes = themes.map((t) => ({ t, n: count('themes', t.id) })).filter((x) => x.n);
-const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
+const usedThemes = themes.map((t) => ({ t, n: songsWith(songs, 'themes', t.id).length })).filter((x) => x.n);
+const recordings = recordingCount(songs);
 ---
 
 <Base bare>
@@ -27,8 +28,8 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
           <strong>lyrics</strong>, the <strong>translation</strong> and a <strong>recording</strong>.
         </p>
         <p class="stats mono">
-          <span>{songs.length} songs</span>
-          <span>{recordings} {recordings === 1 ? 'recording' : 'recordings'}</span>
+          <span>{plural(songs.length, 'song', 'songs')}</span>
+          <span>{plural(recordings, 'recording', 'recordings')}</span>
         </p>
       </div>
 
@@ -45,18 +46,17 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
           <button class="btn btn-gold au" type="button" data-random={JSON.stringify(songs.map((s) => s.id))}>
             <span class="au-icon"><Icon name="shuffle" size={16} /></span> Surprise me
           </button>
-          <a class="btn" href="/songs/">All songs A–Z →</a>
+          <a class="btn" href={PAGES.songs}>All songs A–Z →</a>
         </div>
       </section>
 
       <div class="section-head">
         <h2>Recently added</h2>
-        <a href="/songs/">See all →</a>
+        <a href={PAGES.songs}>See all →</a>
       </div>
       <ul class="song-grid stagger">
         {recent.map((s, i) => <SongCard song={s} i={i} />)}
       </ul>
-
 
       <div class="section-head">
         <h2>By theme</h2>
@@ -69,7 +69,7 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
               <a class="card theme" href={facetUrl('themes', t.id)}>
                 <span class="emoji" aria-hidden="true">{t.data.emoji}</span>
                 <span class="name">{t.data.name}</span>
-                <span class="count">{n} {n === 1 ? 'song' : 'songs'}</span>
+                <span class="count">{plural(n, 'song', 'songs')}</span>
               </a>
             </li>
           ))
@@ -80,15 +80,20 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
 </Base>
 
 <script>
+  import { songUrl } from '../lib/urls';
+
   const btn = document.querySelector<HTMLButtonElement>('[data-random]');
   btn?.addEventListener('click', () => {
-    const ids: string[] = JSON.parse(btn.dataset.random!);
-    const id = ids[Math.floor(Math.random() * ids.length)];
+    const ids: unknown = JSON.parse(btn.dataset.random ?? '[]');
+    if (!Array.isArray(ids) || !ids.length) return;
+    const id: unknown = ids[Math.floor(Math.random() * ids.length)];
+    if (typeof id !== 'string') return;
     btn.classList.remove('spinning');
     void btn.offsetWidth; // restart the animation
     btn.classList.add('spinning');
-    const go = () => (location.href = `/songs/${id}/`);
-    matchMedia('(prefers-reduced-motion: reduce)').matches ? go() : setTimeout(go, 600);
+    const go = () => (location.href = songUrl(id));
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) go();
+    else setTimeout(go, 600); // let the cartwheel play first
   });
   // coming Back from the random song restores this page from cache mid-cartwheel
   addEventListener('pageshow', () => btn?.classList.remove('spinning'));

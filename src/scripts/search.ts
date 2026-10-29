@@ -1,41 +1,39 @@
+/** The song search box (src/components/Search.astro): the index loaded once, results as you type, an optional difficulty filter. */
 import MiniSearch, { type SearchResult } from 'minisearch';
-import { fold } from '../lib/normalize';
-import type { SearchDoc } from '../pages/search-index.json';
+import { FACET_LABELS, TEXT_FIELDS, escapeHtml, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from '../lib/search-text';
+import { DIFFICULTY, levelDots } from '../lib/lyrics';
+import { plural } from '../lib/text';
+import { SEARCH_INDEX_URL, songUrl } from '../lib/urls';
+import { parseSearchDocs, type SearchDoc } from '../lib/search-doc';
+import { required, setQueryParams } from './dom';
 
-// Filler words that would otherwise make every song match an English query.
-const STOP = new Set(['i', 'a', 'the', 'to', 'of', 'and', 'my', 'is', 'it', 'in', 'on', 'me', 'you', 'im']);
-const term = (t: string) => {
-  const f = fold(t);
-  return f.length < 2 || STOP.has(f) ? null : f;
-};
-const queryTerms = (q: string) =>
-  q
-    .split(/[^\p{L}\p{N}]+/u)
-    .map(term)
-    .filter((t): t is string => !!t);
 
-const TEXT_FIELDS = new Set(['title', 'alt', 'hook', 'lyrics', 'translation']);
-const FACET_LABELS: Record<string, string> = {
-  themes: 'Theme',
-  people: 'People',
-  places: 'Place',
-};
+// Wait this long after a keystroke before searching, so fast typing searches once.
+const TYPING_PAUSE_MS = 80;
+// When no song has every word, show the OR matches scoring at least this share of the best.
+const OR_MATCH_CUTOFF = 0.3;
+
+type Level = (typeof DIFFICULTY)[number];
+const levelById = (id: string | null | undefined): Level | undefined => DIFFICULTY.find((d) => d.id === id);
 
 interface Index {
-  ms: MiniSearch<SearchDoc>;
+  mini: MiniSearch<SearchDoc>;
   docs: SearchDoc[];
   byId: Map<string, SearchDoc>;
 }
 let indexPromise: Promise<Index> | undefined;
 
 function loadIndex() {
-  indexPromise ??= fetch('/search-index.json')
-    .then((r) => r.json() as Promise<SearchDoc[]>)
+  indexPromise ??= fetch(SEARCH_INDEX_URL)
+    .then(async (r) => {
+      if (!r.ok) throw new Error(`search index: HTTP ${r.status}`);
+      return parseSearchDocs(await r.json());
+    })
     .then((docs) => {
-      const ms = new MiniSearch<SearchDoc>({
-        fields: ['title', 'alt', 'hook', 'lyrics', 'translation', 'themes', 'people', 'places'],
+      const mini = new MiniSearch<SearchDoc>({
+        fields: [...TEXT_FIELDS, ...Object.keys(FACET_LABELS)],
         storeFields: ['id'],
-        processTerm: term,
+        processTerm: searchTerm,
         searchOptions: {
           boost: { title: 5, alt: 3, hook: 2.5, lyrics: 1.5, people: 1.5, themes: 0.8 },
           prefix: true,
@@ -43,79 +41,19 @@ function loadIndex() {
           fuzzy: (t) => (t.length > 4 ? 0.2 : false),
         },
       });
-      ms.addAll(docs);
-      return { ms, docs, byId: new Map(docs.map((d) => [d.id, d])) };
+      mini.addAll(docs);
+      return { mini, docs, byId: new Map(docs.map((d) => [d.id, d])) };
     });
   indexPromise.catch(() => (indexPromise = undefined)); // allow a retry after a network failure
   return indexPromise;
 }
 
-const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-
-/** Fold `text` char-by-char, remembering which original char each folded char came from. */
-function foldWithMap(text: string) {
-  const chars = [...text];
-  const map: number[] = [];
-  let folded = '';
-  chars.forEach((c, i) => {
-    const f = fold(c);
-    for (let k = 0; k < f.length; k++) map.push(i);
-    folded += f;
-  });
-  return { chars, map, folded };
-}
-
-const isLetter = (c: string | undefined) => !!c && /[\p{L}\p{N}]/u.test(c);
-
-/** Start offsets (in folded text) where `t` begins a word. */
-function wordStarts(folded: string, t: string) {
-  const out: number[] = [];
-  let at = folded.indexOf(t);
-  while (at !== -1) {
-    if (!isLetter(folded[at - 1])) out.push(at);
-    at = folded.indexOf(t, at + 1);
-  }
-  return out;
-}
-
-/** Highlight words starting with any of `terms`, matching accent-insensitively. */
-function highlight(text: string, terms: string[]) {
-  if (!terms.length) return esc(text);
-  const { chars, map, folded } = foldWithMap(text);
-  const hits = new Array(chars.length).fill(false);
-  for (const t of terms) for (const at of wordStarts(folded, t)) for (let k = at; k < at + t.length; k++) hits[map[k]] = true;
-  let out = '';
-  let open = false;
-  chars.forEach((c, i) => {
-    if (hits[i] && !open) (out += '<mark>'), (open = true);
-    if (!hits[i] && open) (out += '</mark>'), (open = false);
-    out += esc(c);
-  });
-  return open ? out + '</mark>' : out;
-}
-
-const countHits = (s: string, terms: string[]) => {
-  const f = fold(s);
-  return terms.filter((t) => wordStarts(f, t).length).length;
-};
-
-/** The lyric line that matches the most terms (ties go to the earliest line). */
-function snippet(doc: SearchDoc, terms: string[]) {
-  let best = doc.hook;
-  let max = 0;
-  for (const line of doc.lines) {
-    const n = countHits(line, terms);
-    if (n > max) (best = line), (max = n);
-  }
-  return max && (max >= countHits(doc.title, terms) || max === terms.length) ? best : doc.hook;
-}
-
-function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
+/** One result's card, as HTML. */
+function cardHtml(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
-  return `<li style="--i:${i}"><a class="card" href="/songs/${doc.id}/">
-    <div class="meta"><span class="dl" title="${esc(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(3 - doc.level)} ${esc(doc.levelLabel)}</span>${
-      doc.media ? `<span class="has-audio">${doc.media.icon} ${doc.media.label}</span>` : ''
+  return `<li style="--i:${i}"><a class="card" href="${songUrl(doc.id)}">
+    <div class="meta"><span class="dl" title="${escapeHtml(doc.levelLabel)}">${levelDots(doc.level).map((on) => (on ? '●' : '○')).join('')} ${escapeHtml(doc.levelLabel)}</span>${
+      doc.media ? `<span class="has-audio">${escapeHtml(doc.media.icon)} ${escapeHtml(doc.media.label)}</span>` : ''
     }</div>
     <h3>${highlight(doc.title, terms)}</h3>
     <p class="hook">${highlight(line, terms)}</p>
@@ -123,29 +61,19 @@ function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   </a></li>`;
 }
 
-/** If a song matched (partly) through its theme/people/places, say so. */
-function explain(r: SearchResult, doc: SearchDoc, terms: string[]) {
-  // only when some part of the query was found nowhere in the title or lyrics
-  const facetOnly = Object.values(r.match).filter((fields) => !fields.some((f) => TEXT_FIELDS.has(f)));
-  if (!facetOnly.length) return undefined;
-  const fields = new Set(facetOnly.flat());
-  const parts = [...fields]
-    .filter((f) => FACET_LABELS[f])
-    .map((f) => `${FACET_LABELS[f]}: ${highlight(String(doc[f as keyof SearchDoc]), terms)}`);
-  return parts.join(' · ') || undefined;
-}
-
-function init(root: HTMLElement) {
+/** Wire one search box: its input, level buttons, results and status, and (with data-sync-url) the page's ?q= and ?level=. */
+function wireSearchBox(root: HTMLElement) {
   if (root.dataset.ready) return;
   root.dataset.ready = '1';
-  const input = root.querySelector<HTMLInputElement>('input[type=search]')!;
-  const results = root.querySelector<HTMLElement>('[data-results]')!;
-  const status = root.querySelector<HTMLElement>('[data-status]')!;
+  const input = required<HTMLInputElement>(root, 'input[type=search]');
+  const results = required(root, '[data-results]');
+  const status = required(root, '[data-status]');
   const levelButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-level]')];
-  const LEVELS: Record<string, number> = { easy: 1, medium: 2, hard: 3 };
-  let level = ''; // 'easy' | 'medium' | 'hard' | ''
+  let level: Level | undefined;
   const browse = root.hasAttribute('data-inline') ? document.querySelector<HTMLElement>('[data-browse]') : null;
   const syncUrl = root.hasAttribute('data-sync-url');
+  const showLevel = () =>
+    levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level?.id)));
   let runId = 0;
 
   const run = async () => {
@@ -154,11 +82,8 @@ function init(root: HTMLElement) {
     const terms = queryTerms(q);
     root.classList.toggle('has-text', !!q);
     if (syncUrl) {
-      const url = new URL(location.href);
-      q ? url.searchParams.set('q', q) : url.searchParams.delete('q');
-      url.searchParams.delete('type');
-      level ? url.searchParams.set('level', level) : url.searchParams.delete('level');
-      history.replaceState(history.state, '', url);
+      // type: links shared before difficulty levels replaced the song-type filter
+      setQueryParams({ q: q || undefined, level: level?.id, type: undefined });
     }
     if (!terms.length && !level) {
       results.innerHTML = '';
@@ -167,19 +92,32 @@ function init(root: HTMLElement) {
       return;
     }
     browse?.setAttribute('hidden', '');
-    const { ms, byId } = await loadIndex();
+    let index: Index;
+    try {
+      index = await loadIndex();
+    } catch {
+      if (id !== runId) return;
+      results.innerHTML = '';
+      status.textContent = "Couldn't load the songs to search — are you offline? Try again in a moment.";
+      return;
+    }
     if (id !== runId) return; // a newer keystroke won
-    const matches = (d?: SearchDoc) => !!d && (!level || d.level === LEVELS[level]);
+    const { mini, byId } = index;
+    const matches = (d?: SearchDoc) => !!d && (!level || d.level === level.level);
     const filter = level ? (r: SearchResult) => matches(byId.get(r.id)) : undefined;
     let hits: { doc: SearchDoc; r?: SearchResult }[];
     if (terms.length) {
       const query = terms.join(' ');
-      let res = ms.search(query, { combineWith: 'AND', filter });
+      let res = mini.search(query, { combineWith: 'AND', filter });
       if (!res.length) {
-        res = ms.search(query, { combineWith: 'OR', filter });
-        res = res.filter((r) => r.score >= res[0].score * 0.3);
+        res = mini.search(query, { combineWith: 'OR', filter });
+        const top = res[0]?.score ?? 0;
+        res = res.filter((r) => r.score >= top * OR_MATCH_CUTOFF);
       }
-      hits = res.map((r) => ({ doc: byId.get(r.id)!, r }));
+      hits = res.flatMap((r) => {
+        const doc = byId.get(r.id);
+        return doc ? [{ doc, r }] : [];
+      });
     } else {
       hits = [...byId.values()].filter((d) => matches(d)).map((doc) => ({ doc }));
     }
@@ -187,14 +125,13 @@ function init(root: HTMLElement) {
       .map(({ doc, r }, i) => {
         // highlight the words the index actually matched too (covers typos and prefixes)
         const marks = r ? [...new Set([...terms, ...r.terms])] : terms;
-        return card(doc, marks, i, r && explain(r, doc, marks));
+        return cardHtml(doc, marks, i, r && whyMatchedHtml(r.match, doc, marks));
       })
       .join('');
-    const scope = level ? levelButtons.find((b) => b.dataset.level === level)?.dataset.label : '';
-    const inType = scope ? ` in ${esc(scope)}` : '';
+    const inLevel = level ? ` in ${escapeHtml(level.label)}` : '';
     status.innerHTML = hits.length
-      ? `${hits.length} song${hits.length === 1 ? '' : 's'}${inType}`
-      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${esc(q)}”${inType}. ${
+      ? `${plural(hits.length, 'song', 'songs')}${inLevel}`
+      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${escapeHtml(q)}”${inLevel}. ${
           level ? 'Try clearing the filter, or' : 'Try'
         } fewer words — or just the coro.</small></span>`;
   };
@@ -202,9 +139,9 @@ function init(root: HTMLElement) {
   let timer: number | undefined;
   input.addEventListener('input', () => {
     clearTimeout(timer);
-    timer = window.setTimeout(run, 80);
+    timer = window.setTimeout(run, TYPING_PAUSE_MS);
   });
-  root.querySelector('form')!.addEventListener('submit', async (e) => {
+  required(root, 'form').addEventListener('submit', async (e) => {
     e.preventDefault();
     clearTimeout(timer);
     await run(); // never act on results from an older query
@@ -213,29 +150,29 @@ function init(root: HTMLElement) {
   });
   for (const btn of levelButtons) {
     btn.addEventListener('click', () => {
-      level = level === btn.dataset.level ? '' : btn.dataset.level!;
-      levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
+      level = level?.id === btn.dataset.level ? undefined : levelById(btn.dataset.level);
+      showLevel();
       run();
     });
   }
-  input.addEventListener('focus', () => loadIndex(), { once: true });
+  // Fetch the index early; a failure is shown when a search needs it.
+  input.addEventListener('focus', () => loadIndex().catch(() => undefined), { once: true });
 
   if (syncUrl) {
     const params = new URLSearchParams(location.search);
     input.value = params.get('q') ?? '';
-    const lv = params.get('level') ?? '';
-    level = lv in LEVELS ? lv : '';
-    levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
+    level = levelById(params.get('level'));
+    showLevel();
     if (input.value || level) run();
   }
 }
 
-document.querySelectorAll<HTMLElement>('[data-search]').forEach(init);
+document.querySelectorAll<HTMLElement>('[data-search]').forEach(wireSearchBox);
 
 // "/" or ⌘K anywhere opens search
 const dialog = document.querySelector<HTMLDialogElement>('#search-dialog');
 let opener: HTMLElement | null = null;
-export function openSearch() {
+function openSearch() {
   const inline = document.querySelector<HTMLInputElement>('[data-search][data-inline] input');
   if (inline) {
     inline.focus();
@@ -243,7 +180,7 @@ export function openSearch() {
     return;
   }
   if (!dialog || dialog.open) return;
-  opener = document.activeElement as HTMLElement | null;
+  opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   dialog.showModal();
   const input = dialog.querySelector('input');
   input?.focus();
@@ -251,7 +188,7 @@ export function openSearch() {
 }
 document.querySelectorAll('[data-open-search]').forEach((b) => b.addEventListener('click', openSearch));
 document.addEventListener('keydown', (e) => {
-  const typing = (e.target as HTMLElement).closest('input, textarea, [contenteditable]');
+  const typing = e.target instanceof Element && e.target.closest('input, textarea, [contenteditable]');
   if ((e.key === '/' && !typing) || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
     e.preventDefault();
     openSearch();
@@ -268,4 +205,4 @@ dialog?.querySelector('input')?.addEventListener('keydown', (e) => {
     dialog.close();
   }
 });
-dialog?.addEventListener('close', () => opener?.focus?.());
+dialog?.addEventListener('close', () => opener?.focus());

@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
 import { getSongs } from '../../lib/songs';
 import { fold } from '../../lib/normalize';
+import { plural } from '../../lib/text';
 
 const songs = await getSongs();
 const groups = new Map<string, typeof songs>();
@@ -18,7 +19,7 @@ for (const s of songs) {
     <header class="page-head">
       <p class="eyebrow">A–Z</p>
       <h1>All songs</h1>
-      <p class="muted">{songs.length} songs. Tap a letter to jump.</p>
+      <p class="muted">{plural(songs.length, 'song', 'songs')}. Tap a letter to jump.</p>
     </header>
     <nav class="letters" aria-label="Jump to letter">
       {[...groups.keys()].map((l) => <a href={`#letter-${l}`}>{l}</a>)}

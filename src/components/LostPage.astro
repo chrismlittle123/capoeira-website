@@ -1,0 +1,37 @@
+---
+// A whole page for when the reader can't have what they asked for (404, offline): the roda, a line, a way back.
+import Base from '../layouts/Base.astro';
+import Roda from './Roda.astro';
+
+interface Props {
+  title: string;
+  heading: string;
+  message: string;
+  href: string;
+  linkLabel: string;
+}
+const { title, heading, message, href, linkLabel } = Astro.props;
+---
+
+<Base title={title} noindex>
+  <div class="wrap lost">
+    <div class="roda"><Roda /></div>
+    <h1>{heading}</h1>
+    <p class="muted">{message}</p>
+    <a class="btn btn-gold" href={href}>{linkLabel}</a>
+  </div>
+</Base>
+
+<style>
+  .lost {
+    text-align: center;
+    padding-top: 40px;
+  }
+  .roda {
+    width: min(320px, 80vw);
+    margin: 0 auto 8px;
+  }
+  h1 {
+    font-size: clamp(36px, 8vw, 56px);
+  }
+</style>

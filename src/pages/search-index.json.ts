@@ -1,24 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getSongs, getNames, lyricsOf, mediaBadge } from '../lib/songs';
 import { allLines, difficulty, hookLine } from '../lib/lyrics';
-
-export interface SearchDoc {
-  id: string;
-  title: string;
-  alt: string;
-  /** 1 easy · 2 medium · 3 hard */
-  level: number;
-  levelLabel: string;
-  themes: string;
-  people: string;
-  places: string;
-  hook: string;
-  lyrics: string;
-  translation: string;
-  lines: string[];
-  /** e.g. { icon: '▶', label: 'watch' } when the song has recordings */
-  media?: { icon: string; label: string };
-}
+import type { SearchDoc } from '../lib/search-doc';
 
 export const GET: APIRoute = async () => {
   const [songs, names] = await Promise.all([getSongs(), getNames()]);
@@ -26,17 +9,17 @@ export const GET: APIRoute = async () => {
     const sections = lyricsOf(song);
     const lines = allLines(sections);
     const d = song.data;
-    const join = (key: keyof typeof names, refs: { id: string }[]) =>
-      refs.map((r) => names[key][r.id]).join(' · ');
+    const namesOf = (key: keyof typeof names, refs: { id: string }[]) => refs.map((r) => names[key][r.id]).join(' · ');
+    const level = difficulty(sections);
     return {
       id: song.id,
       title: d.title,
       alt: d.alternateTitles.join(' · '),
-      level: difficulty(sections).level,
-      levelLabel: difficulty(sections).label,
-      themes: join('themes', d.themes),
-      people: join('people', d.people),
-      places: join('places', d.places),
+      level: level.level,
+      levelLabel: level.label,
+      themes: namesOf('themes', d.themes),
+      people: namesOf('people', d.people),
+      places: namesOf('places', d.places),
       hook: hookLine(sections),
       // de-duplicate repeated coro lines so they don't dominate ranking
       lyrics: [...new Set(lines.map((l) => l.text))].join('\n'),

@@ -45,11 +45,17 @@ function serviceWorker() {
 
         const swPath = join(root, 'sw.js');
         const sw = await readFile(swPath, 'utf8');
+        const versionLine = "const VERSION = '__VERSION__';";
+        const precacheLine = 'const PRECACHE = /* __PRECACHE__ */ [];';
+        // Without both placeholders the service worker would ship an empty cache.
+        for (const line of [versionLine, precacheLine]) {
+          if (!sw.includes(line)) throw new Error(`public/sw.js no longer contains: ${line}`);
+        }
         await writeFile(
           swPath,
           sw
-            .replace("const VERSION = '__VERSION__';", `const VERSION = '${hash.digest('hex').slice(0, 12)}';`)
-            .replace('const PRECACHE = __PRECACHE__;', `const PRECACHE = ${JSON.stringify(urls)};`),
+            .replace(versionLine, `const VERSION = '${hash.digest('hex').slice(0, 12)}';`)
+            .replace(precacheLine, `const PRECACHE = ${JSON.stringify(urls)};`),
         );
       },
     },

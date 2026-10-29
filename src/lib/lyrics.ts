@@ -105,6 +105,9 @@ export const DIFFICULTY = [
 ] as const;
 export type Difficulty = (typeof DIFFICULTY)[number] & { words: number };
 
+/** A level as one dot per level, filled up to it: [true, true, false] for medium. */
+export const levelDots = (level: number): boolean[] => DIFFICULTY.map((d) => d.level <= level);
+
 export function difficulty(sections: LyricSection[]): Difficulty {
   const distinct = [...new Set(allLines(sections).map((l) => l.text.replace(/\s*\(x\d+\)/gi, '').trim()))];
   const words = distinct.reduce((n, l) => n + (l.match(/[\p{L}\p{N}']+/gu)?.length ?? 0), 0);

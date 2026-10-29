@@ -4,6 +4,8 @@ import Icon from '../components/Icon.astro';
 import Search from '../components/Search.astro';
 import { SITE } from '../site.config';
 import { TAXONOMY_KEYS, checkReferences } from '../lib/songs';
+import { MAX_SCALE, MIN_SCALE, STORAGE_KEYS } from '../lib/reading';
+import { PAGES, SONGS_JSON_URL, facetUrl } from '../lib/urls';
 
 // Every page uses this layout, so a broken reference fails the build here.
 await checkReferences();
@@ -11,11 +13,12 @@ await checkReferences();
 interface Props {
   title?: string;
   description?: string;
-  jsonLd?: object;
+  /** schema.org data for the page */
+  jsonLd?: Record<string, unknown>;
   /** hide the header search button (the home page has its own) */
   bare?: boolean;
-  /** og:type — "music.song" on song pages */
-  type?: string;
+  /** og:type */
+  type?: 'website' | 'music.song';
   noindex?: boolean;
 }
 const { title, description = SITE.description, jsonLd, bare = false, type = 'website', noindex = false } = Astro.props;
@@ -23,9 +26,9 @@ const fullTitle = title ? `${title} · ${SITE.shortTitle}` : SITE.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const path = Astro.url.pathname;
 const nav = [
-  { href: '/songs/', label: 'Songs', match: ['/songs/'] },
-  { href: '/browse/', label: 'Browse', match: ['/browse/', ...TAXONOMY_KEYS.map((key) => `/${key}/`)] },
-  { href: '/glossary/', label: 'Glossary', match: ['/glossary/'] },
+  { href: PAGES.songs, label: 'Songs', match: [PAGES.songs] },
+  { href: PAGES.browse, label: 'Browse', match: [PAGES.browse, ...TAXONOMY_KEYS.map((key) => facetUrl(key))] },
+  { href: PAGES.glossary, label: 'Glossary', match: [PAGES.glossary] },
 ];
 ---
 
@@ -40,22 +43,25 @@ const nav = [
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="alternate" type="application/json" href="/api/songs.json" title="Songbook data (JSON)" />
-    <meta name="theme-color" content="#f8f6ee" />
+    <link rel="alternate" type="application/json" href={SONGS_JSON_URL} title="Songbook data (JSON)" />
+    <meta name="theme-color" content={SITE.themeColor} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={type} />
-    <meta property="og:image" content={new URL('/icon-512.png', Astro.site)} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={new URL(SITE.icon.src, Astro.site)} />
     <meta property="og:url" content={canonical} />
-    <script is:inline>
+    <meta name="twitter:card" content="summary" />
+    <script is:inline define:vars={{ keys: STORAGE_KEYS, minScale: MIN_SCALE, maxScale: MAX_SCALE }}>
       // Apply saved reading preferences before first paint so nothing flickers.
+      // (Inline, so it can't import: src/scripts/song-page.ts saves them.)
       try {
-        const d = document.documentElement;
-        if (localStorage.getItem('translation') === '0') d.classList.add('hide-translation');
-        const s = Number(localStorage.getItem('lyric-scale'));
-        if (s) d.style.setProperty('--lyric-scale', String(s));
-      } catch {}
+        const html = document.documentElement;
+        if (localStorage.getItem(keys.translation) === '0') html.classList.add('hide-translation');
+        const scale = Number(localStorage.getItem(keys.lyricScale));
+        if (scale) html.style.setProperty('--lyric-scale', String(Math.min(maxScale, Math.max(minScale, scale))));
+      } catch {
+        // Storage can be blocked (private mode, strict settings): keep the defaults.
+      }
     </script>
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
@@ -64,15 +70,15 @@ const nav = [
     <div class="corda" aria-hidden="true"></div>
     <header class="site-header">
       <div class="wrap bar">
-        <a href="/" class="logo">
+        <a href={PAGES.home} class="logo">
           <span class="wordmark">{SITE.shortTitle}</span>
           <span class="eyebrow sage">cantigas de capoeira</span>
         </a>
         <nav aria-label="Main">
           {
-            nav.map((n) => (
-              <a href={n.href} aria-current={n.match.some((m) => path.startsWith(m)) ? 'page' : undefined}>
-                {n.label}
+            nav.map((item) => (
+              <a href={item.href} aria-current={item.match.some((prefix) => path.startsWith(prefix)) ? 'page' : undefined}>
+                {item.label}
               </a>
             ))
           }
@@ -98,8 +104,8 @@ const nav = [
           <a href={SITE.licenseUrl}>{SITE.license}</a>
         </p>
         <p class="links">
-          <a href="/about/">About &amp; open data</a>
-          <a href="/api/songs.json">JSON</a>
+          <a href={PAGES.about}>About &amp; open data</a>
+          <a href={SONGS_JSON_URL}>JSON</a>
           <span>Iê, axé!</span>
         </p>
       </div>
@@ -120,7 +126,11 @@ const nav = [
 
     <script>
       if ('serviceWorker' in navigator && import.meta.env.PROD) {
-        addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+        addEventListener('load', () =>
+          navigator.serviceWorker
+            .register('/sw.js')
+            .catch((e: unknown) => console.warn('Offline mode is off: the service worker did not register.', e)),
+        );
       }
     </script>
   </body>

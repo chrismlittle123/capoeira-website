@@ -59,6 +59,16 @@ export function facetIds(song: Song, key: TaxonomyKey): string[] {
   return song.data[key].map((r) => r.id);
 }
 
+/** The songs that reference one entry of a facet. */
+export function songsWith(songs: Song[], key: TaxonomyKey, id: string): Song[] {
+  return songs.filter((s) => facetIds(s, key).includes(id));
+}
+
+/** How many recordings the songs have between them. */
+export function recordingCount(songs: Song[]): number {
+  return songs.reduce((n, s) => n + s.data.recordings.length, 0);
+}
+
 /** A taxonomy's entries, by name. */
 export async function getTaxonomy<K extends TaxonomyKey>(key: K): Promise<CollectionEntry<K>[]> {
   const entries = (await getCollection(key)) as CollectionEntry<K>[];
@@ -97,12 +107,4 @@ export function mediaBadge(song: Song): { icon: string; label: string } | undefi
   if (kinds.has('youtube')) return { icon: '▶', label: 'watch' };
   if (kinds.has('audio')) return { icon: '♪', label: 'listen' };
   return undefined;
-}
-
-export function songUrl(id: string): string {
-  return `/songs/${id}/`;
-}
-
-export function facetUrl(key: TaxonomyKey, id?: string): string {
-  return `/${key}/${id ? `${id}/` : ''}`;
 }

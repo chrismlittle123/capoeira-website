@@ -1,5 +1,8 @@
 ---
+// The song search box, with optional difficulty filters; the behaviour is in src/scripts/search.ts.
 import Icon from './Icon.astro';
+import LevelDots from './LevelDots.astro';
+import { PAGES } from '../lib/urls';
 import { getSongs, lyricsOf } from '../lib/songs';
 import { DIFFICULTY, difficulty } from '../lib/lyrics';
 
@@ -20,7 +23,7 @@ for (const s of songs) {
 ---
 
 <div class="search" data-search data-inline={inline || undefined} data-sync-url={syncUrl || undefined}>
-  <form role="search" action="/" method="get">
+  <form role="search" action={PAGES.home} method="get">
     <label for={id} class="sr-only">Search songs</label>
     <span class="glass"><Icon name="search" size={24} /></span>
     <input
@@ -41,10 +44,8 @@ for (const s of songs) {
       <ul class="chips filters" aria-label="Filter by difficulty">
         {DIFFICULTY.filter((d) => levelCounts.get(d.level)).map((d) => (
           <li>
-            <button type="button" class="chip level" data-level={d.id} data-label={d.label} aria-pressed="false">
-              <span class="dots" aria-hidden="true">
-                {[1, 2, 3].map((i) => <i class:list={[i <= d.level && 'on']} />)}
-              </span>
+            <button type="button" class="chip level" data-level={d.id} aria-pressed="false">
+              <LevelDots level={d.level} />
               {d.label} <span class="count">{levelCounts.get(d.level)}</span>
             </button>
           </li>
@@ -117,21 +118,8 @@ for (const s of songs) {
   .filters {
     margin-top: 14px;
   }
-  .filters + .filters {
-    margin-top: 8px;
-  }
-  .level .dots {
-    display: inline-flex;
-    gap: 3px;
-  }
-  .level .dots i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    border: 1px solid currentColor;
-  }
-  .level .dots i.on {
-    background: currentColor;
+  .level {
+    --dot-color: currentColor;
   }
   .results :global(.dl) {
     letter-spacing: 0.1em;

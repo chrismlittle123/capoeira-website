@@ -1,0 +1,27 @@
+---
+// A difficulty level as filled dots out of the number of levels (●●○). Colour: --dot-color, gold by default.
+import { levelDots } from '../lib/lyrics';
+
+interface Props {
+  level: number;
+}
+const { level } = Astro.props;
+---
+
+<span class="dots" aria-hidden="true">{levelDots(level).map((on) => <i class:list={[on && 'on']} />)}</span>
+
+<style>
+  .dots {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--dot-color, var(--gold));
+  }
+  .dots i.on {
+    background: var(--dot-color, var(--gold));
+  }
+</style>

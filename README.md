@@ -112,7 +112,7 @@ R2) and use full `https://` URLs in `file:` — everything else keeps working.
 
 - **Search** (`/` or ⌘K anywhere): accent-insensitive (`sao bento` → São Bento),
   typo-tolerant, matches titles, lyrics *and* English translations, shows the
-  matching line, filters by song type, shareable `?q=` URLs.
+  matching line, filters by difficulty, shareable `?q=` URLs.
 - **Song page**: call-and-response layout, translation toggle, text size, keep-screen-on
   (for reading in the roda), share, glossary popups, related songs.
 - **Player**: audio files and YouTube videos behind one set of controls. The cabaça is
