@@ -15,6 +15,7 @@ recordings:
   - youtube: https://www.youtube.com/watch?v=eKuvWMd1jtY
     title: Mestre Felipe
 added: 2026-10-28
+updated: 2026-10-29
 draft: false
 composer: Mestre Felipe & Mestre Claudio (attributed)
 ---
@@ -30,9 +31,9 @@ Na cidade de Santo Amaro
 > In the town of Santo Amaro
 
 ## Solo
-Foram os negros africanos
+Foi os negros africanos
 > It was the black Africans
-Quando foram recapturados
+Quando foi recapturados
 > When they were recaptured
 Trouxeram para a Bahia
 > They brought them to Bahia

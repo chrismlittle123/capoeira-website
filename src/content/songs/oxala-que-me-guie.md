@@ -11,6 +11,7 @@ summary: "A prayer to Oxalá to guide the singer all the way, and not let faith
 translationReviewed: false
 sources: []
 added: 2026-10-28
+updated: 2026-10-29
 draft: false
 composer: Olho de Gato (Abadá-Capoeira)
 recordings:
@@ -27,6 +28,17 @@ Aruanda ê, camará
 > Aruanda, eh, comrade
 
 ## Solo
+Vem de dentro do peito
+> It comes from deep in my chest
+Essa chama que acende
+> This flame that lights up
+Meu corpo inteiro não pode parar
+> My whole body can't stop
+Eu sou mandingueiro de lá da Bahia
+> I'm a mandingueiro from Bahia
+Axé capoeira, salve Abadá
+> Axé, capoeira — hail Abadá
+
 Oxalá que me guie
 > Oxalá, guide me
 Por todo caminho

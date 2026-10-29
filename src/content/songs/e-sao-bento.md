@@ -6,6 +6,9 @@ themes: [ the-sea, faith ]
 people: [ sao-bento ]
 places: []
 summary: "A plea to São Bento to put the singer's boat into the wind so it can sail."
+about: |
+  Also sung "Ê São Bento, joga meu barco no vento" ("throw my boat into the
+  wind"), as in the reference video; this page follows the class version.
 translationReviewed: false
 sources: []
 recordings:

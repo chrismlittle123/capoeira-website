@@ -17,6 +17,7 @@ recordings:
     start: "2:08"
     end: "2:45"
 added: 2026-10-28
+updated: 2026-10-29
 draft: false
 ---
 
@@ -35,5 +36,14 @@ Beira-mar, beira-mar
 > It belongs to ioiô
 Beira-mar, beira-mar
 > Seashore, seashore
++ É de iaiá
+> It belongs to iaiá
+
+Beira-mar, ioiô
+> Seashore, ioiô
++ É de ioiô
+> It belongs to ioiô
+Beira-mar, iaiá
+> Seashore, iaiá
 + É de iaiá
 > It belongs to iaiá

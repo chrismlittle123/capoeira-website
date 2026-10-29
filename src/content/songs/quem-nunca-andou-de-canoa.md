@@ -16,6 +16,7 @@ recordings:
   - file: /audio/quem-nunca-andou-de-canoa/quem-nunca-andou-de-canoa.m4a
     title: Class recording
 added: 2026-10-28
+updated: 2026-10-29
 draft: false
 ---
 
@@ -30,7 +31,7 @@ Não sabe o que é vadiar
 > Doesn't know what it is to vadiar
 
 ## Coro
-Vadiar, vadiar, vadiar
-> Vadiar, vadiar, vadiar
+Vadiar, vadiar
+> Vadiar, vadiar
 Não sabe o que é vadiar
 > Doesn't know what it is to vadiar

@@ -9,9 +9,11 @@ about: |
   (marimbondo); the answer is a warning that capoeira is dangerous to whoever
   underestimates it.
 added: 2026-10-28
+updated: 2026-10-29
 recordings:
   - youtube: https://www.youtube.com/watch?v=-SufUq4M0EY
     title: Reference video
+translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/zum-zum-zum-capoeira-mata-um.html
   - https://www.lalaue.com/capoeira-music/zum-zum-zum/
@@ -28,3 +30,10 @@ Onde tem marimbondo?
 > Where are the wasps?
 + É zum zum zum
 > It's buzz buzz buzz
+
+O a o a e
+> O a o a e
+Quero ver bater
+> I want to see them strike
+Quero ver cair
+> I want to see them fall

@@ -17,6 +17,7 @@ recordings:
   - youtube: https://www.youtube.com/watch?v=mjqG0UlpTb8
     title: La Laue
 added: 2026-10-28
+updated: 2026-10-29
 sources:
   - https://capoeira.cafe/marinheiro-so/
   - https://www.lalaue.com/capoeira-music/marinheiro-so/
@@ -48,7 +49,7 @@ Quem te ensinou a nadar?
 > Who taught you to swim?
 + Marinheiro só
 > Lonely sailor
-Foi o tombo do navio
+Ou foi o tombo do navio
 > Was it the tumbling of the ship
 + Marinheiro só
 > Lonely sailor
