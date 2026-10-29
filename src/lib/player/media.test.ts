@@ -28,6 +28,9 @@ test('toSeconds reads seconds, m:ss, h:mm:ss and 1h2m3s; anything else is NaN', 
   assert.equal(toSeconds('1:02:03'), 3723);
   assert.equal(toSeconds('1m30s'), 90);
   assert.equal(toSeconds('1h2m3s'), 3723);
+  assert.ok(Number.isNaN(toSeconds('1:75')));
+  assert.ok(Number.isNaN(toSeconds('1:5')));
+  assert.ok(Number.isNaN(toSeconds('1:60:00')));
   assert.ok(Number.isNaN(toSeconds('soon')));
   assert.ok(Number.isNaN(toSeconds('')));
 });

@@ -59,7 +59,7 @@ added: 2026-10-28
 > (the coro answers)
 ```
 
-- `## Coro` (or Chorus/Resposta) = everyone answers; any other heading (`## Solo`,
+- `## Coro` (or Chorus/Resposta/Response/Refrão) = everyone answers; any other heading (`## Solo`,
   `## Ladainha`, …) = the lead singer. Alternate them freely for call-and-response.
 - `+ ` at the start of a line = the coro answers inside a solo section (keeps
   short call-and-response songs compact).

@@ -1,7 +1,7 @@
 /*
  * Lyrics are written in the song's Markdown body:
  *
- *   ## Coro                 ← starts a section; "Coro"/"Chorus"/"Resposta" = everyone answers
+ *   ## Coro                 ← starts a section; "Coro"/"Chorus"/"Resposta"/"Response"/"Refrão" = everyone answers
  *   [0:12] Paranauê, paraná ← optional [m:ss] timestamp syncs the line to the recording
  *   > Paranauê, Paraná      ← "> " gives the translation of the line above
  *                           ← blank line = new stanza

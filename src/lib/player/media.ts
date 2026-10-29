@@ -24,7 +24,8 @@ export function toSeconds(v: string | number): number {
   if (typeof v === 'number') return v;
   const s = v.trim();
   if (/^\d+(\.\d+)?$/.test(s)) return Number(s);
-  if (/^\d+(:\d{1,2}){1,2}$/.test(s)) return s.split(':').reduce((acc, n) => acc * 60 + Number(n), 0);
+  // m:ss or h:mm:ss: each field after a colon is two digits, 00–59, so "1:75" or "1:5" is a typo
+  if (/^\d+(:[0-5]\d){1,2}$/.test(s)) return s.split(':').reduce((acc, n) => acc * 60 + Number(n), 0);
   const m = s.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
   if (m && m[0]) return Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0);
   return NaN;
