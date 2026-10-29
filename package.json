@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "new-song": "node scripts/new-song.mjs",
+    "new-song": "node scripts/new-song.ts",
     "check": "astro check",
     "postinstall": "astro sync",
     "test": "node --test 'src/**/*.test.ts'",
