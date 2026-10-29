@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseLyrics, allLines, hasTranslation, hookLine, plainText, difficulty } from './lyrics.ts';
+import { parseLyrics, allLines, hasTranslation, hookLine, plainText, difficulty, levelDots } from './lyrics.ts';
 
 test('sections: a coro heading is sung by everyone, any other by the lead; lines before a heading are solo', () => {
   const sections = parseLyrics('Eu não sou daqui\n\n## Coro\nParanauê\n\n## Verse\nMarinheiro só');
@@ -55,4 +55,8 @@ test('difficulty counts the words of distinct lines, ignoring repeats and (x2)',
   assert.equal(difficulty(parseLyrics(sixteen)).id, 'medium');
   const many = Array.from({ length: 36 }, (_, i) => `w${i}`).join(' ');
   assert.deepEqual([difficulty(parseLyrics(many)).id, difficulty([]).id], ['hard', 'easy']);
+});
+
+test('levelDots fills one dot per level up to the given one', () => {
+  assert.deepEqual([levelDots(1), levelDots(3)], [[true, false, false], [true, true, true]]);
 });

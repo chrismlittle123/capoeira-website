@@ -1,6 +1,8 @@
 import MiniSearch, { type SearchResult } from 'minisearch';
 import { escapeHtml, highlight, queryTerms, searchTerm, snippet } from '../lib/search-text';
-import { DIFFICULTY } from '../lib/lyrics';
+import { DIFFICULTY, levelDots } from '../lib/lyrics';
+import { plural } from '../lib/text';
+import { SEARCH_INDEX_URL, songUrl } from '../lib/urls';
 import { parseSearchDocs, type SearchDoc } from '../lib/search-doc';
 import { required } from './dom';
 
@@ -26,7 +28,7 @@ interface Index {
 let indexPromise: Promise<Index> | undefined;
 
 function loadIndex() {
-  indexPromise ??= fetch('/search-index.json')
+  indexPromise ??= fetch(SEARCH_INDEX_URL)
     .then(async (r) => {
       if (!r.ok) throw new Error(`search index: HTTP ${r.status}`);
       return parseSearchDocs(await r.json());
@@ -52,8 +54,8 @@ function loadIndex() {
 
 function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
-  return `<li style="--i:${i}"><a class="card" href="/songs/${doc.id}/">
-    <div class="meta"><span class="dl" title="${escapeHtml(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(DIFFICULTY.length - doc.level)} ${escapeHtml(doc.levelLabel)}</span>${
+  return `<li style="--i:${i}"><a class="card" href="${songUrl(doc.id)}">
+    <div class="meta"><span class="dl" title="${escapeHtml(doc.levelLabel)}">${levelDots(doc.level).map((on) => (on ? '●' : '○')).join('')} ${escapeHtml(doc.levelLabel)}</span>${
       doc.media ? `<span class="has-audio">${escapeHtml(doc.media.icon)} ${escapeHtml(doc.media.label)}</span>` : ''
     }</div>
     <h3>${highlight(doc.title, terms)}</h3>
@@ -146,7 +148,7 @@ function init(root: HTMLElement) {
       .join('');
     const inLevel = level ? ` in ${escapeHtml(level.label)}` : '';
     status.innerHTML = hits.length
-      ? `${hits.length} song${hits.length === 1 ? '' : 's'}${inLevel}`
+      ? `${plural(hits.length, 'song', 'songs')}${inLevel}`
       : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${escapeHtml(q)}”${inLevel}. ${
           level ? 'Try clearing the filter, or' : 'Try'
         } fewer words — or just the coro.</small></span>`;
