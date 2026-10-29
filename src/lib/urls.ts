@@ -6,6 +6,8 @@ export const PAGES = { home: '/', songs: '/songs/', browse: '/browse/', glossary
 
 /** Every song as open data. */
 export const SONGS_JSON_URL = '/api/songs.json';
+/** For search engines. */
+export const SITEMAP_URL = '/sitemap.xml';
 /** Themes, people, places and the glossary as open data. */
 export const ONTOLOGY_JSON_URL = '/api/ontology.json';
 

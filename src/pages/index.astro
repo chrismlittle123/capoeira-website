@@ -69,7 +69,7 @@ const recordings = recordingCount(songs);
               <a class="card theme" href={facetUrl('themes', t.id)}>
                 <span class="emoji" aria-hidden="true">{t.data.emoji}</span>
                 <span class="name">{t.data.name}</span>
-                <span class="count">{n} {n === 1 ? 'song' : 'songs'}</span>
+                <span class="count">{plural(n, 'song', 'songs')}</span>
               </a>
             </li>
           ))
