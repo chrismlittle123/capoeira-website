@@ -73,6 +73,9 @@ const recording = z
     youtube: z
       .string()
       .refine((u) => !!youtubeId(u), { error: (iss) => `not a YouTube video link: ${String(iss.input)}` })
+      .refine((u) => !Number.isNaN(youtubeStart(u) ?? 0), {
+        error: (iss) => `can't read the start time in this YouTube link — use ?t=90 or ?t=1m30s: ${String(iss.input)}`,
+      })
       .optional(),
     // Play only part of the media, e.g. a song inside a long roda video.
     start: time.optional(),

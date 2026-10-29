@@ -28,11 +28,12 @@ test('toSeconds reads seconds, m:ss, h:mm:ss and 1h2m3s; anything else is NaN', 
   assert.ok(Number.isNaN(toSeconds('')));
 });
 
-test('youtubeStart reads t= or start=, else undefined, and never throws on a bad link', () => {
+test('youtubeStart reads t= or start=, else undefined; an unreadable one is NaN; it never throws on a bad link', () => {
   assert.equal(youtubeStart('https://youtu.be/dQw4w9WgXcQ?t=1m30s'), 90);
   assert.equal(youtubeStart('https://www.youtube.com/watch?v=dQw4w9WgXcQ&start=45'), 45);
   assert.equal(youtubeStart('https://youtu.be/dQw4w9WgXcQ'), undefined);
   assert.equal(youtubeStart('not a url'), undefined);
+  assert.ok(Number.isNaN(youtubeStart('https://youtu.be/dQw4w9WgXcQ?t=abc') ?? 0));
 });
 
 test('formatTime gives m:ss, and a dash for no time', () => {

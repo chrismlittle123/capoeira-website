@@ -15,7 +15,7 @@ export function toSeconds(v: string | number): number {
   return NaN;
 }
 
-/** Start time encoded in a YouTube link (?t=90, ?t=1m30s, &start=90). */
+/** Start time encoded in a YouTube link (?t=90, ?t=1m30s, &start=90): undefined when there's none, NaN when it can't be read. */
 export function youtubeStart(url: string) {
   try {
     const p = new URL(url).searchParams;
