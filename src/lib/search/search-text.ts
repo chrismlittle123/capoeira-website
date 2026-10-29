@@ -1,5 +1,10 @@
-/** Text handling for the song search (src/scripts/search.ts): query terms, highlighting, snippets. */
+/**
+ * Matching typed text for the song search (src/scripts/search.ts: query terms, highlighting,
+ * snippets, why a song matched) and the glossary filter (src/scripts/glossary-filter.ts).
+ */
 import { fold } from '../normalize.ts';
+import { escapeHtml } from '../text.ts';
+import { FACET_LABELS, TEXT_FIELDS, type FacetField } from './search-doc.ts';
 
 // Filler words that would otherwise make every song match an English query.
 const STOP = new Set(['i', 'a', 'the', 'to', 'of', 'and', 'my', 'is', 'it', 'in', 'on', 'me', 'you', 'im']);
@@ -10,14 +15,11 @@ export const searchTerm = (word: string) => {
   return f.length < 2 || STOP.has(f) ? null : f;
 };
 
-export const queryTerms = (q: string) =>
-  q
-    .split(/[^\p{L}\p{N}]+/u)
-    .map(searchTerm)
-    .filter((t): t is string => !!t);
+// Typed text splits into words at anything that isn't a letter or digit: "ginga," is "ginga".
+const words = (s: string) => fold(s).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 
-const HTML_ENTITIES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-export const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => HTML_ENTITIES[c] ?? c);
+/** The words of a search query worth matching on, folded. */
+export const queryTerms = (q: string) => words(q).map(searchTerm).filter((t): t is string => !!t);
 
 /** Fold `text` char-by-char, remembering which original char each folded char came from. */
 function foldWithMap(text: string) {
@@ -95,17 +97,9 @@ export function snippet(doc: { title: string; hook: string; lines: string[] }, t
 
 /** Does `folded` (already folded text) contain every word of `query`, accents optional? An empty query matches. */
 export function containsAllWords(folded: string, query: string) {
-  return fold(query)
-    .split(/\s+/)
-    .filter(Boolean)
-    .every((w) => folded.includes(w));
+  return words(query).every((w) => folded.includes(w));
 }
 
-/** The search index's text fields: a match in one of these is in the song itself. */
-export const TEXT_FIELDS = ['title', 'alt', 'hook', 'lyrics', 'translation'] as const;
-/** The index's facet fields, with how a match through one is labelled. */
-export const FACET_LABELS = { themes: 'Theme', people: 'People', places: 'Place' } as const;
-type FacetField = keyof typeof FACET_LABELS;
 const isTextField = (f: string) => (TEXT_FIELDS as readonly string[]).includes(f);
 const isFacetField = (f: string): f is FacetField => f in FACET_LABELS;
 

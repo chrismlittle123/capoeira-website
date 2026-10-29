@@ -1,14 +1,13 @@
 /** Facts the song page derives from a song's data: who wrote it, and which songs to sing next. */
+import type { CollectionEntry } from 'astro:content';
 import { TAXONOMY_KEYS, type TaxonomyKey } from './facets.ts';
 
 /** The capoeira styles a song can belong to (checked by src/content.config.ts), with display names. */
 export const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
 export const STYLES = ['angola', 'regional', 'contemporanea'] as const satisfies readonly (keyof typeof STYLE_NAMES)[];
 
-export interface Origin {
-  origin: 'traditional' | 'composed' | 'unknown';
-  composer?: string;
-}
+/** Where a song comes from, as its frontmatter says (src/content.config.ts). */
+export type Origin = Pick<CollectionEntry<'songs'>['data'], 'origin' | 'composer'>;
 
 /** "Traditional", "By Mestre X", "Composed (author unknown)" or "Origin unknown". */
 export function originText({ origin, composer }: Origin): string {

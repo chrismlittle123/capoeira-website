@@ -3,7 +3,7 @@
 // (src/scripts/glossary-popover.ts).
 import { getCollection } from 'astro:content';
 import type { LyricSection } from '../lib/lyrics/lyrics';
-import { glossaryLinker } from '../lib/lyrics/glossary-links';
+import { GLOSS_POPOVER_ID, glossaryLinker } from '../lib/lyrics/glossary-links';
 import { formatTime } from '../lib/player/media';
 import { LOCALE } from '../lib/normalize';
 
@@ -62,7 +62,7 @@ const glossaryJson = JSON.stringify(Object.fromEntries(usedTerms.map((g) => [g.i
     <script is:inline type="application/json" id="glossary-data" set:html={glossaryJson} />
   )
 }
-<div class="gloss-pop" id="gloss-pop" aria-live="polite" hidden></div>
+<div class="gloss-pop" id={GLOSS_POPOVER_ID} aria-live="polite" hidden></div>
 
 <script>
   import '../scripts/glossary-popover';

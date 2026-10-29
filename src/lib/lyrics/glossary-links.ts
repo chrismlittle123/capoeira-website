@@ -1,5 +1,7 @@
 /** Linking glossary words inside lyrics (src/components/Lyrics.astro). */
-import { escapeHtml } from '../search/search-text.ts';
+import * as z from 'zod/mini';
+import { parseData } from '../data.ts';
+import { escapeHtml } from '../text.ts';
 import { LOCALE } from '../normalize.ts';
 
 export interface GlossaryWord {
@@ -7,6 +9,9 @@ export interface GlossaryWord {
   /** the headword and its other spellings/inflections */
   forms: string[];
 }
+
+/** The id of the popover (in src/components/Lyrics.astro) that a glossary word opens. */
+export const GLOSS_POPOVER_ID = 'gloss-pop';
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -34,7 +39,7 @@ export function glossaryLinker(words: GlossaryWord[]) {
       used.add(id);
       out +=
         escapeHtml(text.slice(last, m.index)) +
-        `<span class="gloss" role="button" tabindex="0" aria-expanded="false" aria-controls="gloss-pop" data-term="${escapeHtml(id)}">${escapeHtml(m[0])}</span>`;
+        `<span class="gloss" role="button" tabindex="0" aria-expanded="false" aria-controls="${GLOSS_POPOVER_ID}" data-term="${escapeHtml(id)}">${escapeHtml(m[0])}</span>`;
       last = m.index + m[0].length;
     }
     return out + escapeHtml(text.slice(last));
@@ -42,23 +47,12 @@ export function glossaryLinker(words: GlossaryWord[]) {
   return { link, used };
 }
 
+// Each entry carries more (its forms); the popover needs only these, and the rest is dropped.
+const glossaryData = z.record(z.string(), z.object({ term: z.string(), definition: z.string() }));
+
 /** A glossary word as the lyrics page embeds it for its popover. */
-export interface GlossaryEntry {
-  term: string;
-  definition: string;
-}
+export type GlossaryEntry = z.infer<typeof glossaryData>[string];
 
-const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
-
-/** The page's id → entry map (#glossary-data); throws when it isn't one. */
-export function parseGlossaryData(data: unknown): Map<string, GlossaryEntry> {
-  if (!isRecord(data)) throw new Error('glossary data: expected a map of id → entry');
-  const entries = new Map<string, GlossaryEntry>();
-  for (const [id, g] of Object.entries(data)) {
-    if (!isRecord(g) || typeof g.term !== 'string' || typeof g.definition !== 'string') {
-      throw new Error(`glossary data: "${id}" needs a term and a definition`);
-    }
-    entries.set(id, { term: g.term, definition: g.definition });
-  }
-  return entries;
-}
+/** The page's id → entry map (#glossary-data); throws, naming the bad entry, when it isn't one. */
+export const parseGlossaryData = (data: unknown) =>
+  new Map(Object.entries(parseData(glossaryData, data, 'The glossary data')));

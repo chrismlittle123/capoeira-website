@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { containsAllWords, escapeHtml, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from './search-text.ts';
+import { containsAllWords, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from './search-text.ts';
 
 test('searchTerm folds a word, and drops one-letter and filler words', () => {
   assert.equal(searchTerm('Iê'), 'ie');
@@ -12,10 +12,6 @@ test('searchTerm folds a word, and drops one-letter and filler words', () => {
 test('queryTerms splits on anything that is not a letter or digit', () => {
   assert.deepEqual(queryTerms('  São Bento, the  grande!'), ['sao', 'bento', 'grande']);
   assert.deepEqual(queryTerms(''), []);
-});
-
-test('escapeHtml escapes the five HTML-special characters', () => {
-  assert.equal(escapeHtml(`<a href="x">Tom & Jerry's</a>`), '&lt;a href=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/a&gt;');
 });
 
 test('highlight marks words that start with a term, accent-insensitively, and escapes the rest', () => {
@@ -32,8 +28,9 @@ test('snippet picks the line matching the most terms, else the hook', () => {
   assert.equal(snippet(doc, ['mae']), 'Vou dizer a minha mãe');
   assert.equal(snippet(doc, ['minha', 'mae']), 'Vou dizer a minha mãe');
   assert.equal(snippet(doc, ['nada']), doc.hook);
-  // the title matches better than any line: show the hook
+  // the title matches as many terms as the best line: the line still wins
   assert.equal(snippet(doc, ['paranaue', 'mae']), 'Vou dizer a minha mãe');
+  // the title matches more terms than any line: show the hook
   assert.equal(snippet({ ...doc, title: 'Paranauê minha mãe' }, ['paranaue', 'minha', 'mae', 'x']), doc.hook);
 });
 
@@ -43,6 +40,7 @@ test('containsAllWords needs every word somewhere in the text, in any order, acc
   assert.ok(containsAllWords(text, 'sway'));
   assert.ok(!containsAllWords(text, 'ginga roda'));
   assert.ok(containsAllWords(text, '   '));
+  assert.ok(containsAllWords(text, 'ginga, capoeira!'));
 });
 
 test('whyMatchedHtml names the facets a song matched through, only when some word is in no text field', () => {

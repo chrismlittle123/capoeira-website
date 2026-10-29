@@ -34,6 +34,6 @@ test('parseGlossaryData reads the embedded entries, keeping only term and defini
 });
 
 test('parseGlossaryData refuses anything else, naming the bad entry', () => {
-  assert.throws(() => parseGlossaryData([]), /expected a map/);
-  assert.throws(() => parseGlossaryData({ ginga: { term: 'ginga' } }), /"ginga"/);
+  assert.throws(() => parseGlossaryData([]), /glossary data/);
+  assert.throws(() => parseGlossaryData({ ginga: { term: 'ginga' } }), /ginga\.definition/);
 });

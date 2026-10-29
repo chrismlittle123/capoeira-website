@@ -175,8 +175,7 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
   let pendingSeek: number | undefined;
 
   const create = (t: Take, autoplay: boolean) => {
-    // parseTakes guarantees a YouTube take its id
-    if (!t.videoId) return;
+    if (t.kind !== 'youtube') return;
     // Insert the embed straight away, inside the user's tap, so the video starts even
     // before YouTube's control script has loaded (iOS only autoplays from a gesture).
     const params = new URLSearchParams({
@@ -241,7 +240,7 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
       frame.innerHTML = '';
       poster?.removeAttribute('hidden');
       const img = poster?.querySelector('img');
-      if (img && t.videoId) img.src = youtubeThumbnailUrl(t.videoId);
+      if (img && t.kind === 'youtube') img.src = youtubeThumbnailUrl(t.videoId);
     },
     play() {
       if (!take) return;

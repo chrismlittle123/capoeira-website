@@ -1,8 +1,9 @@
+/** Reading the songbook's content collections at build time: songs, taxonomies, and the reference check. */
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { parseLyrics, hookLine, type LyricSection } from '../lyrics/lyrics';
-import { TAXONOMY_KEYS, type TaxonomyKey } from './facets';
-import { compareText } from '../normalize';
-import { brokenReferences, oncePerBuild, type Ref } from './references';
+import { parseLyrics, hookLine, type LyricSection } from '../lyrics/lyrics.ts';
+import { TAXONOMY_KEYS, type TaxonomyKey } from './facets.ts';
+import { compareText } from '../normalize.ts';
+import { brokenReferences, oncePerBuild, type Ref } from './references.ts';
 
 export type Song = CollectionEntry<'songs'>;
 

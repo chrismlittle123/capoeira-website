@@ -23,7 +23,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
       <div class="video" data-video hidden={first.kind !== 'youtube'}>
         <button type="button" class="poster" data-poster aria-label="Play video">
           <img
-            src={first.videoId ? youtubeThumbnailUrl(first.videoId) : undefined}
+            src={first.kind === 'youtube' ? youtubeThumbnailUrl(first.videoId) : undefined}
             alt=""
             loading="lazy"
             decoding="async"

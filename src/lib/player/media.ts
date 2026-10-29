@@ -49,6 +49,12 @@ export function mediaBadge(recordings: { kind: MediaKind }[]): { icon: string; l
   return undefined;
 }
 
+/** A link to another site, rather than a file in public/. */
+export const isRemoteUrl = (p: string) => /^https?:\/\//.test(p);
+
+/** Where an audio file is served from: "audio/x.m4a" → "/audio/x.m4a"; links to other sites are kept as they are. */
+export const audioSitePath = (p: string) => (isRemoteUrl(p) || p.startsWith('/') ? p : `/${p}`);
+
 /** Seconds as m:ss for the player, or a dash when there's no time yet. */
 export const formatTime = (t: number) =>
   Number.isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}` : '–:––';

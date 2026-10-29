@@ -73,7 +73,7 @@ export function parseLyrics(body: string): LyricSection[] {
       const m = rest.match(TIME);
       stanza.push({
         text: m ? rest.slice(m[0].length) : rest,
-        time: m ? Number(m[1]) * 60 + Number(m[2]) : undefined,
+        ...(m && { time: Number(m[1]) * 60 + Number(m[2]) }),
         ...(coro && { coro: true }),
       });
     }

@@ -1,5 +1,5 @@
 /** The site's URLs, built in one place (safe to import in the browser). */
-import type { TaxonomyKey } from './facets';
+import type { TaxonomyKey } from './facets.ts';
 
 /** The fixed pages. */
 export const PAGES = { home: '/', songs: '/songs/', browse: '/browse/', glossary: '/glossary/', about: '/about/' } as const;

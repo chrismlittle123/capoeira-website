@@ -2,7 +2,7 @@ import { defineCollection, reference } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
-import { toSeconds, youtubeId, youtubeStart } from './lib/player/media';
+import { audioSitePath, isRemoteUrl, toSeconds, youtubeId, youtubeStart } from './lib/player/media';
 import { LOCALE } from './lib/normalize';
 import { PUBLIC_DIR, SONGS_DIR, dataFile } from './lib/content/paths';
 import { STYLES } from './lib/content/song-facts';
@@ -54,7 +54,7 @@ const glossary = defineCollection({
 const audioPath = z
   .string()
   .refine(
-    (p) => /^https?:\/\//.test(p) || existsSync(`${PUBLIC_DIR}${p.startsWith('/') ? '' : '/'}${p}`),
+    (p) => isRemoteUrl(p) || existsSync(`${PUBLIC_DIR}${audioSitePath(p)}`),
     { error: (iss) => `audio file not found in public/: ${String(iss.input)}` },
   );
 
@@ -97,7 +97,7 @@ const recording = z
     if (youtube && videoId && !file) {
       return { ...r, kind: 'youtube' as const, src: youtube, videoId, start: start ?? youtubeStart(youtube) ?? 0 };
     }
-    if (file && !youtube) return { ...r, kind: 'audio' as const, src: file, videoId: undefined, start: start ?? 0 };
+    if (file && !youtube) return { ...r, kind: 'audio' as const, src: audioSitePath(file), videoId: undefined, start: start ?? 0 };
     ctx.addIssue({ code: 'custom', message: 'each recording needs exactly one of `file:` or `youtube:`' });
     return z.NEVER;
   });

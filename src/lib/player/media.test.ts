@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { youtubeId, toSeconds, youtubeStart, formatTime, youtubeEmbedUrl, youtubeThumbnailUrl, mediaBadge } from './media.ts';
+import { youtubeId, toSeconds, youtubeStart, formatTime, youtubeEmbedUrl, youtubeThumbnailUrl, mediaBadge, audioSitePath } from './media.ts';
 
 test('youtubeId reads every link form, and nothing else', () => {
   const id = 'dQw4w9WgXcQ';
@@ -61,4 +61,10 @@ test('formatTime gives m:ss, and a dash for no time', () => {
 test('youtubeEmbedUrl and youtubeThumbnailUrl build the no-cookie embed and the large thumbnail', () => {
   assert.equal(youtubeEmbedUrl('dQw4w9WgXcQ'), 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ');
   assert.equal(youtubeThumbnailUrl('dQw4w9WgXcQ'), 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg');
+});
+
+test('audioSitePath serves a relative audio path from the site root and leaves links alone', () => {
+  assert.equal(audioSitePath('audio/a/b.m4a'), '/audio/a/b.m4a');
+  assert.equal(audioSitePath('/audio/a/b.m4a'), '/audio/a/b.m4a');
+  assert.equal(audioSitePath('https://cdn.example/d.m4a'), 'https://cdn.example/d.m4a');
 });
