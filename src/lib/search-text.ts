@@ -92,3 +92,11 @@ export function snippet(doc: { title: string; hook: string; lines: string[] }, t
   }
   return max && (max >= countHits(doc.title, terms) || max === terms.length) ? best : doc.hook;
 }
+
+/** Does `folded` (already folded text) contain every word of `query`, accents optional? An empty query matches. */
+export function containsAllWords(folded: string, query: string) {
+  return fold(query)
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((w) => folded.includes(w));
+}

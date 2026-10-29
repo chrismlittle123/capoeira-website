@@ -44,37 +44,7 @@ const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.local
 </Base>
 
 <script>
-  import { fold } from '../lib/normalize';
-
-  const form = document.querySelector<HTMLFormElement>('[data-glossary-search]');
-  const input = form?.querySelector('input');
-  const status = document.querySelector<HTMLElement>('[data-status]');
-  const items = [...document.querySelectorAll<HTMLElement>('[data-terms] > div')];
-
-  // Every word typed must appear somewhere in the term, its forms or its definition; accents optional.
-  function filter() {
-    if (!input || !status) return;
-    const words = fold(input.value).split(/\s+/).filter(Boolean);
-    let shown = 0;
-    for (const el of items) {
-      const text = el.dataset.text ?? '';
-      const hit = words.every((w) => text.includes(w));
-      el.hidden = !hit;
-      if (hit) shown++;
-    }
-    status.textContent = !words.length ? '' : shown ? `${shown} of ${items.length} terms` : 'No terms match.';
-    const url = new URL(location.href);
-    if (words.length) url.searchParams.set('q', input.value);
-    else url.searchParams.delete('q');
-    history.replaceState(null, '', url);
-  }
-
-  if (form && input) {
-    input.value = new URLSearchParams(location.search).get('q') ?? '';
-    input.addEventListener('input', filter);
-    form.addEventListener('submit', (e) => e.preventDefault());
-    if (input.value) filter();
-  }
+  import '../scripts/glossary-filter';
 </script>
 
 <style>

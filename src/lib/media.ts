@@ -4,6 +4,12 @@ const YT_ID = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|sh
 
 export const youtubeId = (url: string) => url.match(YT_ID)?.[1];
 
+/** The privacy-enhanced embed for a video, without parameters. */
+export const youtubeEmbedUrl = (videoId: string) => `https://www.youtube-nocookie.com/embed/${videoId}`;
+
+/** A video's large thumbnail. */
+export const youtubeThumbnailUrl = (videoId: string) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
 /** "90", "1:30", "1m30s", "1h2m3s" → seconds */
 export function toSeconds(v: string | number): number {
   if (typeof v === 'number') return v;

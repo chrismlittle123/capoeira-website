@@ -5,13 +5,12 @@ import Berimbau from '../components/Berimbau.astro';
 import RhythmGrid from '../components/RhythmGrid.astro';
 import SongCard from '../components/SongCard.astro';
 import Icon from '../components/Icon.astro';
-import { getSongs, getTaxonomy, facetIds } from '../lib/songs';
+import { getSongs, getTaxonomy, songsWith } from '../lib/songs';
 import { facetUrl } from '../lib/urls';
 
 const [songs, themes] = await Promise.all([getSongs(), getTaxonomy('themes')]);
 const recent = [...songs].sort((a, b) => +b.data.added - +a.data.added).slice(0, 6);
-const count = (key: 'themes', id: string) => songs.filter((s) => facetIds(s, key).includes(id)).length;
-const usedThemes = themes.map((t) => ({ t, n: count('themes', t.id) })).filter((x) => x.n);
+const usedThemes = themes.map((t) => ({ t, n: songsWith(songs, 'themes', t.id).length })).filter((x) => x.n);
 const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
 ---
 
@@ -83,13 +82,16 @@ const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
 <script>
   const btn = document.querySelector<HTMLButtonElement>('[data-random]');
   btn?.addEventListener('click', () => {
-    const ids: string[] = JSON.parse(btn.dataset.random!);
-    const id = ids[Math.floor(Math.random() * ids.length)];
+    const ids: unknown = JSON.parse(btn.dataset.random ?? '[]');
+    if (!Array.isArray(ids) || !ids.length) return;
+    const id: unknown = ids[Math.floor(Math.random() * ids.length)];
+    if (typeof id !== 'string') return;
     btn.classList.remove('spinning');
     void btn.offsetWidth; // restart the animation
     btn.classList.add('spinning');
     const go = () => (location.href = `/songs/${id}/`);
-    matchMedia('(prefers-reduced-motion: reduce)').matches ? go() : setTimeout(go, 600);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) go();
+    else setTimeout(go, 600); // let the cartwheel play first
   });
   // coming Back from the random song restores this page from cache mid-cartwheel
   addEventListener('pageshow', () => btn?.classList.remove('spinning'));

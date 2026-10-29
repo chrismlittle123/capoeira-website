@@ -10,6 +10,8 @@ import { facetUrl, songUrl } from '../../lib/urls';
 import { allLines, difficulty, hasTranslation, plainText } from '../../lib/lyrics';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { SITE } from '../../site.config';
+import { originText, relatedIds } from '../../lib/song-facts';
+import { youtubeEmbedUrl, youtubeThumbnailUrl } from '../../lib/media';
 
 export async function getStaticPaths() {
   const songs = await getSongs();
@@ -31,20 +33,15 @@ const level = difficulty(sections);
 const names = await getNames();
 const people = await getEntries(d.people);
 
-// Related: explicit links first, then shared themes/people/places.
+// Sing next: linked songs first, then ones sharing themes, people and places.
 const all = await getSongs();
-const explicit = new Set(d.related.map((r) => r.id));
-const WEIGHTS: [TaxonomyKey, number][] = [['themes', 3], ['people', 3], ['places', 2]];
-const score = (s: Song) =>
-  (explicit.has(s.id) || s.data.related.some((r) => r.id === song.id) ? 10 : 0) +
-  WEIGHTS.reduce((n, [k, w]) => n + w * facetIds(s, k).filter((id) => facetIds(song, k).includes(id)).length, 0);
-const related = all
-  .filter((s) => s.id !== song.id)
-  .map((s) => ({ s, n: score(s) }))
-  .filter((x) => x.n >= 2)
-  .sort((a, b) => b.n - a.n)
-  .slice(0, 4)
-  .map((x) => x.s);
+const relatable = (s: Song) => ({
+  id: s.id,
+  related: s.data.related.map((r) => r.id),
+  facets: { themes: facetIds(s, 'themes'), people: facetIds(s, 'people'), places: facetIds(s, 'places') },
+});
+const byId = new Map(all.map((s) => [s.id, s]));
+const related = relatedIds(relatable(song), all.map(relatable)).flatMap((id) => byId.get(id) ?? []);
 
 const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
 type Fact = { label: string; key?: TaxonomyKey; items: { id: string; name: string }[] };
@@ -56,16 +53,7 @@ const allFacts: Fact[] = [
 ];
 const facts = allFacts.filter((f) => f.items.length);
 
-const originText =
-  d.origin === 'traditional'
-    ? 'Traditional'
-    : d.origin === 'composed'
-      ? d.composer
-        ? `By ${d.composer}`
-        : 'Composed (author unknown)'
-      : d.composer
-        ? `By ${d.composer}`
-        : 'Origin unknown';
+const origin = originText(d);
 const nonEmpty = <T,>(a: T[]) => (a.length ? a : undefined);
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -87,8 +75,8 @@ const jsonLd = {
             video: {
               '@type': 'VideoObject',
               name: r.title ?? d.title,
-              embedUrl: `https://www.youtube-nocookie.com/embed/${r.videoId}`,
-              thumbnailUrl: `https://i.ytimg.com/vi/${r.videoId}/hqdefault.jpg`,
+              embedUrl: youtubeEmbedUrl(r.videoId),
+              thumbnailUrl: youtubeThumbnailUrl(r.videoId),
               url: r.src,
             },
           }
@@ -114,7 +102,7 @@ const translated = hasTranslation(sections);
       </nav>
       <p class="meta mono">
         <DifficultyBadge difficulty={level} />
-        <span>{originText}</span>
+        <span>{origin}</span>
       </p>
       {d.alternateTitles.length > 0 && <p class="alt">also sung as {d.alternateTitles.map((t) => `“${t}”`).join(', ')}</p>}
       {d.summary && <p class="summary">{d.summary}</p>}
@@ -205,7 +193,7 @@ const translated = hasTranslation(sections);
           }
           <div>
             <dt>Origin</dt>
-            <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : originText}</dd>
+            <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : origin}</dd>
           </div>
         </dl>
       </aside>

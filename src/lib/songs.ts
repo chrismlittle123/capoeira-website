@@ -59,6 +59,11 @@ export function facetIds(song: Song, key: TaxonomyKey): string[] {
   return song.data[key].map((r) => r.id);
 }
 
+/** The songs that reference one entry of a facet. */
+export function songsWith(songs: Song[], key: TaxonomyKey, id: string): Song[] {
+  return songs.filter((s) => facetIds(s, key).includes(id));
+}
+
 /** A taxonomy's entries, by name. */
 export async function getTaxonomy<K extends TaxonomyKey>(key: K): Promise<CollectionEntry<K>[]> {
   const entries = (await getCollection(key)) as CollectionEntry<K>[];

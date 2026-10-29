@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { escapeHtml, highlight, queryTerms, searchTerm, snippet } from './search-text.ts';
+import { containsAllWords, escapeHtml, highlight, queryTerms, searchTerm, snippet } from './search-text.ts';
 
 test('searchTerm folds a word, and drops one-letter and filler words', () => {
   assert.equal(searchTerm('Iê'), 'ie');
@@ -35,4 +35,12 @@ test('snippet picks the line matching the most terms, else the hook', () => {
   // the title matches better than any line: show the hook
   assert.equal(snippet(doc, ['paranaue', 'mae']), 'Vou dizer a minha mãe');
   assert.equal(snippet({ ...doc, title: 'Paranauê minha mãe' }, ['paranaue', 'minha', 'mae', 'x']), doc.hook);
+});
+
+test('containsAllWords needs every word somewhere in the text, in any order, accents optional', () => {
+  const text = 'ginga the basic swaying movement of capoeira';
+  assert.ok(containsAllWords(text, 'Gínga  capoeira'));
+  assert.ok(containsAllWords(text, 'sway'));
+  assert.ok(!containsAllWords(text, 'ginga roda'));
+  assert.ok(containsAllWords(text, '   '));
 });

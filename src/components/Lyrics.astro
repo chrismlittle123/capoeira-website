@@ -20,6 +20,8 @@ const rendered = sections.map((s) => ({
   stanzas: s.stanzas.map((st) => st.map((l) => ({ ...l, html: link(l.text) }))),
 }));
 const usedTerms = glossary.filter((g) => used.has(g.id));
+// The linked words' entries for the popover, with "<" escaped so the JSON can't end the script element early.
+const glossaryJson = JSON.stringify(Object.fromEntries(usedTerms.map((g) => [g.id, g.data]))).replace(/</g, '\\u003c');
 ---
 
 <div class="lyrics" data-lyrics>
@@ -56,7 +58,7 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
 
 {
   usedTerms.length > 0 && (
-    <script is:inline type="application/json" id="glossary-data" set:html={JSON.stringify(Object.fromEntries(usedTerms.map((g) => [g.id, g.data]))).replace(/</g, '\\u003c')} />
+    <script is:inline type="application/json" id="glossary-data" set:html={glossaryJson} />
   )
 }
 <div class="gloss-pop" id="gloss-pop" aria-live="polite" hidden></div>

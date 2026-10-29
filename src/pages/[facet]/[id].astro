@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
-import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, facetIds, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import type { CollectionEntry } from 'astro:content';
+import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, songsWith, entryFacts, type TaxonomyKey } from '../../lib/songs';
 import { facetUrl } from '../../lib/urls';
 
 export async function getStaticPaths() {
@@ -13,12 +14,17 @@ export async function getStaticPaths() {
   }
   return paths;
 }
-const { key, entry } = Astro.props as { key: TaxonomyKey; entry: Awaited<ReturnType<typeof getTaxonomy>>[number] };
+interface Props {
+  key: TaxonomyKey;
+  entry: CollectionEntry<TaxonomyKey>;
+}
+const { key, entry } = Astro.props;
 const facet = FACETS[key];
-const songs = await getSongs();
-const matching = songs.filter((s) => facetIds(s, key).includes(entry.id));
-const data = entry.data as Record<string, unknown> & { name: string; description?: string };
-const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).join(', ') : undefined;
+const matching = songsWith(await getSongs(), key, entry.id);
+const data = entry.data;
+const aka = 'aka' in data && data.aka.length ? data.aka.join(', ') : undefined;
+const emoji = 'emoji' in data ? data.emoji : undefined;
+const facts = entryFacts(data);
 ---
 
 <Base title={data.name} description={data.description ?? `Capoeira songs: ${data.name}`}>
@@ -26,12 +32,12 @@ const aka = Array.isArray(data.aka) && data.aka.length ? (data.aka as string[]).
     <header class="page-head">
       <p class="eyebrow"><a href={facetUrl(key)}>{facet.label}</a></p>
       <h1>
-        {typeof data.emoji === 'string' && <span class="emoji" aria-hidden="true">{`${data.emoji} `}</span>}{data.name}
+        {emoji && <span class="emoji" aria-hidden="true">{`${emoji} `}</span>}{data.name}
       </h1>
       {aka && <p class="muted">Also known as {aka}</p>}
-      {entryFacts(data).length > 0 && (
+      {facts.length > 0 && (
         <ul class="chips facts">
-          {entryFacts(data).map((f) => (
+          {facts.map((f) => (
             <li class="chip">{f}</li>
           ))}
         </ul>

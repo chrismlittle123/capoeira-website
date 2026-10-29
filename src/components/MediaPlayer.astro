@@ -3,6 +3,7 @@
 import Icon from './Icon.astro';
 import type { Song } from '../lib/songs';
 import { takesFor } from '../lib/playback';
+import { youtubeThumbnailUrl } from '../lib/media';
 
 interface Props {
   recordings: Song['data']['recordings'];
@@ -22,7 +23,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
       <div class="video" data-video hidden={first.kind !== 'youtube'}>
         <button type="button" class="poster" data-poster aria-label="Play video">
           <img
-            src={first.videoId ? `https://i.ytimg.com/vi/${first.videoId}/hqdefault.jpg` : undefined}
+            src={first.videoId ? youtubeThumbnailUrl(first.videoId) : undefined}
             alt=""
             loading="lazy"
             decoding="async"
@@ -133,6 +134,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
   }
   .poster {
     position: absolute;
+    z-index: 1;
     inset: 0;
     padding: 0;
     border: 0;
@@ -179,9 +181,6 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
      and swallow taps — the poster is what starts playback */
   .frame:empty {
     display: none;
-  }
-  .poster {
-    z-index: 1;
   }
   .poster[hidden] {
     display: none;

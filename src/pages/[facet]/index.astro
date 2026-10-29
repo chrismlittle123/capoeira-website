@@ -1,17 +1,20 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, facetIds, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, songsWith, entryFacts, type TaxonomyKey } from '../../lib/songs';
 import { facetUrl } from '../../lib/urls';
 
 export function getStaticPaths() {
   return TAXONOMY_KEYS.map((key) => ({ params: { facet: key }, props: { key } }));
 }
-const { key } = Astro.props as { key: TaxonomyKey };
+interface Props {
+  key: TaxonomyKey;
+}
+const { key } = Astro.props;
 const facet = FACETS[key];
 const [songs, entries] = await Promise.all([getSongs(), getTaxonomy(key)]);
 // entries that have songs first; empty ones stay listed (they explain the ontology) but dimmed
 const items = entries
-  .map((e) => ({ e, n: songs.filter((s) => facetIds(s, key).includes(e.id)).length }))
+  .map((e) => ({ e, n: songsWith(songs, key, e.id).length }))
   .sort((a, b) => Number(b.n > 0) - Number(a.n > 0));
 ---
 

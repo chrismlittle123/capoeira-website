@@ -2,6 +2,7 @@
 // The song search box, with optional difficulty filters; the behaviour is in src/scripts/search.ts.
 import Icon from './Icon.astro';
 import LevelDots from './LevelDots.astro';
+import { PAGES } from '../lib/urls';
 import { getSongs, lyricsOf } from '../lib/songs';
 import { DIFFICULTY, difficulty } from '../lib/lyrics';
 
@@ -22,7 +23,7 @@ for (const s of songs) {
 ---
 
 <div class="search" data-search data-inline={inline || undefined} data-sync-url={syncUrl || undefined}>
-  <form role="search" action="/" method="get">
+  <form role="search" action={PAGES.home} method="get">
     <label for={id} class="sr-only">Search songs</label>
     <span class="glass"><Icon name="search" size={24} /></span>
     <input

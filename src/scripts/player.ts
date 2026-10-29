@@ -1,4 +1,4 @@
-import { formatTime } from '../lib/media';
+import { formatTime, youtubeEmbedUrl, youtubeThumbnailUrl } from '../lib/media';
 import { SITE } from '../site.config';
 import { clampTime, lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/playback';
 import { required, requiredClosest } from './dom';
@@ -176,6 +176,8 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
   let pendingSeek: number | undefined;
 
   const create = (t: Take, autoplay: boolean) => {
+    // parseTakes guarantees a YouTube take its id
+    if (!t.videoId) return;
     // Insert the embed straight away, inside the user's tap, so the video starts even
     // before YouTube's control script has loaded (iOS only autoplays from a gesture).
     const params = new URLSearchParams({
@@ -188,7 +190,7 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
     });
     if (t.end) params.set('end', String(Math.ceil(t.end)));
     const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube-nocookie.com/embed/${t.videoId}?${params}`;
+    iframe.src = `${youtubeEmbedUrl(t.videoId)}?${params}`;
     iframe.title = t.label;
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     iframe.allowFullscreen = true;
@@ -240,7 +242,7 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
       frame.innerHTML = '';
       poster?.removeAttribute('hidden');
       const img = poster?.querySelector('img');
-      if (img && t.videoId) img.src = `https://i.ytimg.com/vi/${t.videoId}/hqdefault.jpg`;
+      if (img && t.videoId) img.src = youtubeThumbnailUrl(t.videoId);
     },
     play() {
       if (!take) return;
