@@ -1,4 +1,5 @@
 import { formatTime } from '../lib/media';
+import { SITE } from '../site.config';
 import { clampTime, lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/playback';
 import { required, requiredClosest } from './dom';
 
@@ -30,8 +31,6 @@ interface Events {
 
 // After the reader scrolls, leave the page where they put it for this long before following the song again.
 const SCROLL_PAUSE_MS = 3000;
-// The seek bar runs from 0 to SEEK_STEPS (its max in MediaPlayer.astro).
-const SEEK_STEPS = 1000;
 // Lock-screen skip back/forward, in seconds, when the system doesn't say.
 const SKIP_SECONDS = 5;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -296,6 +295,8 @@ export function initPlayer(root: HTMLElement) {
   const $ = <T extends HTMLElement>(sel: string) => required<T>(root, sel);
   const play = $<HTMLButtonElement>('[data-play]');
   const bar = $<HTMLInputElement>('[data-seek-bar]');
+  // the bar runs from 0 to its max
+  const seekSteps = Number(bar.max);
   const cur = $('[data-cur]');
   const dur = $('[data-dur]');
   const speedLabel = $('[data-speed-label]');
@@ -416,7 +417,7 @@ export function initPlayer(root: HTMLElement) {
     if (Number.isFinite(end) && t >= end && !e.paused && takes[index].kind === 'audio') return events.onEnd();
     const p = progress(t, start, end);
     if (!scrubbing) {
-      bar.value = String(Math.round(p * SEEK_STEPS));
+      bar.value = String(Math.round(p * seekSteps));
       root.style.setProperty('--p', String(p));
     }
     cur.textContent = formatTime(t);
@@ -440,14 +441,15 @@ export function initPlayer(root: HTMLElement) {
   bar.addEventListener('input', () => {
     scrubbing = true;
     const [start, end] = range();
-    const t = start + (Number(bar.value) / SEEK_STEPS) * ((end || 0) - start);
-    cur.textContent = formatTime(t);
-    root.style.setProperty('--p', String(Number(bar.value) / SEEK_STEPS));
+    const fraction = Number(bar.value) / seekSteps;
+    // until the length is known there's no time to show for a position
+    if (Number.isFinite(end)) cur.textContent = formatTime(start + fraction * (end - start));
+    root.style.setProperty('--p', String(fraction));
   });
   bar.addEventListener('change', () => {
     scrubbing = false;
     const [start, end] = range();
-    if (Number.isFinite(end)) engine().seek(start + (Number(bar.value) / SEEK_STEPS) * (end - start));
+    if (Number.isFinite(end)) engine().seek(start + (Number(bar.value) / seekSteps) * (end - start));
   });
 
   $<HTMLButtonElement>('[data-speed]').addEventListener('click', () => {
@@ -532,9 +534,9 @@ export function initPlayer(root: HTMLElement) {
       t.kind === 'audio'
         ? new MediaMetadata({
             title: root.dataset.title,
-            artist: t.performer ?? 'Capoeira Songs',
+            artist: t.performer ?? SITE.title,
             album: t.label,
-            artwork: [{ src: '/icon-512.png', sizes: '512x512', type: 'image/png' }],
+            artwork: [SITE.icon],
           })
         : null;
   }
