@@ -1,21 +1,39 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { fold } from '../lib/normalize';
 
 const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'pt'));
 ---
 
-<Base title="Glossary" description="Portuguese words you'll hear in capoeira songs, explained.">
+<Base title="Glossary" description="Capoeira words you'll hear in the roda and in the songs, explained.">
   <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">Vocabulário</p>
       <h1>Glossary</h1>
       <p class="muted">Words you'll hear in the roda. They're underlined in the lyrics — tap one to see what it means.</p>
     </header>
-    <dl class="terms stagger">
+    <form class="find" role="search" data-glossary-search>
+      <label for="term-q" class="sr-only">Search the glossary</label>
+      <span class="glass"><Icon name="search" size={22} /></span>
+      <input
+        id="term-q"
+        name="q"
+        type="search"
+        placeholder="Search terms…"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        enterkeyhint="search"
+      />
+    </form>
+    <p class="status muted" data-status aria-live="polite"></p>
+    <dl class="terms stagger" data-terms>
       {
         terms.map((t, i) => (
-          <div id={t.id} style={`--i:${i}`}>
+          <div id={t.id} style={`--i:${i}`} data-text={fold([t.data.term, ...t.data.forms, t.data.definition].join(' '))}>
             <dt lang="pt-BR">{t.data.term}</dt>
             <dd>{t.data.definition}</dd>
           </div>
@@ -25,6 +43,40 @@ const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.local
   </div>
 </Base>
 
+<script>
+  import { fold } from '../lib/normalize';
+
+  const form = document.querySelector<HTMLFormElement>('[data-glossary-search]');
+  const input = form?.querySelector('input');
+  const status = document.querySelector<HTMLElement>('[data-status]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-terms] > div')];
+
+  // Every word typed must appear somewhere in the term, its forms or its definition; accents optional.
+  function filter() {
+    if (!input || !status) return;
+    const words = fold(input.value).split(/\s+/).filter(Boolean);
+    let shown = 0;
+    for (const el of items) {
+      const text = el.dataset.text ?? '';
+      const hit = words.every((w) => text.includes(w));
+      el.hidden = !hit;
+      if (hit) shown++;
+    }
+    status.textContent = !words.length ? '' : shown ? `${shown} of ${items.length} terms` : 'No terms match.';
+    const url = new URL(location.href);
+    if (words.length) url.searchParams.set('q', input.value);
+    else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+  }
+
+  if (form && input) {
+    input.value = new URLSearchParams(location.search).get('q') ?? '';
+    input.addEventListener('input', filter);
+    form.addEventListener('submit', (e) => e.preventDefault());
+    if (input.value) filter();
+  }
+</script>
+
 <style>
   .page-head {
     padding: 40px 0 24px;
@@ -33,6 +85,43 @@ const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.local
   .page-head h1 {
     font-size: clamp(40px, 8vw, 64px);
     margin: 10px 0 8px;
+  }
+  .find {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 640px;
+  }
+  .glass {
+    position: absolute;
+    left: 16px;
+    color: var(--gold);
+    pointer-events: none;
+  }
+  .find input {
+    width: 100%;
+    height: 52px;
+    padding: 0 16px 0 48px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+    color: var(--text);
+    font: 400 18px/1 var(--font-ui);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .find input::placeholder {
+    color: var(--muted);
+  }
+  .find input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 14%, transparent);
+  }
+  .status {
+    min-height: 1.5em;
+    margin: 10px 0 14px;
   }
   .terms {
     display: grid;
@@ -45,6 +134,9 @@ const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.local
     border-radius: var(--radius);
     background: color-mix(in srgb, var(--surface) 85%, transparent);
     border: 1px solid var(--line);
+  }
+  .terms > div[hidden] {
+    display: none;
   }
   .terms > div:target {
     border-color: var(--gold);

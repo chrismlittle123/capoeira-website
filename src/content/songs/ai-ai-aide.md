@@ -11,6 +11,7 @@ about: |
   these, make up your own, or just call "ai, ai, Aidê" in its variations.
 translationReviewed: false
 added: 2026-10-28
+updated: 2026-10-29
 recordings:
   - youtube: https://www.youtube.com/watch?v=uiYy4tw3nDg
     title: Learning video
@@ -43,8 +44,8 @@ Eu estou aqui pra ver você
 > I'm here to see you
 + Ai, ai, Aidê
 > Oh, oh, Aidê
-Como vai, como passou, como vai vosmecê?
-> How are you, how have you been, how are you, sir?
+Como vai, como passou, como vai você?
+> How are you, how have you been, how are you?
 + Ai, ai, Aidê
 > Oh, oh, Aidê
 Joga certinho pra mim aprender

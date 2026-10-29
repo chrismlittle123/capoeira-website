@@ -1,13 +1,16 @@
 ---
 title: "Onde Vai Caimã"
-alternateTitles: [ "Caimã é capoeira" ]
+alternateTitles: [ "Onde vai Caiman", "Meu camarada venha ver" ]
 styles: [ angola ]
 themes: [ the-game, the-sea ]
 people: []
 places: [ ilha-de-mare, abaete ]
 origin: traditional
-summary: "A song following the capoeirista Caimã as he travels the world taking
-  his art with him."
+summary: "Where is Caimã going? To Ilha de Maré and the Lagoa do Abaeté, to play
+  capoeira."
+about: |
+  Lyrics from capoeiralyrics.info, which gives a few versions; the last stanza
+  is the third version, sung "na enchente da maré".
 translationReviewed: false
 sources:
   - https://capoeiralyrics.info/songs/onde-vai-caiman.html
@@ -20,20 +23,30 @@ recordings:
     notes: "Same roda recording as another song; this song is in the second half
       (approximate start)."
 added: 2026-10-28
+updated: 2026-10-29
 draft: false
 ---
 
 ## Solo
-Caimã é capoeira, Caimã é capoeira, o mundo ele foi rodar
-> Caimã is a capoeirista, Caimã is a capoeirista, he went off to travel the world
-Foi levando a sua arte, oi, por onde ele passar
-> He took his art with him, oh, wherever he went
+Meu camarada, venha ver
+> My friend, come and see
+A brincadeira, nego planta bananeira
+> The game where folks do handstands
+E joga as pernas pro ar
+> And throw their legs into the air
+Já me disseram que essa coisa
+> They've already told me that this thing
+É brasileira, que se chama capoeira
+> Is Brazilian, and it's called capoeira
+E na Bahia eu vou jogar
+> And in Bahia I'm going to play
+
 Onde vai Caimã, Caimã, Caimã
 > Where is Caimã going, Caimã, Caimã
 + Onde vai Caimã
 > Where is Caimã going
-Vai para Ilha de Maré
-> He's going to Ilha de Maré
+Pra Ilha de Maré
+> To Ilha de Maré
 + Onde vai Caimã
 > Where is Caimã going
 Vai jogar a capoeira
@@ -41,22 +54,31 @@ Vai jogar a capoeira
 + Onde vai Caimã
 > Where is Caimã going
 Na Lagoa do Abaeté
-> To the Lagoa do Abaeté
+> At the Lagoa do Abaeté
 + Onde vai Caimã
 > Where is Caimã going
-Foi pra Ilha de Maré
-> He went to Ilha de Maré
+Vamos embora, vamos embora
+> Let's go, let's go
 + Onde vai Caimã
 > Where is Caimã going
-Lá na ilha, ê
-> Over on the island, eh
+Lá da Ilha de Maré
+> From over at Ilha de Maré
 + Onde vai Caimã
 > Where is Caimã going
-Lá na ilha, á
-> Over on the island, ah
+
+Na enchente da maré
+> On the rising tide
 + Onde vai Caimã
 > Where is Caimã going
-Pra jogar a capoeira
-> To play capoeira
+Vou jogar a capoeira
+> I'm going to play capoeira
++ Onde vai Caimã
+> Where is Caimã going
+Na Ribeira e lá na Sé
+> In Ribeira and over in the Sé
++ Onde vai Caimã
+> Where is Caimã going
+Olha o jogo de dentro
+> Look, the jogo de dentro (the close, inside game)
 + Onde vai Caimã
 > Where is Caimã going

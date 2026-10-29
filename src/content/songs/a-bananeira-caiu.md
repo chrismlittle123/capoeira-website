@@ -5,10 +5,10 @@ styles: [ angola ]
 themes: [ nature, everyday ]
 people: []
 places: []
-summary: "The machete struck low, and the banana tree came down."
+summary: "The machete cut low, and the banana tree came down."
 about: |
-  Sung when someone falls out of a handstand. Many singers (Mestre Boca Rica,
-  La Laue) sing the solo as "Meu facão bateu embaixo" — "my machete struck low".
+  Sung when someone falls out of a handstand. Others sing "Mas o facão bateu
+  embaixo" (but the machete struck low).
 translationReviewed: false
 sources:
   - https://capoeira.cafe/a-bananeira-caiu/
@@ -20,12 +20,13 @@ recordings:
     title: Roda recording
     end: "2:05"
 added: 2026-10-28
+updated: 2026-10-29
 draft: false
 ---
 
 ## Solo
-Mas o facão bateu embaixo, compadre (x2)
-> But the machete struck low, my friend
+Meu facão cortou embaixo, compadre (x2)
+> My machete cut low, my friend
 + A bananeira caiu
 > The banana tree fell
 Cai, cai, cai bananeira

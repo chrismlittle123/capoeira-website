@@ -1,90 +1,214 @@
-axe:
-  term: Axé
-  definition: Life force, positive energy — the good vibration of the roda. Also used as a greeting or blessing.
-camara:
-  term: Camará
-  forms: [camarada]
-  definition: Comrade, friend. The response sung in the louvação, from "camarada".
-roda:
-  term: Roda
-  forms: [rodas]
-  definition: The circle of people, music and singing in which capoeira is played.
-ie:
-  term: Iê
-  definition: The call that opens a ladainha or stops the game — the berimbau's voice made human.
-mandinga:
-  term: Mandinga
-  definition: Magic, cunning and charm in the game; the hidden, mystical side of capoeira.
-malicia:
-  term: Malícia
-  definition: Craftiness — reading your opponent and deceiving them with a smile.
-volta-do-mundo:
-  term: Volta do mundo
-  definition: “The world goes round” — walking around the roda during a pause in the game; also a reminder that life turns.
-jogo:
-  term: Jogo
-  definition: The game — capoeira is not "fought", it is played.
+# Capoeira and Brazil-specific terms, from https://kadaracapoeira.ca/capoeira-glossary/
+# Each term (and its `forms`) is linked the first time it appears in a song's lyrics.
+
+# People & ranks
+capoeirista:
+  term: Capoeirista
+  forms: [capoeiristas]
+  definition: A person who practices capoeira.
+angoleiro:
+  term: Angoleiro
+  forms: [angoleiros, angoleira]
+  definition: A person who practices Capoeira Angola.
+apelido:
+  term: Apelido
+  forms: [apellido]
+  definition: Nickname given to a capoeirista, often by a teacher. Originally used to protect identity.
+graduado:
+  term: Graduado
+  definition: A student who has achieved a recognized rank and may assist with teaching.
+formado:
+  term: Formado
+  definition: A student who has completed formal capoeira education but is not yet a teacher.
+instrutor:
+  term: Instrutor
+  definition: Instructor; a formal teaching rank.
+professor:
+  term: Professor
+  definition: A teaching rank above Instrutor.
+contra-mestre:
+  term: Contra-Mestre
+  forms: [contramestre]
+  definition: A rank below Mestre; an experienced teacher preparing for mastery.
 mestre:
   term: Mestre
   forms: [mestres]
-  definition: Master; the highest title of a capoeira teacher.
+  definition: Master; a highly experienced and recognized capoeira teacher.
+bamba:
+  term: Bamba
+  forms: [bambas]
+  definition: A capoeira expert or "tough guy", skilled in both fighting and wordplay.
+camara:
+  term: Camará
+  forms: [camarada]
+  definition: A term of camaraderie; "friend" or "comrade" in the roda.
+
+# Movements
+ginga:
+  term: Ginga
+  definition: The fundamental swaying movement of capoeira.
+au:
+  term: Aú
+  forms: [au]
+  definition: Cartwheel.
+bencao:
+  term: Bênção
+  forms: [benção, bença]
+  definition: '"Blessing"; also a powerful front push kick.'
+cintura-desprezada:
+  term: Cintura Desprezada
+  definition: A sequence created by Mestre Bimba involving throws and flips.
+cocorinha:
+  term: Cocorinha
+  definition: A low crouch used for dodging attacks.
+macaco:
+  term: Macaco
+  definition: A backward flipping movement resembling a monkey jump.
+martelo:
+  term: Martelo
+  definition: Literally "hammer"; a straight, powerful kick.
+meia-lua-de-frente:
+  term: Meia-lua de Frente
+  definition: A circular front kick.
+meia-lua-de-compasso:
+  term: Meia-lua de Compasso
+  definition: A spinning kick combining rotation and balance.
+negativa:
+  term: Negativa
+  definition: A grounded evasive move used to avoid kicks.
+queda-de-rins:
+  term: Queda de Rins
+  definition: '"Fall on the kidneys"; the body is supported by the elbow and side.'
+rasteira:
+  term: Rasteira
+  definition: A sweep used to knock the opponent off balance.
+saida:
+  term: Saída
+  definition: Exit or escape movement.
+volta-ao-mundo:
+  term: Volta ao Mundo
+  forms: [volta do mundo]
+  definition: '"Around the world"; players walk around the roda to reset the game.'
+
+# Instruments & music
 berimbau:
   term: Berimbau
   forms: [berimbaus]
-  definition: The musical bow with a gourd resonator that leads the roda and sets the game.
-aide:
-  term: Aidê
-  definition: A woman's name in song; in one popular story, an enslaved woman who refused her master and escaped to the quilombo.
-lampiao:
-  term: Lampião
-  definition: Nickname (literally "lantern") of the famous cangaceiro Virgulino Ferreira da Silva.
-marinheiro:
-  term: Marinheiro
-  definition: Sailor.
-paranaue:
-  term: Paranauê
-  definition: A sung exclamation built on "Paraná" — the great river on Brazil's border with Paraguay and Argentina.
-viola:
-  term: Viola
-  definition: The highest-pitched of the three berimbaus (gunga, médio, viola), which improvises over the others. Also a name for a guitar.
+  definition: The lead musical instrument in capoeira; made of biriba wood, arame and a gourd resonator.
 gunga:
   term: Gunga
-  definition: The deepest berimbau, played by whoever leads the roda.
-vadiar:
-  term: Vadiar
-  forms: [vadiação, vadiando]
-  definition: To loaf, to play around — the old word for playing capoeira, from the days when capoeiristas were called "vadios" (idlers).
+  definition: The largest berimbau with the lowest tone; sets the rhythm and is usually played by a senior.
+viola:
+  term: Viola
+  definition: The smallest berimbau, with the highest pitch.
+verga:
+  term: Verga
+  definition: The wooden bow of the berimbau.
+arame:
+  term: Arame
+  definition: The wire string used on the berimbau.
+cabaca:
+  term: Cabaça
+  definition: The gourd attached to a berimbau, used as a resonator.
+baqueta:
+  term: Baqueta
+  definition: Stick used to strike the berimbau string or other percussion instruments.
 atabaque:
   term: Atabaque
   forms: [atabaques]
-  definition: The tall hand drum of the bateria.
+  definition: Tall Afro-Brazilian drum.
 pandeiro:
   term: Pandeiro
   forms: [pandeiros]
-  definition: The Brazilian frame drum with jingles.
+  definition: Brazilian tambourine used in capoeira and samba.
 agogo:
   term: Agogô
-  definition: A double bell struck with a stick.
+  definition: A two-tone metal bell.
 reco-reco:
   term: Reco-reco
-  definition: A scraper — a notched piece of bamboo or wood rubbed with a stick.
-ioio:
-  term: Ioiô
-  definition: Old Bahian form of address for a young master or gentleman (from "senhor"); in songs often just part of the refrain, paired with iaiá.
-iaia:
-  term: Iaiá
-  definition: Old Bahian form of address for a young mistress or lady (from "sinhá"); the partner of ioiô in many refrains.
-terreiro:
-  term: Terreiro
-  forms: [terreiros]
-  definition: A yard or open ground — and the sacred space of a Candomblé house.
-patua:
-  term: Patuá
-  definition: A small protective amulet, often a cloth pouch worn around the neck.
-angoleiro:
-  term: Angoleiro
-  forms: [angoleira, angoleiros]
-  definition: A player of Capoeira Angola.
-dende:
-  term: Dendê
-  definition: Palm oil, the red oil of Bahian cooking — and in capoeira, the spice, flavour and swing a player brings to the game ("ter dendê").
+  definition: A scraped percussion instrument.
+bateria:
+  term: Bateria
+  definition: The full lineup of musical instruments in a roda.
+batucada:
+  term: Batucada
+  definition: Brazilian percussion ensemble using drums, shakers and bells.
+toque:
+  term: Toque
+  forms: [toques]
+  definition: A rhythm played on the berimbau.
+aviso:
+  term: Aviso
+  definition: A berimbau rhythm used to signal something.
+ladainha:
+  term: Ladainha
+  forms: [ladainhas]
+  definition: A solo song that opens a Capoeira Angola roda.
+louvacao:
+  term: Louvação
+  definition: A praise song following the ladainha.
+chula:
+  term: Chula
+  forms: [chulas]
+  definition: A responsive section between ladainha and corrido.
+corrido:
+  term: Corrido
+  forms: [corridos]
+  definition: Call-and-response songs sung during the game.
+
+# Culture & spirit
+axe:
+  term: Axé
+  definition: Positive energy, life force, or spiritual vibe.
+batizado:
+  term: Batizado
+  definition: '"Baptism"; an initiation ceremony where students receive their first corda.'
+batuque:
+  term: Batuque
+  definition: An Afro-Brazilian dance-fight game that predates capoeira.
+capoeira-angola:
+  term: Capoeira Angola
+  definition: Traditional, slower, more grounded style of capoeira.
+capoeira-regional:
+  term: Capoeira Regional
+  definition: A more upright, dynamic style developed by Mestre Bimba.
+corpo-fechado:
+  term: Corpo Fechado
+  definition: '"Closed body"; spiritual protection through ritual.'
+fundamentos:
+  term: Fundamentos
+  forms: [fundamento]
+  definition: Core principles or foundations of capoeira.
+jogo:
+  term: Jogo
+  definition: '"Game"; the interaction between two players in the roda.'
+malicia:
+  term: Malícia
+  definition: Cunning, cleverness, or trickery in the game.
+mandinga:
+  term: Mandinga
+  definition: A magical or spiritual presence; charisma and cleverness in the game.
+abada:
+  term: Abadá
+  forms: [abadás]
+  definition: Traditional capoeira pants worn in training and rodas. Also the name of the Abadá-Capoeira group.
+maculele:
+  term: Maculelê
+  definition: A traditional Afro-Brazilian stick dance often performed with capoeira.
+quilombo:
+  term: Quilombo
+  forms: [quilombos]
+  definition: A settlement formed by escaped slaves, hidden deep in the forest.
+zumbi:
+  term: Zumbi
+  definition: Legendary leader of the Quilombo dos Palmares; a symbol of resistance and Afro-Brazilian pride.
+samba:
+  term: Samba
+  definition: A lively Afro-Brazilian music and dance style.
+candomble:
+  term: Candomblé
+  definition: An Afro-Brazilian religion linked closely with capoeira's roots.
+orixas:
+  term: Orixás
+  forms: [orixá]
+  definition: Deities in Afro-Brazilian spiritual traditions like Candomblé.

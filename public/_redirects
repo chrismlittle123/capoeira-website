@@ -24,3 +24,7 @@
 /types /browse/ 301
 /toques/* /browse/ 301
 /toques /browse/ 301
+
+# Renamed songs — send old links to the new page.
+/songs/saudade-me-bate-no-peito/ /songs/saudade-que-bate-no-peito/ 301
+/songs/saudade-me-bate-no-peito /songs/saudade-que-bate-no-peito/ 301
