@@ -3,7 +3,10 @@ import '../styles/global.css';
 import Icon from '../components/Icon.astro';
 import Search from '../components/Search.astro';
 import { SITE } from '../site.config';
-import { FACETS } from '../lib/songs';
+import { TAXONOMY_KEYS, checkReferences } from '../lib/songs';
+
+// Every page uses this layout, so a broken reference fails the build here.
+await checkReferences();
 
 interface Props {
   title?: string;
@@ -21,7 +24,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const path = Astro.url.pathname;
 const nav = [
   { href: '/songs/', label: 'Songs', match: ['/songs/'] },
-  { href: '/browse/', label: 'Browse', match: ['/browse/', ...Object.values(FACETS).map((f) => `/${f.path}/`)] },
+  { href: '/browse/', label: 'Browse', match: ['/browse/', ...TAXONOMY_KEYS.map((key) => `/${key}/`)] },
   { href: '/glossary/', label: 'Glossary', match: ['/glossary/'] },
 ];
 ---

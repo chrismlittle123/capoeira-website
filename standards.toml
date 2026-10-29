@@ -1,0 +1,9 @@
+# Proposed by Flaude: standards-kit's template for this repo's language, at a
+# pinned tag of the standards registry (Flaude's plans/standards-gate.md).
+
+[metadata]
+tier = "internal"
+
+[extends]
+registry = "github:chrismlittle123/standards@standards-v4.1.0"
+ruleset = "typescript-internal"

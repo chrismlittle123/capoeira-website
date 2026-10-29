@@ -12,7 +12,7 @@
 
 export type Role = 'solo' | 'coro';
 
-export interface LyricLine {
+interface LyricLine {
   text: string;
   /** set when the coro answers inline ("+ " lines) */
   coro?: boolean;
@@ -59,7 +59,9 @@ export function parseLyrics(body: string): LyricSection[] {
     } else if (line.startsWith('>')) {
       const prev = stanza.at(-1);
       const t = line.replace(/^>\s?/, '');
-      if (prev) prev.translation = prev.translation ? `${prev.translation} ${t}` : t;
+      // A translation of nothing would be lost: fail the build so it's fixed.
+      if (!prev) throw new Error(`Lyrics: a "> " translation needs a sung line above it in the same stanza: "${line}"`);
+      prev.translation = prev.translation ? `${prev.translation} ${t}` : t;
     } else {
       ensureSection();
       const coro = line.startsWith('+ ');
@@ -81,8 +83,6 @@ export const allLines = (sections: LyricSection[]) =>
 
 export const hasTranslation = (sections: LyricSection[]) =>
   allLines(sections).some((l) => l.translation);
-
-export const isSynced = (sections: LyricSection[]) => allLines(sections).some((l) => l.time != null);
 
 /** The first line of the coro, else the first line — what people actually remember. */
 export function hookLine(sections: LyricSection[]): string {
@@ -108,5 +108,7 @@ export type Difficulty = (typeof DIFFICULTY)[number] & { words: number };
 export function difficulty(sections: LyricSection[]): Difficulty {
   const distinct = [...new Set(allLines(sections).map((l) => l.text.replace(/\s*\(x\d+\)/gi, '').trim()))];
   const words = distinct.reduce((n, l) => n + (l.match(/[\p{L}\p{N}']+/gu)?.length ?? 0), 0);
-  return { ...DIFFICULTY.find((d) => words <= d.max)!, words };
+  // The last level's max is Infinity, so a level is always found.
+  const level = DIFFICULTY.find((d) => words <= d.max) ?? DIFFICULTY[DIFFICULTY.length - 1];
+  return { ...level, words };
 }

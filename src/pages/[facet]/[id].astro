@@ -1,13 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
-import { FACETS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
 
 export async function getStaticPaths() {
   const paths = [];
-  for (const key of Object.keys(FACETS) as TaxonomyKey[]) {
+  for (const key of TAXONOMY_KEYS) {
     for (const entry of await getTaxonomy(key)) {
-      paths.push({ params: { facet: FACETS[key].path, id: entry.id }, props: { key, entry } });
+      paths.push({ params: { facet: key, id: entry.id }, props: { key, entry } });
     }
   }
   return paths;
