@@ -1,27 +1,12 @@
 ---
-import Base from '../layouts/Base.astro';
-import Roda from '../components/Roda.astro';
+import LostPage from '../components/LostPage.astro';
+import { PAGES } from '../lib/urls';
 ---
 
-<Base title="Offline" noindex>
-  <div class="wrap lost">
-    <div class="roda"><Roda /></div>
-    <h1>Sem sinal…</h1>
-    <p class="muted">You're offline and this page wasn't saved on your phone yet. Every song is — try the songbook.</p>
-    <a class="btn btn-gold" href="/songs/">Open the songs</a>
-  </div>
-</Base>
-
-<style>
-  .lost {
-    text-align: center;
-    padding-top: 40px;
-  }
-  .roda {
-    width: min(320px, 80vw);
-    margin: 0 auto 8px;
-  }
-  h1 {
-    font-size: clamp(36px, 8vw, 56px);
-  }
-</style>
+<LostPage
+  title="Offline"
+  heading="Sem sinal…"
+  message="You're offline and this page wasn't saved on your phone yet. Every song is — try the songbook."
+  href={PAGES.songs}
+  linkLabel="Open the songs"
+/>

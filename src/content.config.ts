@@ -4,6 +4,7 @@ import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
 import { toSeconds, youtubeId, youtubeStart } from './lib/media';
 import { PUBLIC_DIR, SONGS_DIR, dataFile } from './lib/paths';
+import { STYLES } from './lib/song-facts';
 
 /*
  * The songbook ontology.
@@ -105,7 +106,7 @@ const songs = defineCollection({
   schema: z.object({
     title: z.string(),
     alternateTitles: z.array(z.string()).default([]),
-    styles: z.array(z.enum(['angola', 'regional', 'contemporanea'])).default([]),
+    styles: z.array(z.enum(STYLES)).default([]),
     themes: z.array(reference('themes')).default([]),
     people: z.array(reference('people')).default([]),
     places: z.array(reference('places')).default([]),

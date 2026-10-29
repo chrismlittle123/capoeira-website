@@ -6,11 +6,11 @@ import MediaPlayer from '../../components/MediaPlayer.astro';
 import SongCard from '../../components/SongCard.astro';
 import Icon from '../../components/Icon.astro';
 import { getSongs, getNames, lyricsOf, facetIds, type Song, type TaxonomyKey } from '../../lib/songs';
-import { facetUrl, songUrl } from '../../lib/urls';
+import { PAGES, facetUrl, songUrl } from '../../lib/urls';
 import { allLines, difficulty, hasTranslation, plainText } from '../../lib/lyrics';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { SITE } from '../../site.config';
-import { originText, relatedIds } from '../../lib/song-facts';
+import { STYLE_NAMES, originFact, originText, relatedIds } from '../../lib/song-facts';
 import { youtubeEmbedUrl, youtubeThumbnailUrl } from '../../lib/media';
 
 export async function getStaticPaths() {
@@ -43,7 +43,6 @@ const relatable = (s: Song) => ({
 const byId = new Map(all.map((s) => [s.id, s]));
 const related = relatedIds(relatable(song), all.map(relatable)).flatMap((id) => byId.get(id) ?? []);
 
-const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
 type Fact = { label: string; key?: TaxonomyKey; items: { id: string; name: string }[] };
 const allFacts: Fact[] = [
   { label: 'Themes', key: 'themes', items: d.themes.map((r) => ({ id: r.id, name: names.themes[r.id] })) },
@@ -96,7 +95,7 @@ const translated = hasTranslation(sections);
     <header class="head">
       <h1 style={`view-transition-name: song-${song.id}`}>{d.title}</h1>
       <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/songs/">Songs</a>
+        <a href={PAGES.songs}>Songs</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">{d.title}</span>
       </nav>
@@ -193,7 +192,7 @@ const translated = hasTranslation(sections);
           }
           <div>
             <dt>Origin</dt>
-            <dd>{d.origin === 'traditional' ? 'Traditional (domínio público)' : origin}</dd>
+            <dd>{originFact(d)}</dd>
           </div>
         </dl>
       </aside>

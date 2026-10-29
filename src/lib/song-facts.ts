@@ -1,6 +1,10 @@
 /** Facts the song page derives from a song's data: who wrote it, and which songs to sing next. */
 import type { TaxonomyKey } from './songs';
 
+/** The capoeira styles a song can belong to (checked by src/content.config.ts), with display names. */
+export const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
+export const STYLES = ['angola', 'regional', 'contemporanea'] as const satisfies readonly (keyof typeof STYLE_NAMES)[];
+
 export interface Origin {
   origin: 'traditional' | 'composed' | 'unknown';
   composer?: string;
@@ -12,6 +16,9 @@ export function originText({ origin, composer }: Origin): string {
   if (composer) return `By ${composer}`;
   return origin === 'composed' ? 'Composed (author unknown)' : 'Origin unknown';
 }
+
+/** The origin as the song page's facts list words it: traditional songs are in the public domain. */
+export const originFact = (o: Origin) => (o.origin === 'traditional' ? 'Traditional (domínio público)' : originText(o));
 
 /** What relatedness is judged on: the songs it links to, and its ids per facet. */
 export interface Relatable {

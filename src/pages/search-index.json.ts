@@ -9,17 +9,17 @@ export const GET: APIRoute = async () => {
     const sections = lyricsOf(song);
     const lines = allLines(sections);
     const d = song.data;
-    const join = (key: keyof typeof names, refs: { id: string }[]) =>
-      refs.map((r) => names[key][r.id]).join(' · ');
+    const namesOf = (key: keyof typeof names, refs: { id: string }[]) => refs.map((r) => names[key][r.id]).join(' · ');
+    const level = difficulty(sections);
     return {
       id: song.id,
       title: d.title,
       alt: d.alternateTitles.join(' · '),
-      level: difficulty(sections).level,
-      levelLabel: difficulty(sections).label,
-      themes: join('themes', d.themes),
-      people: join('people', d.people),
-      places: join('places', d.places),
+      level: level.level,
+      levelLabel: level.label,
+      themes: namesOf('themes', d.themes),
+      people: namesOf('people', d.people),
+      places: namesOf('places', d.places),
       hook: hookLine(sections),
       // de-duplicate repeated coro lines so they don't dominate ranking
       lyrics: [...new Set(lines.map((l) => l.text))].join('\n'),

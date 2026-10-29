@@ -1,12 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getSongs } from '../lib/songs';
+import { getSongs, recordingCount } from '../lib/songs';
+import { plural } from '../lib/text';
 import { SITE } from '../site.config';
 import { ONTOLOGY_JSON_URL, SONGS_JSON_URL } from '../lib/urls';
 
 const songs = await getSongs();
-const recordings = songs.reduce((n, s) => n + s.data.recordings.length, 0);
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const recordings = recordingCount(songs);
 ---
 
 <Base title="About & open data" description="About this songbook and how to use its open data.">
