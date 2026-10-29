@@ -1,4 +1,4 @@
-import { formatTime as fmt } from '../lib/media';
+import { formatTime } from '../lib/media';
 import { clampTime, lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/playback';
 import { required, requiredClosest } from './dom';
 
@@ -19,16 +19,21 @@ interface Engine {
   level(): number;
 }
 
+/** What an engine reports back. These only update the controls; they don't start or stop anything. */
 interface Events {
-  play(): void;
-  pause(): void;
-  ended(): void;
-  meta(): void;
-  error(msg: string): void;
+  onPlay(): void;
+  onPause(): void;
+  onEnd(): void;
+  onMeta(): void;
+  onError(msg: string): void;
 }
 
 // After the reader scrolls, leave the page where they put it for this long before following the song again.
 const SCROLL_PAUSE_MS = 3000;
+// The seek bar runs from 0 to SEEK_STEPS (its max in MediaPlayer.astro).
+const SEEK_STEPS = 1000;
+// Lock-screen skip back/forward, in seconds, when the system doesn't say.
+const SKIP_SECONDS = 5;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ───────────────────────── audio ─────────────────────────
@@ -55,17 +60,18 @@ function audioEngine(audio: HTMLAudioElement, on: Events): Engine & { load(src: 
   };
 
   audio.addEventListener('play', () => {
-    ctx?.resume();
-    on.play();
+    // A context that stays suspended only stills the gourd animation.
+    ctx?.resume().catch(() => undefined);
+    on.onPlay();
   });
-  audio.addEventListener('pause', () => on.pause());
-  audio.addEventListener('ended', () => on.ended());
-  audio.addEventListener('loadedmetadata', () => on.meta());
+  audio.addEventListener('pause', () => on.onPause());
+  audio.addEventListener('ended', () => on.onEnd());
+  audio.addEventListener('loadedmetadata', () => on.onMeta());
   audio.addEventListener('error', () => {
-    if (audio.getAttribute('src')) on.error("Couldn't load this recording — are you offline?");
+    if (audio.getAttribute('src')) on.onError("Couldn't load this recording — are you offline?");
   });
   // metadata may already be there (cached file) before we attached the listener
-  if (audio.readyState >= 1) queueMicrotask(() => on.meta());
+  if (audio.readyState >= 1) queueMicrotask(() => on.onMeta());
 
   return {
     load(src) {
@@ -76,7 +82,7 @@ function audioEngine(audio: HTMLAudioElement, on: Events): Engine & { load(src: 
       ensureAnalyser();
       audio.play().catch((e: DOMException) => {
         // AbortError: superseded by pause/seek. NotAllowedError: autoplay blocked — just stay paused.
-        if (e.name !== 'AbortError' && e.name !== 'NotAllowedError') on.error("Couldn't play this recording.");
+        if (e.name !== 'AbortError' && e.name !== 'NotAllowedError') on.onError("Couldn't play this recording.");
       });
     },
     pause: () => audio.pause(),
@@ -199,27 +205,30 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
             events: {
               onReady: (e) => {
                 e.target.setPlaybackRate?.(rate);
-                on.meta();
+                on.onMeta();
                 // autoplay may already be running before the API attached
                 if (e.target.getPlayerState?.() === 1) {
                   state = 1;
-                  on.play();
+                  on.onPlay();
                 }
                 resolve();
               },
               onStateChange: (e) => {
                 state = e.data;
-                if (e.data === 1) on.play();
-                else if (e.data === 2) on.pause();
-                else if (e.data === 0) on.ended();
+                if (e.data === 1) on.onPlay();
+                else if (e.data === 2) on.onPause();
+                else if (e.data === 0) on.onEnd();
               },
-              onError: () => on.error("This video can't be played here — try opening it on YouTube."),
+              onError: () => on.onError("This video can't be played here — try opening it on YouTube."),
             },
           });
         }),
     );
-    // The video itself still plays without the API; only our extra controls need it.
-    ready.catch(() => undefined);
+    // The video itself still plays without the API; only our extra controls need it. The
+    // failure is reported here once, and `ready` then resolves so later calls are no-ops.
+    ready = ready.catch(() =>
+      on.onError("YouTube's player controls didn't load: use the video's own controls."),
+    );
   };
 
   const engine: Engine & { load(t: Take): void } = {
@@ -315,7 +324,7 @@ export function initPlayer(root: HTMLElement) {
   let smooth = 0;
 
   const events: Events = {
-    play() {
+    onPlay() {
       error.hidden = true;
       started = true;
       root.classList.add('playing');
@@ -327,7 +336,7 @@ export function initPlayer(root: HTMLElement) {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(tick);
     },
-    pause() {
+    onPause() {
       root.classList.remove('playing');
       document.body.classList.remove('playing');
       play.setAttribute('aria-label', 'Play');
@@ -335,26 +344,29 @@ export function initPlayer(root: HTMLElement) {
       setMediaState('paused');
       tick();
     },
-    ended() {
+    onEnd() {
       const t = takes[index];
       if (looping) {
         engine().seek(t.start);
         engine().play();
         return;
       }
-      events.pause();
+      // An audio take with an `end:` is still playing when it gets here: stop it, or tick()
+      // would see it running past its end and call onEnd again, forever.
+      engine().pause();
+      events.onPause();
       current?.classList.remove('now');
       current = undefined;
       lyrics?.classList.remove('synced');
     },
-    meta() {
-      dur.textContent = fmt(range()[1]);
+    onMeta() {
+      dur.textContent = formatTime(range()[1]);
       tick();
     },
-    error(msg) {
+    onError(msg) {
       error.textContent = msg;
       error.hidden = false;
-      events.pause();
+      events.onPause();
     },
   };
 
@@ -401,15 +413,15 @@ export function initPlayer(root: HTMLElement) {
     const e = engine();
     const t = e.time;
     const [start, end] = range();
-    if (Number.isFinite(end) && t >= end && !e.paused && takes[index].kind === 'audio') return events.ended();
+    if (Number.isFinite(end) && t >= end && !e.paused && takes[index].kind === 'audio') return events.onEnd();
     const p = progress(t, start, end);
     if (!scrubbing) {
-      bar.value = String(Math.round(p * 1000));
+      bar.value = String(Math.round(p * SEEK_STEPS));
       root.style.setProperty('--p', String(p));
     }
-    cur.textContent = fmt(t);
-    bar.setAttribute('aria-valuetext', `${fmt(t)} of ${fmt(end)}`);
-    if (dur.textContent !== fmt(end)) dur.textContent = fmt(end);
+    cur.textContent = formatTime(t);
+    bar.setAttribute('aria-valuetext', `${formatTime(t)} of ${formatTime(end)}`);
+    if (dur.textContent !== formatTime(end)) dur.textContent = formatTime(end);
     highlight(t);
     if (e.paused) return setAmp(0);
     setAmp(reducedMotion() ? 0 : smooth * 0.6 + e.level() * 0.4);
@@ -428,14 +440,14 @@ export function initPlayer(root: HTMLElement) {
   bar.addEventListener('input', () => {
     scrubbing = true;
     const [start, end] = range();
-    const t = start + (Number(bar.value) / 1000) * ((end || 0) - start);
-    cur.textContent = fmt(t);
-    root.style.setProperty('--p', String(Number(bar.value) / 1000));
+    const t = start + (Number(bar.value) / SEEK_STEPS) * ((end || 0) - start);
+    cur.textContent = formatTime(t);
+    root.style.setProperty('--p', String(Number(bar.value) / SEEK_STEPS));
   });
   bar.addEventListener('change', () => {
     scrubbing = false;
     const [start, end] = range();
-    if (Number.isFinite(end)) engine().seek(start + (Number(bar.value) / 1000) * (end - start));
+    if (Number.isFinite(end)) engine().seek(start + (Number(bar.value) / SEEK_STEPS) * (end - start));
   });
 
   $<HTMLButtonElement>('[data-speed]').addEventListener('click', () => {
@@ -475,7 +487,7 @@ export function initPlayer(root: HTMLElement) {
     current?.classList.remove('now');
     current = undefined;
     lyrics?.classList.toggle('synced', synced() && wasPlaying);
-    dur.textContent = fmt(range()[1]);
+    dur.textContent = formatTime(range()[1]);
     setMediaMetadata();
     if (wasPlaying) {
       engine().seek(t.start);
@@ -546,8 +558,8 @@ export function initPlayer(root: HTMLElement) {
     const handlers: [MediaSessionAction, MediaSessionActionHandler][] = [
       ['play', () => engine().play()],
       ['pause', () => engine().pause()],
-      ['seekbackward', (d) => engine().seek(clamp(engine().time - (d.seekOffset ?? 5)))],
-      ['seekforward', (d) => engine().seek(clamp(engine().time + (d.seekOffset ?? 5)))],
+      ['seekbackward', (d) => engine().seek(clamp(engine().time - (d.seekOffset ?? SKIP_SECONDS)))],
+      ['seekforward', (d) => engine().seek(clamp(engine().time + (d.seekOffset ?? SKIP_SECONDS)))],
       ['seekto', (d) => d.seekTime != null && engine().seek(clamp(d.seekTime))],
     ];
     for (const [action, fn] of handlers)

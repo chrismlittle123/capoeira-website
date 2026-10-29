@@ -1,15 +1,19 @@
 import MiniSearch, { type SearchResult } from 'minisearch';
-import { escapeHtml as esc, highlight, queryTerms, searchTerm, snippet } from '../lib/search-text';
+import { escapeHtml, highlight, queryTerms, searchTerm, snippet } from '../lib/search-text';
 import { DIFFICULTY } from '../lib/lyrics';
 import { parseSearchDocs, type SearchDoc } from '../lib/search-doc';
 import { required } from './dom';
 
-const TEXT_FIELDS = new Set(['title', 'alt', 'hook', 'lyrics', 'translation']);
-const FACET_LABELS: Record<string, string> = {
-  themes: 'Theme',
-  people: 'People',
-  places: 'Place',
-};
+const TEXT_FIELDS = ['title', 'alt', 'hook', 'lyrics', 'translation'] as const;
+const FACET_LABELS = { themes: 'Theme', people: 'People', places: 'Place' } as const;
+type FacetField = keyof typeof FACET_LABELS;
+const isTextField = (f: string) => (TEXT_FIELDS as readonly string[]).includes(f);
+const isFacetField = (f: string): f is FacetField => f in FACET_LABELS;
+
+// Wait this long after a keystroke before searching, so fast typing searches once.
+const TYPING_PAUSE_MS = 80;
+// When no song has every word, show the OR matches scoring at least this share of the best.
+const OR_MATCH_CUTOFF = 0.3;
 
 type Level = (typeof DIFFICULTY)[number];
 const levelById = (id: string | null | undefined): Level | undefined => DIFFICULTY.find((d) => d.id === id);
@@ -29,7 +33,7 @@ function loadIndex() {
     })
     .then((docs) => {
       const mini = new MiniSearch<SearchDoc>({
-        fields: ['title', 'alt', 'hook', 'lyrics', 'translation', 'themes', 'people', 'places'],
+        fields: [...TEXT_FIELDS, ...Object.keys(FACET_LABELS)],
         storeFields: ['id'],
         processTerm: searchTerm,
         searchOptions: {
@@ -49,8 +53,8 @@ function loadIndex() {
 function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
   return `<li style="--i:${i}"><a class="card" href="/songs/${doc.id}/">
-    <div class="meta"><span class="dl" title="${esc(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(DIFFICULTY.length - doc.level)} ${esc(doc.levelLabel)}</span>${
-      doc.media ? `<span class="has-audio">${esc(doc.media.icon)} ${esc(doc.media.label)}</span>` : ''
+    <div class="meta"><span class="dl" title="${escapeHtml(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(DIFFICULTY.length - doc.level)} ${escapeHtml(doc.levelLabel)}</span>${
+      doc.media ? `<span class="has-audio">${escapeHtml(doc.media.icon)} ${escapeHtml(doc.media.label)}</span>` : ''
     }</div>
     <h3>${highlight(doc.title, terms)}</h3>
     <p class="hook">${highlight(line, terms)}</p>
@@ -61,12 +65,10 @@ function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
 /** If a song matched (partly) through its theme/people/places, say so. */
 function explain(r: SearchResult, doc: SearchDoc, terms: string[]) {
   // only when some part of the query was found nowhere in the title or lyrics
-  const facetOnly = Object.values(r.match).filter((fields) => !fields.some((f) => TEXT_FIELDS.has(f)));
+  const facetOnly = Object.values(r.match).filter((fields) => !fields.some(isTextField));
   if (!facetOnly.length) return undefined;
   const fields = new Set(facetOnly.flat());
-  const parts = [...fields]
-    .filter((f) => FACET_LABELS[f])
-    .map((f) => `${FACET_LABELS[f]}: ${highlight(String(doc[f as keyof SearchDoc]), terms)}`);
+  const parts = [...fields].filter(isFacetField).map((f) => `${FACET_LABELS[f]}: ${highlight(doc[f], terms)}`);
   return parts.join(' · ') || undefined;
 }
 
@@ -126,7 +128,7 @@ function init(root: HTMLElement) {
       if (!res.length) {
         res = mini.search(query, { combineWith: 'OR', filter });
         const top = res[0]?.score ?? 0;
-        res = res.filter((r) => r.score >= top * 0.3);
+        res = res.filter((r) => r.score >= top * OR_MATCH_CUTOFF);
       }
       hits = res.flatMap((r) => {
         const doc = byId.get(r.id);
@@ -142,10 +144,10 @@ function init(root: HTMLElement) {
         return card(doc, marks, i, r && explain(r, doc, marks));
       })
       .join('');
-    const inLevel = level ? ` in ${esc(level.label)}` : '';
+    const inLevel = level ? ` in ${escapeHtml(level.label)}` : '';
     status.innerHTML = hits.length
       ? `${hits.length} song${hits.length === 1 ? '' : 's'}${inLevel}`
-      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${esc(q)}”${inLevel}. ${
+      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${escapeHtml(q)}”${inLevel}. ${
           level ? 'Try clearing the filter, or' : 'Try'
         } fewer words — or just the coro.</small></span>`;
   };
@@ -153,7 +155,7 @@ function init(root: HTMLElement) {
   let timer: number | undefined;
   input.addEventListener('input', () => {
     clearTimeout(timer);
-    timer = window.setTimeout(run, 80);
+    timer = window.setTimeout(run, TYPING_PAUSE_MS);
   });
   required(root, 'form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -194,7 +196,7 @@ function openSearch() {
     return;
   }
   if (!dialog || dialog.open) return;
-  opener = document.activeElement as HTMLElement | null;
+  opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   dialog.showModal();
   const input = dialog.querySelector('input');
   input?.focus();
@@ -202,7 +204,7 @@ function openSearch() {
 }
 document.querySelectorAll('[data-open-search]').forEach((b) => b.addEventListener('click', openSearch));
 document.addEventListener('keydown', (e) => {
-  const typing = (e.target as HTMLElement).closest('input, textarea, [contenteditable]');
+  const typing = e.target instanceof Element && e.target.closest('input, textarea, [contenteditable]');
   if ((e.key === '/' && !typing) || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
     e.preventDefault();
     openSearch();
@@ -219,4 +221,4 @@ dialog?.querySelector('input')?.addEventListener('keydown', (e) => {
     dialog.close();
   }
 });
-dialog?.addEventListener('close', () => opener?.focus?.());
+dialog?.addEventListener('close', () => opener?.focus());
