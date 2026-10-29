@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { TAXONOMY_KEYS, facetUrl } from '../../lib/songs';
+import { TAXONOMY_KEYS } from '../../lib/songs';
+import { facetUrl, glossaryUrl } from '../../lib/urls';
 import { SITE } from '../../site.config';
 
 export const GET: APIRoute = async ({ site }) => {
@@ -11,7 +12,7 @@ export const GET: APIRoute = async ({ site }) => {
     );
   }
   out.glossary = Object.fromEntries(
-    (await getCollection('glossary')).map((e) => [e.id, { ...e.data, url: new URL(`/glossary/#${e.id}`, site).href }]),
+    (await getCollection('glossary')).map((e) => [e.id, { ...e.data, url: new URL(glossaryUrl(e.id), site).href }]),
   );
   const body = {
     name: `${SITE.title} — ontology`,

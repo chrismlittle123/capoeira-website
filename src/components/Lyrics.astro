@@ -1,47 +1,23 @@
 ---
+// The lyrics, line by line with translations and timestamps, with glossary words linked to a popover
+// (src/scripts/glossary-popover.ts).
 import { getCollection } from 'astro:content';
 import type { LyricSection } from '../lib/lyrics';
+import { glossaryLinker } from '../lib/glossary-links';
+import { formatTime } from '../lib/media';
 
 interface Props {
   sections: LyricSection[];
 }
 const { sections } = Astro.props;
 
-// Link glossary words inside lyrics (longest forms first so "volta do mundo" beats "mundo").
+// Link glossary words inside lyrics, each once, where it first appears.
 const glossary = await getCollection('glossary');
-const forms = glossary
-  .flatMap((g) => [g.data.term, ...g.data.forms].map((f) => ({ f, id: g.id })))
-  .sort((a, b) => b.f.length - a.f.length);
-const byForm = new Map(forms.map(({ f, id }) => [f.toLocaleLowerCase('pt'), id]));
-const re = forms.length
-  ? new RegExp(
-      `(?<![\\p{L}])(${forms.map(({ f }) => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?![\\p{L}])`,
-      'giu',
-    )
-  : null;
-const used = new Set<string>();
+const { link, used } = glossaryLinker(glossary.map((g) => ({ id: g.id, forms: [g.data.term, ...g.data.forms] })));
 
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-function linkGlossary(text: string) {
-  if (!re) return esc(text);
-  let out = '';
-  let last = 0;
-  for (const m of text.matchAll(re)) {
-    const id = byForm.get(m[0].toLocaleLowerCase('pt'));
-    if (!id || used.has(id)) continue; // explain each word once, where it first appears
-    used.add(id);
-    out +=
-      esc(text.slice(last, m.index)) +
-      `<span class="gloss" role="button" tabindex="0" aria-expanded="false" aria-controls="gloss-pop" data-term="${id}">${esc(m[0])}</span>`;
-    last = m.index! + m[0].length;
-  }
-  return out + esc(text.slice(last));
-}
-
-const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 const rendered = sections.map((s) => ({
   ...s,
-  stanzas: s.stanzas.map((st) => st.map((l) => ({ ...l, html: linkGlossary(l.text) }))),
+  stanzas: s.stanzas.map((st) => st.map((l) => ({ ...l, html: link(l.text) }))),
 }));
 const usedTerms = glossary.filter((g) => used.has(g.id));
 ---
@@ -59,8 +35,8 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
             {st.map((l) => (
               <p class:list={['line', l.coro && 'coro-line']} data-time={l.time}>
                 {l.time != null && (
-                  <button type="button" class="seek" data-seek={l.time} aria-label={`Play from ${fmt(l.time)}`}>
-                    {fmt(l.time)}
+                  <button type="button" class="seek" data-seek={l.time} aria-label={`Play from ${formatTime(l.time)}`}>
+                    {formatTime(l.time)}
                   </button>
                 )}
                 <span class="pt" lang="pt-BR" set:html={l.html} />
@@ -86,52 +62,7 @@ const usedTerms = glossary.filter((g) => used.has(g.id));
 <div class="gloss-pop" id="gloss-pop" aria-live="polite" hidden></div>
 
 <script>
-  const data = JSON.parse(document.querySelector('#glossary-data')?.textContent || '{}');
-  const pop = document.querySelector<HTMLElement>('.gloss-pop')!;
-  let current: HTMLElement | null = null;
-  const hide = () => {
-    pop.hidden = true;
-    current?.setAttribute('aria-expanded', 'false');
-    current = null;
-  };
-  document.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement).closest('.gloss-pop')) return;
-    const btn = (e.target as HTMLElement).closest<HTMLElement>('.gloss');
-    if (!btn) return hide();
-    if (btn === current) return hide();
-    const g = data[btn.dataset.term!];
-    if (!g) return;
-    pop.innerHTML = '';
-    const b = document.createElement('strong');
-    b.textContent = g.term;
-    const p = document.createElement('span');
-    p.textContent = g.definition;
-    const more = document.createElement('a');
-    more.href = `/glossary/#${btn.dataset.term}`;
-    more.textContent = 'All words →';
-    pop.append(b, p, more);
-    pop.hidden = false;
-    const r = btn.getBoundingClientRect();
-    const w = pop.offsetWidth;
-    const h = pop.offsetHeight;
-    const vw = document.documentElement.clientWidth; // excludes the scrollbar
-    pop.style.left = `${Math.max(12, Math.min(vw - w - 12, r.left + r.width / 2 - w / 2)) + scrollX}px`;
-    // open above the word when there isn't room below
-    const below = r.bottom + 8 + h < innerHeight || r.top - 8 - h < 0;
-    pop.style.top = `${(below ? r.bottom + 8 : r.top - 8 - h) + scrollY}px`;
-    current?.setAttribute('aria-expanded', 'false');
-    current = btn;
-    btn.setAttribute('aria-expanded', 'true');
-  });
-  addEventListener('resize', hide);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') hide();
-    const el = e.target as HTMLElement;
-    if ((e.key === 'Enter' || e.key === ' ') && el.classList?.contains('gloss')) {
-      e.preventDefault();
-      el.click();
-    }
-  });
+  import '../scripts/glossary-popover';
 </script>
 
 <style>

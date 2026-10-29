@@ -5,6 +5,7 @@ import Search from '../components/Search.astro';
 import { SITE } from '../site.config';
 import { TAXONOMY_KEYS, checkReferences } from '../lib/songs';
 import { MAX_SCALE, MIN_SCALE, STORAGE_KEYS } from '../lib/reading';
+import { PAGES, SONGS_JSON_URL, facetUrl } from '../lib/urls';
 
 // Every page uses this layout, so a broken reference fails the build here.
 await checkReferences();
@@ -24,11 +25,10 @@ const { title, description = SITE.description, jsonLd, bare = false, type = 'web
 const fullTitle = title ? `${title} · ${SITE.shortTitle}` : SITE.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const path = Astro.url.pathname;
-const SONGS_JSON = '/api/songs.json';
 const nav = [
-  { href: '/songs/', label: 'Songs', match: ['/songs/'] },
-  { href: '/browse/', label: 'Browse', match: ['/browse/', ...TAXONOMY_KEYS.map((key) => `/${key}/`)] },
-  { href: '/glossary/', label: 'Glossary', match: ['/glossary/'] },
+  { href: PAGES.songs, label: 'Songs', match: [PAGES.songs] },
+  { href: PAGES.browse, label: 'Browse', match: [PAGES.browse, ...TAXONOMY_KEYS.map((key) => facetUrl(key))] },
+  { href: PAGES.glossary, label: 'Glossary', match: [PAGES.glossary] },
 ];
 ---
 
@@ -43,7 +43,7 @@ const nav = [
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="alternate" type="application/json" href={SONGS_JSON} title="Songbook data (JSON)" />
+    <link rel="alternate" type="application/json" href={SONGS_JSON_URL} title="Songbook data (JSON)" />
     <meta name="theme-color" content={SITE.themeColor} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -70,7 +70,7 @@ const nav = [
     <div class="corda" aria-hidden="true"></div>
     <header class="site-header">
       <div class="wrap bar">
-        <a href="/" class="logo">
+        <a href={PAGES.home} class="logo">
           <span class="wordmark">{SITE.shortTitle}</span>
           <span class="eyebrow sage">cantigas de capoeira</span>
         </a>
@@ -104,8 +104,8 @@ const nav = [
           <a href={SITE.licenseUrl}>{SITE.license}</a>
         </p>
         <p class="links">
-          <a href="/about/">About &amp; open data</a>
-          <a href={SONGS_JSON}>JSON</a>
+          <a href={PAGES.about}>About &amp; open data</a>
+          <a href={SONGS_JSON_URL}>JSON</a>
           <span>Iê, axé!</span>
         </p>
       </div>

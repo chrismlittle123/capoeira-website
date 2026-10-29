@@ -5,7 +5,8 @@ import Berimbau from '../components/Berimbau.astro';
 import RhythmGrid from '../components/RhythmGrid.astro';
 import SongCard from '../components/SongCard.astro';
 import Icon from '../components/Icon.astro';
-import { getSongs, getTaxonomy, facetIds, facetUrl } from '../lib/songs';
+import { getSongs, getTaxonomy, facetIds } from '../lib/songs';
+import { facetUrl } from '../lib/urls';
 
 const [songs, themes] = await Promise.all([getSongs(), getTaxonomy('themes')]);
 const recent = [...songs].sort((a, b) => +b.data.added - +a.data.added).slice(0, 6);

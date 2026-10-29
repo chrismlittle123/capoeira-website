@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
-import { TAXONOMY_KEYS, getSongs, getTaxonomy, facetUrl, songUrl } from '../lib/songs';
+import { TAXONOMY_KEYS, getSongs, getTaxonomy } from '../lib/songs';
+import { PAGES, facetUrl, songUrl } from '../lib/urls';
 
 export const GET: APIRoute = async ({ site }) => {
   const songs = await getSongs();
-  const paths = ['/', '/songs/', '/browse/', '/glossary/', '/about/', ...songs.map((s) => songUrl(s.id))];
+  const paths: string[] = [...Object.values(PAGES), ...songs.map((s) => songUrl(s.id))];
   for (const key of TAXONOMY_KEYS) {
     paths.push(facetUrl(key));
     for (const e of await getTaxonomy(key)) paths.push(facetUrl(key, e.id));

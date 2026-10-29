@@ -1,38 +1,17 @@
 ---
+// A song's recordings behind one set of controls; the behaviour is in src/scripts/player.ts.
 import Icon from './Icon.astro';
 import type { Song } from '../lib/songs';
-import type { Take } from '../lib/playback';
+import { takesFor } from '../lib/playback';
 
-type Recording = Song['data']['recordings'][number];
 interface Props {
-  recordings: Recording[];
+  recordings: Song['data']['recordings'];
   songTitle: string;
 }
 const { recordings, songTitle } = Astro.props;
+// the recording that line timestamps in the lyrics refer to
 const syncIndex = Math.max(0, recordings.findIndex((r) => r.sync));
-const label = (r: Recording, i: number) =>
-  r.title ??
-  r.performer ??
-  (r.recordedAt
-    ? r.recordedAt.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
-    : r.kind === 'youtube'
-      ? `Video ${i + 1}`
-      : `Recording ${i + 1}`);
-// "Reference video", "Reference video" → "Reference video 1", "Reference video 2"
-const rawLabels = recordings.map((r, i) => label(r, i));
-const labels = rawLabels.map((l, i) => {
-  const same = rawLabels.filter((x) => x === l);
-  return same.length > 1 ? `${l} ${rawLabels.slice(0, i + 1).filter((x) => x === l).length}` : l;
-});
-const takes: Take[] = recordings.map((r, i) => ({
-  kind: r.kind,
-  src: r.kind === 'audio' && !/^https?:/.test(r.src) && !r.src.startsWith('/') ? `/${r.src}` : r.src,
-  videoId: r.videoId,
-  start: r.start,
-  end: r.end,
-  label: labels[i],
-  performer: r.performer,
-}));
+const takes = takesFor(recordings);
 const first = takes[0];
 const anyVideo = takes.some((t) => t.kind === 'youtube');
 ---

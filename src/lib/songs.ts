@@ -98,11 +98,3 @@ export function mediaBadge(song: Song): { icon: string; label: string } | undefi
   if (kinds.has('audio')) return { icon: '♪', label: 'listen' };
   return undefined;
 }
-
-export function songUrl(id: string): string {
-  return `/songs/${id}/`;
-}
-
-export function facetUrl(key: TaxonomyKey, id?: string): string {
-  return `/${key}/${id ? `${id}/` : ''}`;
-}

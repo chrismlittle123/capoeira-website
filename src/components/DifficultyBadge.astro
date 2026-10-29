@@ -1,5 +1,7 @@
 ---
+// A song's difficulty: dots and label, with the word count on hover.
 import type { Difficulty } from '../lib/lyrics';
+import LevelDots from './LevelDots.astro';
 
 interface Props {
   difficulty: Difficulty;
@@ -8,7 +10,7 @@ const { difficulty: d } = Astro.props;
 ---
 
 <span class="difficulty" title={`${d.label} — ${d.words} words to learn`}>
-  <span class="dots" aria-hidden="true">{[1, 2, 3].map((i) => <i class:list={[i <= d.level && 'on']} />)}</span>
+  <LevelDots level={d.level} />
   {d.label}
 </span>
 
@@ -22,18 +24,5 @@ const { difficulty: d } = Astro.props;
     text-transform: uppercase;
     color: var(--muted);
     white-space: nowrap;
-  }
-  .dots {
-    display: inline-flex;
-    gap: 3px;
-  }
-  .dots i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    border: 1px solid var(--gold);
-  }
-  .dots i.on {
-    background: var(--gold);
   }
 </style>

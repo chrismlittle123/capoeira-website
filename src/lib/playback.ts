@@ -11,6 +11,46 @@ export interface Take {
   performer?: string;
 }
 
+/** A song's recording as the content schema gives it (src/content.config.ts). */
+export interface Recording {
+  kind: Take['kind'];
+  src: string;
+  videoId?: string;
+  start: number;
+  end?: number;
+  title?: string;
+  performer?: string;
+  recordedAt?: Date;
+}
+
+/** What a recording is called: its title, else who sings it, else when it was made, else its place in the list. */
+function rawLabel(r: Recording, i: number) {
+  const fallback = r.kind === 'youtube' ? `Video ${i + 1}` : `Recording ${i + 1}`;
+  return r.title ?? r.performer ?? r.recordedAt?.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) ?? fallback;
+}
+
+/** Number labels that repeat: "Roda", "Roda" → "Roda 1", "Roda 2". */
+export function numberRepeats(labels: string[]): string[] {
+  return labels.map((l, i) => {
+    const total = labels.filter((x) => x === l).length;
+    return total > 1 ? `${l} ${labels.slice(0, i + 1).filter((x) => x === l).length}` : l;
+  });
+}
+
+/** The player's takes for a song's recordings; a relative audio path is served from the site root. */
+export function takesFor(recordings: Recording[]): Take[] {
+  const labels = numberRepeats(recordings.map(rawLabel));
+  return recordings.map((r, i) => ({
+    kind: r.kind,
+    src: r.kind === 'audio' && !/^https?:/.test(r.src) && !r.src.startsWith('/') ? `/${r.src}` : r.src,
+    videoId: r.videoId,
+    start: r.start,
+    end: r.end,
+    label: labels[i] ?? '',
+    performer: r.performer,
+  }));
+}
+
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const optional = (v: unknown, type: 'string' | 'number') => v === undefined || typeof v === type;
 

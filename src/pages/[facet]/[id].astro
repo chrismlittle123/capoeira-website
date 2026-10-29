@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SongCard from '../../components/SongCard.astro';
-import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, facetIds, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import { facetUrl } from '../../lib/urls';
 
 export async function getStaticPaths() {
   const paths = [];

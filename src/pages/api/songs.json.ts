@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { getSongs, lyricsOf, songUrl } from '../../lib/songs';
+import { getSongs, lyricsOf } from '../../lib/songs';
+import { songUrl } from '../../lib/urls';
 import { difficulty } from '../../lib/lyrics';
 import { SITE } from '../../site.config';
 
