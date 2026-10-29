@@ -1,24 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getSongs, getNames, lyricsOf, mediaBadge } from '../lib/songs';
 import { allLines, difficulty, hookLine } from '../lib/lyrics';
-
-export interface SearchDoc {
-  id: string;
-  title: string;
-  alt: string;
-  /** 1 easy · 2 medium · 3 hard */
-  level: number;
-  levelLabel: string;
-  themes: string;
-  people: string;
-  places: string;
-  hook: string;
-  lyrics: string;
-  translation: string;
-  lines: string[];
-  /** e.g. { icon: '▶', label: 'watch' } when the song has recordings */
-  media?: { icon: string; label: string };
-}
+import type { SearchDoc } from '../lib/search-doc';
 
 export const GET: APIRoute = async () => {
   const [songs, names] = await Promise.all([getSongs(), getNames()]);

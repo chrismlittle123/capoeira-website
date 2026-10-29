@@ -1,6 +1,7 @@
 import MiniSearch, { type SearchResult } from 'minisearch';
 import { escapeHtml as esc, highlight, queryTerms, searchTerm, snippet } from '../lib/search-text';
-import type { SearchDoc } from '../pages/search-index.json';
+import { DIFFICULTY } from '../lib/lyrics';
+import { parseSearchDocs, type SearchDoc } from '../lib/search-doc';
 import { required } from './dom';
 
 const TEXT_FIELDS = new Set(['title', 'alt', 'hook', 'lyrics', 'translation']);
@@ -10,8 +11,11 @@ const FACET_LABELS: Record<string, string> = {
   places: 'Place',
 };
 
+type Level = (typeof DIFFICULTY)[number];
+const levelById = (id: string | null | undefined): Level | undefined => DIFFICULTY.find((d) => d.id === id);
+
 interface Index {
-  ms: MiniSearch<SearchDoc>;
+  mini: MiniSearch<SearchDoc>;
   docs: SearchDoc[];
   byId: Map<string, SearchDoc>;
 }
@@ -19,9 +23,12 @@ let indexPromise: Promise<Index> | undefined;
 
 function loadIndex() {
   indexPromise ??= fetch('/search-index.json')
-    .then((r) => r.json() as Promise<SearchDoc[]>)
+    .then(async (r) => {
+      if (!r.ok) throw new Error(`search index: HTTP ${r.status}`);
+      return parseSearchDocs(await r.json());
+    })
     .then((docs) => {
-      const ms = new MiniSearch<SearchDoc>({
+      const mini = new MiniSearch<SearchDoc>({
         fields: ['title', 'alt', 'hook', 'lyrics', 'translation', 'themes', 'people', 'places'],
         storeFields: ['id'],
         processTerm: searchTerm,
@@ -32,8 +39,8 @@ function loadIndex() {
           fuzzy: (t) => (t.length > 4 ? 0.2 : false),
         },
       });
-      ms.addAll(docs);
-      return { ms, docs, byId: new Map(docs.map((d) => [d.id, d])) };
+      mini.addAll(docs);
+      return { mini, docs, byId: new Map(docs.map((d) => [d.id, d])) };
     });
   indexPromise.catch(() => (indexPromise = undefined)); // allow a retry after a network failure
   return indexPromise;
@@ -42,7 +49,7 @@ function loadIndex() {
 function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
   return `<li style="--i:${i}"><a class="card" href="/songs/${doc.id}/">
-    <div class="meta"><span class="dl" title="${esc(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(3 - doc.level)} ${esc(doc.levelLabel)}</span>${
+    <div class="meta"><span class="dl" title="${esc(doc.levelLabel)}">${'●'.repeat(doc.level)}${'○'.repeat(DIFFICULTY.length - doc.level)} ${esc(doc.levelLabel)}</span>${
       doc.media ? `<span class="has-audio">${esc(doc.media.icon)} ${esc(doc.media.label)}</span>` : ''
     }</div>
     <h3>${highlight(doc.title, terms)}</h3>
@@ -70,10 +77,11 @@ function init(root: HTMLElement) {
   const results = required(root, '[data-results]');
   const status = required(root, '[data-status]');
   const levelButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-level]')];
-  const LEVELS: Record<string, number> = { easy: 1, medium: 2, hard: 3 };
-  let level = ''; // 'easy' | 'medium' | 'hard' | ''
+  let level: Level | undefined;
   const browse = root.hasAttribute('data-inline') ? document.querySelector<HTMLElement>('[data-browse]') : null;
   const syncUrl = root.hasAttribute('data-sync-url');
+  const showLevel = () =>
+    levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level?.id)));
   let runId = 0;
 
   const run = async () => {
@@ -85,8 +93,9 @@ function init(root: HTMLElement) {
       const url = new URL(location.href);
       if (q) url.searchParams.set('q', q);
       else url.searchParams.delete('q');
+      // links shared before difficulty levels replaced the song-type filter
       url.searchParams.delete('type');
-      if (level) url.searchParams.set('level', level);
+      if (level) url.searchParams.set('level', level.id);
       else url.searchParams.delete('level');
       history.replaceState(history.state, '', url);
     }
@@ -97,16 +106,25 @@ function init(root: HTMLElement) {
       return;
     }
     browse?.setAttribute('hidden', '');
-    const { ms, byId } = await loadIndex();
+    let index: Index;
+    try {
+      index = await loadIndex();
+    } catch {
+      if (id !== runId) return;
+      results.innerHTML = '';
+      status.textContent = "Couldn't load the songs to search — are you offline? Try again in a moment.";
+      return;
+    }
     if (id !== runId) return; // a newer keystroke won
-    const matches = (d?: SearchDoc) => !!d && (!level || d.level === LEVELS[level]);
+    const { mini, byId } = index;
+    const matches = (d?: SearchDoc) => !!d && (!level || d.level === level.level);
     const filter = level ? (r: SearchResult) => matches(byId.get(r.id)) : undefined;
     let hits: { doc: SearchDoc; r?: SearchResult }[];
     if (terms.length) {
       const query = terms.join(' ');
-      let res = ms.search(query, { combineWith: 'AND', filter });
+      let res = mini.search(query, { combineWith: 'AND', filter });
       if (!res.length) {
-        res = ms.search(query, { combineWith: 'OR', filter });
+        res = mini.search(query, { combineWith: 'OR', filter });
         const top = res[0]?.score ?? 0;
         res = res.filter((r) => r.score >= top * 0.3);
       }
@@ -124,11 +142,10 @@ function init(root: HTMLElement) {
         return card(doc, marks, i, r && explain(r, doc, marks));
       })
       .join('');
-    const scope = level ? levelButtons.find((b) => b.dataset.level === level)?.dataset.label : '';
-    const inType = scope ? ` in ${esc(scope)}` : '';
+    const inLevel = level ? ` in ${esc(level.label)}` : '';
     status.innerHTML = hits.length
-      ? `${hits.length} song${hits.length === 1 ? '' : 's'}${inType}`
-      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${esc(q)}”${inType}. ${
+      ? `${hits.length} song${hits.length === 1 ? '' : 's'}${inLevel}`
+      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${esc(q)}”${inLevel}. ${
           level ? 'Try clearing the filter, or' : 'Try'
         } fewer words — or just the coro.</small></span>`;
   };
@@ -147,19 +164,19 @@ function init(root: HTMLElement) {
   });
   for (const btn of levelButtons) {
     btn.addEventListener('click', () => {
-      level = level === btn.dataset.level ? '' : (btn.dataset.level ?? '');
-      levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
+      level = level?.id === btn.dataset.level ? undefined : levelById(btn.dataset.level);
+      showLevel();
       run();
     });
   }
-  input.addEventListener('focus', () => loadIndex(), { once: true });
+  // Fetch the index early; a failure is shown when a search needs it.
+  input.addEventListener('focus', () => loadIndex().catch(() => undefined), { once: true });
 
   if (syncUrl) {
     const params = new URLSearchParams(location.search);
     input.value = params.get('q') ?? '';
-    const lv = params.get('level') ?? '';
-    level = lv in LEVELS ? lv : '';
-    levelButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
+    level = levelById(params.get('level'));
+    showLevel();
     if (input.value || level) run();
   }
 }

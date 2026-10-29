@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SPEEDS, clampTime, lineAt, nextSpeed, progress } from './playback.ts';
+import { SPEEDS, clampTime, lineAt, nextSpeed, parseTakes, progress } from './playback.ts';
 
 test('nextSpeed steps through the speeds and wraps; an unknown rate restarts', () => {
   assert.deepEqual(
@@ -33,4 +33,17 @@ test('lineAt finds the line being sung, lighting it slightly early', () => {
   assert.equal(lineAt(times, 99), 2);
   assert.equal(lineAt([3, 6], 1), -1);
   assert.equal(lineAt([], 1), -1);
+});
+
+test('parseTakes accepts the takes MediaPlayer writes, and refuses anything else', () => {
+  const takes = [
+    { kind: 'youtube', src: 'https://youtu.be/dQw4w9WgXcQ', videoId: 'dQw4w9WgXcQ', start: 0, label: 'Video' },
+    { kind: 'audio', src: '/audio/a/b.m4a', start: 5, end: 30, label: 'Roda', performer: 'Ana' },
+  ];
+  assert.deepEqual(parseTakes(JSON.parse(JSON.stringify(takes))), takes);
+  assert.deepEqual(parseTakes([]), []);
+  assert.throws(() => parseTakes({}));
+  assert.throws(() => parseTakes([{ kind: 'youtube', src: 'x', start: 0, label: 'no id' }]));
+  assert.throws(() => parseTakes([{ kind: 'audio', src: '/a.m4a', start: '0', label: 'x' }]));
+  assert.throws(() => parseTakes([{ kind: 'vimeo', src: 'x', start: 0, label: 'x' }]));
 });

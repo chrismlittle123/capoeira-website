@@ -1,6 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import type { Song } from '../lib/songs';
+import type { Take } from '../lib/playback';
 
 type Recording = Song['data']['recordings'][number];
 interface Props {
@@ -23,7 +24,7 @@ const labels = rawLabels.map((l, i) => {
   const same = rawLabels.filter((x) => x === l);
   return same.length > 1 ? `${l} ${rawLabels.slice(0, i + 1).filter((x) => x === l).length}` : l;
 });
-const takes = recordings.map((r, i) => ({
+const takes: Take[] = recordings.map((r, i) => ({
   kind: r.kind,
   src: r.kind === 'audio' && !/^https?:/.test(r.src) && !r.src.startsWith('/') ? `/${r.src}` : r.src,
   videoId: r.videoId,

@@ -1,21 +1,11 @@
 import { formatTime as fmt } from '../lib/media';
-import { clampTime, lineAt, nextSpeed, progress } from '../lib/playback';
+import { clampTime, lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/playback';
 import { required, requiredClosest } from './dom';
 
 /*
  * One set of controls (cabaça play button, wire seek bar, speed, loop, takes) driving
  * either an <audio> element or a YouTube embed, plus karaoke-style lyric sync.
  */
-
-interface Take {
-  kind: 'audio' | 'youtube';
-  src: string;
-  videoId?: string;
-  start: number;
-  end?: number;
-  label: string;
-  performer?: string;
-}
 
 interface Engine {
   play(): void;
@@ -37,6 +27,8 @@ interface Events {
   error(msg: string): void;
 }
 
+// After the reader scrolls, leave the page where they put it for this long before following the song again.
+const SCROLL_PAUSE_MS = 3000;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ───────────────────────── audio ─────────────────────────
@@ -290,7 +282,7 @@ export function initPlayer(root: HTMLElement) {
   const slot = requiredClosest(root, '[data-player-slot]');
   const holder = requiredClosest(root, '[data-bar-holder]');
   const audio = required<HTMLAudioElement>(root, 'audio');
-  const takes: Take[] = JSON.parse(required(root, '[data-takes]').textContent || '[]');
+  const takes = parseTakes(JSON.parse(required(root, '[data-takes]').textContent || '[]'));
   if (!takes.length) return;
   const $ = <T extends HTMLElement>(sel: string) => required<T>(root, sel);
   const play = $<HTMLButtonElement>('[data-play]');
@@ -389,7 +381,7 @@ export function initPlayer(root: HTMLElement) {
     current = found;
     if (!found) return;
     found.classList.add('now');
-    if (!engine().paused && Date.now() - userScrolledAt > 3000)
+    if (!engine().paused && Date.now() - userScrolledAt > SCROLL_PAUSE_MS)
       found.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
   }
   const userScrolled = () => (userScrolledAt = Date.now());
@@ -514,16 +506,17 @@ export function initPlayer(root: HTMLElement) {
         visible = e.isIntersecting;
         updateDock();
       },
-      { rootMargin: '-64px 0px 0px 0px' }, // the sticky header covers the top 64px
+      // the sticky header covers the top of the page
+      { rootMargin: `-${document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 64}px 0px 0px 0px` },
     ).observe(holder);
   }
 
   // ── lock-screen / headphone controls (audio only — YouTube manages its own)
-  const ms = 'mediaSession' in navigator ? navigator.mediaSession : undefined;
+  const session = 'mediaSession' in navigator ? navigator.mediaSession : undefined;
   function setMediaMetadata() {
-    if (!ms) return;
+    if (!session) return;
     const t = takes[index];
-    ms.metadata =
+    session.metadata =
       t.kind === 'audio'
         ? new MediaMetadata({
             title: root.dataset.title,
@@ -534,17 +527,17 @@ export function initPlayer(root: HTMLElement) {
         : null;
   }
   function setMediaState(s: MediaSessionPlaybackState) {
-    if (!ms || takes[index].kind !== 'audio') return;
-    ms.playbackState = s;
+    if (!session || takes[index].kind !== 'audio') return;
+    session.playbackState = s;
     const [start, end] = range();
     if (Number.isFinite(end))
       try {
-        ms.setPositionState({ duration: end, position: clampTime(audio.currentTime, start, end), playbackRate: audio.playbackRate });
+        session.setPositionState({ duration: end, position: clampTime(audio.currentTime, start, end), playbackRate: audio.playbackRate });
       } catch {
         // Some browsers reject a position state they consider invalid; the lock screen just skips this update.
       }
   }
-  if (ms) {
+  if (session) {
     setMediaMetadata();
     const clamp = (t: number) => {
       const [start, end] = range();
@@ -559,7 +552,7 @@ export function initPlayer(root: HTMLElement) {
     ];
     for (const [action, fn] of handlers)
       try {
-        ms.setActionHandler(action, fn);
+        session.setActionHandler(action, fn);
       } catch {
         // This browser doesn't support the action: leave it out.
       }
