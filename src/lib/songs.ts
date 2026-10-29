@@ -2,22 +2,15 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { parseLyrics, hookLine, type LyricSection } from './lyrics';
 import { TAXONOMY_KEYS, type TaxonomyKey } from './facets';
 import { compareText } from './normalize';
-import { brokenReferences, type Ref } from './references';
+import { brokenReferences, oncePerBuild, type Ref } from './references';
 
 export type Song = CollectionEntry<'songs'>;
 
-let checked: Promise<void> | undefined;
-
 /**
  * Fail on a reference to an unknown song, theme, person or place: Astro only warns about a
- * dangling one. A build checks once, however often it's called; `astro dev` checks on every
- * page, so a new typo or a fix shows up without restarting the server.
+ * dangling one. Checked once per build, and on every page in `astro dev`.
  */
-export function checkReferences(): Promise<void> {
-  if (!import.meta.env.PROD) return failOnBrokenReferences();
-  checked ??= failOnBrokenReferences();
-  return checked;
-}
+export const checkReferences = oncePerBuild(failOnBrokenReferences, () => import.meta.env.PROD);
 
 async function failOnBrokenReferences(): Promise<void> {
   const songs = await getCollection('songs');
