@@ -1,9 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { FACETS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
+import { FACETS, TAXONOMY_KEYS, getSongs, getTaxonomy, facetIds, facetUrl, entryFacts, type TaxonomyKey } from '../../lib/songs';
 
 export function getStaticPaths() {
-  return (Object.keys(FACETS) as TaxonomyKey[]).map((key) => ({ params: { facet: FACETS[key].path }, props: { key } }));
+  return TAXONOMY_KEYS.map((key) => ({ params: { facet: key }, props: { key } }));
 }
 const { key } = Astro.props as { key: TaxonomyKey };
 const facet = FACETS[key];

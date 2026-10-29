@@ -1,11 +1,11 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { FACETS, facetUrl, type TaxonomyKey } from '../../lib/songs';
+import { TAXONOMY_KEYS, facetUrl } from '../../lib/songs';
 import { SITE } from '../../site.config';
 
 export const GET: APIRoute = async ({ site }) => {
   const out: Record<string, Record<string, unknown>> = {};
-  for (const key of Object.keys(FACETS) as TaxonomyKey[]) {
+  for (const key of TAXONOMY_KEYS) {
     out[key] = Object.fromEntries(
       (await getCollection(key)).map((e) => [e.id, { ...e.data, url: new URL(facetUrl(key, e.id), site).href }]),
     );
