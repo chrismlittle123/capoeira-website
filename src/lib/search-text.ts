@@ -100,3 +100,24 @@ export function containsAllWords(folded: string, query: string) {
     .filter(Boolean)
     .every((w) => folded.includes(w));
 }
+
+/** The search index's text fields: a match in one of these is in the song itself. */
+export const TEXT_FIELDS = ['title', 'alt', 'hook', 'lyrics', 'translation'] as const;
+/** The index's facet fields, with how a match through one is labelled. */
+export const FACET_LABELS = { themes: 'Theme', people: 'People', places: 'Place' } as const;
+type FacetField = keyof typeof FACET_LABELS;
+const isTextField = (f: string) => (TEXT_FIELDS as readonly string[]).includes(f);
+const isFacetField = (f: string): f is FacetField => f in FACET_LABELS;
+
+/**
+ * HTML saying which theme, person or place a song matched through, when some word of the
+ * query was found nowhere in its title or lyrics; undefined when every word was.
+ * `match` is MiniSearch's: each matched term → the fields it was found in.
+ */
+export function whyMatchedHtml(match: Record<string, string[]>, doc: Record<FacetField, string>, terms: string[]): string | undefined {
+  const facetOnly = Object.values(match).filter((fields) => !fields.some(isTextField));
+  if (!facetOnly.length) return undefined;
+  const fields = new Set(facetOnly.flat());
+  const parts = [...fields].filter(isFacetField).map((f) => `${FACET_LABELS[f]}: ${highlight(doc[f], terms)}`);
+  return parts.join(' · ') || undefined;
+}

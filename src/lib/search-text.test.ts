@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { containsAllWords, escapeHtml, highlight, queryTerms, searchTerm, snippet } from './search-text.ts';
+import { containsAllWords, escapeHtml, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from './search-text.ts';
 
 test('searchTerm folds a word, and drops one-letter and filler words', () => {
   assert.equal(searchTerm('Iê'), 'ie');
@@ -43,4 +43,11 @@ test('containsAllWords needs every word somewhere in the text, in any order, acc
   assert.ok(containsAllWords(text, 'sway'));
   assert.ok(!containsAllWords(text, 'ginga roda'));
   assert.ok(containsAllWords(text, '   '));
+});
+
+test('whyMatchedHtml names the facets a song matched through, only when some word is in no text field', () => {
+  const doc = { themes: 'The sea', people: 'Besouro', places: 'Bahia' };
+  assert.equal(whyMatchedHtml({ mar: ['lyrics'] }, doc, ['mar']), undefined);
+  assert.equal(whyMatchedHtml({ mar: ['lyrics'], besouro: ['people'] }, doc, ['besouro']), 'People: <mark>Besouro</mark>');
+  assert.equal(whyMatchedHtml({ bahia: ['places', 'themes'] }, doc, []), 'Place: Bahia · Theme: The sea');
 });

@@ -1,16 +1,12 @@
+/** The song search box (src/components/Search.astro): the index loaded once, results as you type, an optional difficulty filter. */
 import MiniSearch, { type SearchResult } from 'minisearch';
-import { escapeHtml, highlight, queryTerms, searchTerm, snippet } from '../lib/search-text';
+import { FACET_LABELS, TEXT_FIELDS, escapeHtml, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from '../lib/search-text';
 import { DIFFICULTY, levelDots } from '../lib/lyrics';
 import { plural } from '../lib/text';
 import { SEARCH_INDEX_URL, songUrl } from '../lib/urls';
 import { parseSearchDocs, type SearchDoc } from '../lib/search-doc';
-import { required } from './dom';
+import { required, setQueryParams } from './dom';
 
-const TEXT_FIELDS = ['title', 'alt', 'hook', 'lyrics', 'translation'] as const;
-const FACET_LABELS = { themes: 'Theme', people: 'People', places: 'Place' } as const;
-type FacetField = keyof typeof FACET_LABELS;
-const isTextField = (f: string) => (TEXT_FIELDS as readonly string[]).includes(f);
-const isFacetField = (f: string): f is FacetField => f in FACET_LABELS;
 
 // Wait this long after a keystroke before searching, so fast typing searches once.
 const TYPING_PAUSE_MS = 80;
@@ -52,7 +48,8 @@ function loadIndex() {
   return indexPromise;
 }
 
-function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
+/** One result's card, as HTML. */
+function cardHtml(doc: SearchDoc, terms: string[], i: number, why?: string) {
   const line = snippet(doc, terms);
   return `<li style="--i:${i}"><a class="card" href="${songUrl(doc.id)}">
     <div class="meta"><span class="dl" title="${escapeHtml(doc.levelLabel)}">${levelDots(doc.level).map((on) => (on ? '●' : '○')).join('')} ${escapeHtml(doc.levelLabel)}</span>${
@@ -64,17 +61,8 @@ function card(doc: SearchDoc, terms: string[], i: number, why?: string) {
   </a></li>`;
 }
 
-/** If a song matched (partly) through its theme/people/places, say so. */
-function explain(r: SearchResult, doc: SearchDoc, terms: string[]) {
-  // only when some part of the query was found nowhere in the title or lyrics
-  const facetOnly = Object.values(r.match).filter((fields) => !fields.some(isTextField));
-  if (!facetOnly.length) return undefined;
-  const fields = new Set(facetOnly.flat());
-  const parts = [...fields].filter(isFacetField).map((f) => `${FACET_LABELS[f]}: ${highlight(doc[f], terms)}`);
-  return parts.join(' · ') || undefined;
-}
-
-function init(root: HTMLElement) {
+/** Wire one search box: its input, level buttons, results and status, and (with data-sync-url) the page's ?q= and ?level=. */
+function wireSearchBox(root: HTMLElement) {
   if (root.dataset.ready) return;
   root.dataset.ready = '1';
   const input = required<HTMLInputElement>(root, 'input[type=search]');
@@ -94,14 +82,8 @@ function init(root: HTMLElement) {
     const terms = queryTerms(q);
     root.classList.toggle('has-text', !!q);
     if (syncUrl) {
-      const url = new URL(location.href);
-      if (q) url.searchParams.set('q', q);
-      else url.searchParams.delete('q');
-      // links shared before difficulty levels replaced the song-type filter
-      url.searchParams.delete('type');
-      if (level) url.searchParams.set('level', level.id);
-      else url.searchParams.delete('level');
-      history.replaceState(history.state, '', url);
+      // type: links shared before difficulty levels replaced the song-type filter
+      setQueryParams({ q: q || undefined, level: level?.id, type: undefined });
     }
     if (!terms.length && !level) {
       results.innerHTML = '';
@@ -143,7 +125,7 @@ function init(root: HTMLElement) {
       .map(({ doc, r }, i) => {
         // highlight the words the index actually matched too (covers typos and prefixes)
         const marks = r ? [...new Set([...terms, ...r.terms])] : terms;
-        return card(doc, marks, i, r && explain(r, doc, marks));
+        return cardHtml(doc, marks, i, r && whyMatchedHtml(r.match, doc, marks));
       })
       .join('');
     const inLevel = level ? ` in ${escapeHtml(level.label)}` : '';
@@ -185,7 +167,7 @@ function init(root: HTMLElement) {
   }
 }
 
-document.querySelectorAll<HTMLElement>('[data-search]').forEach(init);
+document.querySelectorAll<HTMLElement>('[data-search]').forEach(wireSearchBox);
 
 // "/" or ⌘K anywhere opens search
 const dialog = document.querySelector<HTMLDialogElement>('#search-dialog');

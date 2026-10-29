@@ -1,14 +1,14 @@
 /** The glossary page's filter box (src/pages/glossary.astro), kept in the URL as ?q=. */
 import { containsAllWords } from '../lib/search-text';
+import { required, setQueryParams } from './dom';
 
-const form = document.querySelector<HTMLFormElement>('[data-glossary-search]');
-const input = form?.querySelector('input');
-const status = document.querySelector<HTMLElement>('[data-status]');
+const form = required<HTMLFormElement>(document, '[data-glossary-search]');
+const input = required<HTMLInputElement>(form, 'input');
+const status = required(document, '[data-status]');
 // each term's folded text (term, forms and definition) is in its data-text
 const items = [...document.querySelectorAll<HTMLElement>('[data-terms] > div')];
 
 function filter() {
-  if (!input || !status) return;
   const query = input.value;
   let shown = 0;
   for (const el of items) {
@@ -18,15 +18,10 @@ function filter() {
   }
   const searching = query.trim() !== '';
   status.textContent = !searching ? '' : shown ? `${shown} of ${items.length} terms` : 'No terms match.';
-  const url = new URL(location.href);
-  if (searching) url.searchParams.set('q', query);
-  else url.searchParams.delete('q');
-  history.replaceState(null, '', url);
+  setQueryParams({ q: searching ? query : undefined });
 }
 
-if (form && input) {
-  input.value = new URLSearchParams(location.search).get('q') ?? '';
-  input.addEventListener('input', filter);
-  form.addEventListener('submit', (e) => e.preventDefault());
-  if (input.value) filter();
-}
+input.value = new URLSearchParams(location.search).get('q') ?? '';
+input.addEventListener('input', filter);
+form.addEventListener('submit', (e) => e.preventDefault());
+if (input.value) filter();

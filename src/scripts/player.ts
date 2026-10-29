@@ -1,12 +1,11 @@
+/**
+ * One set of controls (cabaça play button, wire seek bar, speed, loop, takes) driving
+ * either an <audio> element or a YouTube embed, plus karaoke-style lyric sync.
+ */
 import { formatTime, youtubeEmbedUrl, youtubeThumbnailUrl } from '../lib/media';
 import { SITE } from '../site.config';
 import { clampTime, lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/playback';
 import { required, requiredClosest } from './dom';
-
-/*
- * One set of controls (cabaça play button, wire seek bar, speed, loop, takes) driving
- * either an <audio> element or a YouTube embed, plus karaoke-style lyric sync.
- */
 
 interface Engine {
   play(): void;
