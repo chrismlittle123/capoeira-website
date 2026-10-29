@@ -5,6 +5,7 @@ import {
   audioUrl,
   dataIds,
   isSlug,
+  localDate,
   parseIdList,
   slugify,
   songMarkdown,
@@ -74,4 +75,9 @@ test('songMarkdown writes frontmatter that reads back as the song, with a lyrics
 test('songMarkdown leaves out empty lists and recordings', () => {
   const md = songMarkdown({ title: 'A', themes: [], people: [], places: [], added: '2026-10-29' });
   assert.deepEqual(frontmatter(md), { title: 'A', summary: '', added: '2026-10-29' });
+});
+
+test('localDate is the calendar date where the script runs, not in UTC', () => {
+  assert.equal(localDate(new Date(2026, 0, 5, 23, 30)), '2026-01-05');
+  assert.equal(localDate(new Date(2026, 11, 31, 0, 5)), '2026-12-31');
 });

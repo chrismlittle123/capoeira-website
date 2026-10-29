@@ -43,6 +43,10 @@ export const parseIdList = (answer: string) =>
 
 export const unknownIds = (picked: string[], known: string[]) => picked.filter((id) => !known.includes(id));
 
+/** YYYY-MM-DD in the local time zone (toISOString would give the UTC date). */
+export const localDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
 export interface NewSong {
   title: string;
   themes: string[];

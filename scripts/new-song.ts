@@ -4,11 +4,12 @@ import { createInterface } from 'node:readline';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { youtubeId } from '../src/lib/media.ts';
-import { PUBLIC_DIR, SONGS_DIR, dataFile } from '../src/lib/paths.ts';
+import { PUBLIC_DIR, dataFile, songFile } from '../src/lib/paths.ts';
 import {
   audioUrl,
   dataIds,
   isSlug,
+  localDate,
   parseIdList,
   slugify,
   songMarkdown,
@@ -32,8 +33,14 @@ function fail(message: string): never {
 }
 
 /** Ask for ids from one of the src/data files, refusing any that aren't in it. */
-async function askIds(label: string, data: string) {
-  const known = dataIds(readFileSync(dataFile(data), 'utf8'));
+async function askIds(label: string, data: 'themes' | 'people' | 'places') {
+  const path = dataFile(data);
+  let known: string[] = [];
+  try {
+    known = dataIds(readFileSync(path, 'utf8'));
+  } catch (e) {
+    fail(`can't read the ids in ${path}: ${e instanceof Error ? e.message : String(e)}`);
+  }
   console.log(`\n${label}:\n  ${known.join(', ')}`);
   const picked = parseIdList(await ask(`${label} (comma separated, blank for none)`));
   const unknown = unknownIds(picked, known);
@@ -44,9 +51,10 @@ async function askIds(label: string, data: string) {
 // Ask and check everything first: nothing is written until every answer is good.
 const [, , argTitle, argAudio] = process.argv;
 const title = argTitle || (await ask('Title'));
+if (!title.trim()) fail('a song needs a title');
 const slug = await ask('URL slug', slugify(title));
 if (!isSlug(slug)) fail(`"${slug}" can't be a URL slug: use lower-case letters, digits and dashes`);
-const songPath = `${SONGS_DIR}/${slug}.md`;
+const songPath = songFile(slug);
 if (existsSync(songPath)) fail(`${songPath} already exists`);
 
 const song: NewSong = {
@@ -54,7 +62,7 @@ const song: NewSong = {
   themes: await askIds('Themes', 'themes'),
   people: await askIds('People', 'people'),
   places: await askIds('Places', 'places'),
-  added: new Date().toISOString().slice(0, 10),
+  added: localDate(new Date()),
 };
 
 let audioSource: string | undefined;
@@ -63,6 +71,8 @@ if (audioAnswer) {
   audioSource = unescapeDroppedPath(audioAnswer);
   if (!existsSync(audioSource)) fail(`audio file not found: ${audioSource}`);
   song.audio = { file: audioUrl(slug, audioSource), performer: await ask('Who is singing? (optional)') };
+  // audioUrl starts with a slash: /audio/<song>/<file>
+  if (existsSync(`${PUBLIC_DIR}${song.audio.file}`)) fail(`${PUBLIC_DIR}${song.audio.file} already exists`);
 }
 
 const youtube = await ask('YouTube link (blank to skip)');
