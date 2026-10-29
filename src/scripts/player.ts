@@ -1,4 +1,6 @@
 import { formatTime as fmt } from '../lib/media';
+import { clampTime, lineAt, nextSpeed, progress } from '../lib/playback';
+import { required, requiredClosest } from './dom';
 
 /*
  * One set of controls (cabaça play button, wire seek bar, speed, loop, takes) driving
@@ -35,7 +37,6 @@ interface Events {
   error(msg: string): void;
 }
 
-const SPEEDS = [1, 0.75, 0.5, 1.25];
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ───────────────────────── audio ─────────────────────────
@@ -115,21 +116,47 @@ function audioEngine(audio: HTMLAudioElement, on: Events): Engine & { load(src: 
 
 // ───────────────────────── YouTube ─────────────────────────
 
+/** The parts of YouTube's IFrame API player we use. Its methods only appear once it's ready. */
+interface YTPlayer {
+  playVideo?(): void;
+  pauseVideo?(): void;
+  seekTo?(seconds: number, allowSeekAhead: boolean): void;
+  getCurrentTime?(): number;
+  getDuration?(): number;
+  getPlayerState?(): number;
+  setPlaybackRate?(rate: number): void;
+  destroy?(): void;
+}
+
+interface YTApi {
+  Player: new (
+    el: HTMLElement,
+    options: {
+      events: {
+        onReady(e: { target: YTPlayer }): void;
+        onStateChange(e: { data: number }): void;
+        onError(): void;
+      };
+    },
+  ) => YTPlayer;
+}
+
 declare global {
   interface Window {
-    YT?: any;
+    YT?: YTApi;
     onYouTubeIframeAPIReady?: () => void;
   }
 }
 
-let ytApi: Promise<any> | undefined;
+let ytApi: Promise<YTApi> | undefined;
 function loadYouTubeApi() {
-  ytApi ??= new Promise((resolve, reject) => {
+  ytApi ??= new Promise<YTApi>((resolve, reject) => {
     if (window.YT?.Player) return resolve(window.YT);
     const prev = window.onYouTubeIframeAPIReady;
     window.onYouTubeIframeAPIReady = () => {
       prev?.();
-      resolve(window.YT);
+      if (window.YT) resolve(window.YT);
+      else reject(new Error('YouTube API missing'));
     };
     const s = document.createElement('script');
     s.src = 'https://www.youtube.com/iframe_api';
@@ -144,7 +171,7 @@ function loadYouTubeApi() {
 }
 
 function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Events) {
-  let player: any;
+  let player: YTPlayer | undefined;
   let ready: Promise<void> | undefined;
   let take: Take | undefined;
   let state = -1; // YT.PlayerState
@@ -178,17 +205,17 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
         new Promise<void>((resolve) => {
           player = new YT.Player(iframe, {
             events: {
-              onReady: () => {
-                player.setPlaybackRate(rate);
+              onReady: (e) => {
+                e.target.setPlaybackRate?.(rate);
                 on.meta();
                 // autoplay may already be running before the API attached
-                if (player.getPlayerState?.() === 1) {
+                if (e.target.getPlayerState?.() === 1) {
                   state = 1;
                   on.play();
                 }
                 resolve();
               },
-              onStateChange: (e: { data: number }) => {
+              onStateChange: (e) => {
                 state = e.data;
                 if (e.data === 1) on.play();
                 else if (e.data === 2) on.pause();
@@ -200,7 +227,7 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
         }),
     );
     // The video itself still plays without the API; only our extra controls need it.
-    ready.catch(() => {});
+    ready.catch(() => undefined);
   };
 
   const engine: Engine & { load(t: Take): void } = {
@@ -218,10 +245,10 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
     play() {
       if (!take) return;
       if (!ready) create(take, true);
-      else ready.then(() => player.playVideo());
+      else ready.then(() => player?.playVideo?.());
     },
     pause() {
-      ready?.then(() => player.pauseVideo());
+      ready?.then(() => player?.pauseVideo?.());
     },
     seek(t) {
       if (!take) return;
@@ -230,7 +257,7 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
         create(take, true);
         return;
       }
-      ready.then(() => player.seekTo(t, true));
+      ready.then(() => player?.seekTo?.(t, true));
     },
     get time() {
       return player?.getCurrentTime?.() ?? take?.start ?? 0;
@@ -260,11 +287,12 @@ function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Event
 // ───────────────────────── controller ─────────────────────────
 
 export function initPlayer(root: HTMLElement) {
-  const slot = root.closest<HTMLElement>('[data-player-slot]')!;
-  const holder = root.closest<HTMLElement>('[data-bar-holder]')!;
-  const audio = root.querySelector('audio')!;
-  const takes: Take[] = JSON.parse(root.querySelector('[data-takes]')!.textContent!);
-  const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const slot = requiredClosest(root, '[data-player-slot]');
+  const holder = requiredClosest(root, '[data-bar-holder]');
+  const audio = required<HTMLAudioElement>(root, 'audio');
+  const takes: Take[] = JSON.parse(required(root, '[data-takes]').textContent || '[]');
+  if (!takes.length) return;
+  const $ = <T extends HTMLElement>(sel: string) => required<T>(root, sel);
   const play = $<HTMLButtonElement>('[data-play]');
   const bar = $<HTMLInputElement>('[data-seek-bar]');
   const cur = $('[data-cur]');
@@ -283,6 +311,7 @@ export function initPlayer(root: HTMLElement) {
     el,
     t: Number(el.dataset.time),
   }));
+  const lineTimes = lines.map((l) => l.t);
 
   let index = 0;
   let looping = false;
@@ -338,8 +367,8 @@ export function initPlayer(root: HTMLElement) {
   };
 
   const audioE = audioEngine(audio, events);
-  const ytE = video ? youtubeEngine(video.querySelector('[data-frame]')!, video.querySelector('[data-poster]'), events) : undefined;
-  const engine = (): Engine => (takes[index].kind === 'youtube' ? ytE! : audioE);
+  const ytE = video ? youtubeEngine(required(video, '[data-frame]'), video.querySelector('[data-poster]'), events) : undefined;
+  const engine = (): Engine => (takes[index].kind === 'youtube' && ytE ? ytE : audioE);
   // The engine only knows its video once a take is loaded — do it for the first take now,
   // otherwise a song whose first recording is a YouTube video can't be played.
   if (takes[0].kind === 'youtube') ytE?.load(takes[0]);
@@ -354,8 +383,7 @@ export function initPlayer(root: HTMLElement) {
   const synced = () => lines.length > 0 && index === syncIndex;
   function highlight(t: number) {
     if (!synced()) return;
-    let found: HTMLElement | undefined;
-    for (const l of lines) if (l.t <= t + 0.15) found = l.el;
+    const found = lines[lineAt(lineTimes, t)]?.el;
     if (found === current) return;
     current?.classList.remove('now');
     current = found;
@@ -382,7 +410,7 @@ export function initPlayer(root: HTMLElement) {
     const t = e.time;
     const [start, end] = range();
     if (Number.isFinite(end) && t >= end && !e.paused && takes[index].kind === 'audio') return events.ended();
-    const p = Number.isFinite(end) && end > start ? Math.min(1, Math.max(0, (t - start) / (end - start))) : 0;
+    const p = progress(t, start, end);
     if (!scrubbing) {
       bar.value = String(Math.round(p * 1000));
       root.style.setProperty('--p', String(p));
@@ -420,7 +448,7 @@ export function initPlayer(root: HTMLElement) {
 
   $<HTMLButtonElement>('[data-speed]').addEventListener('click', () => {
     const e = engine();
-    const next = SPEEDS[(SPEEDS.indexOf(e.rate) + 1) % SPEEDS.length];
+    const next = nextSpeed(e.rate);
     audioE.rate = next;
     if (ytE) ytE.rate = next;
     speedLabel.textContent = `${next}×`;
@@ -511,14 +539,16 @@ export function initPlayer(root: HTMLElement) {
     const [start, end] = range();
     if (Number.isFinite(end))
       try {
-        ms.setPositionState({ duration: end, position: Math.min(end, Math.max(start, audio.currentTime)), playbackRate: audio.playbackRate });
-      } catch {}
+        ms.setPositionState({ duration: end, position: clampTime(audio.currentTime, start, end), playbackRate: audio.playbackRate });
+      } catch {
+        // Some browsers reject a position state they consider invalid; the lock screen just skips this update.
+      }
   }
   if (ms) {
     setMediaMetadata();
     const clamp = (t: number) => {
       const [start, end] = range();
-      return Math.max(start, Number.isFinite(end) ? Math.min(end, t) : t);
+      return clampTime(t, start, end);
     };
     const handlers: [MediaSessionAction, MediaSessionActionHandler][] = [
       ['play', () => engine().play()],
@@ -530,6 +560,8 @@ export function initPlayer(root: HTMLElement) {
     for (const [action, fn] of handlers)
       try {
         ms.setActionHandler(action, fn);
-      } catch {}
+      } catch {
+        // This browser doesn't support the action: leave it out.
+      }
   }
 }
