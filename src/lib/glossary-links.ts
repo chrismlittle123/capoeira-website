@@ -1,5 +1,6 @@
 /** Linking glossary words inside lyrics (src/components/Lyrics.astro). */
 import { escapeHtml } from './search-text.ts';
+import { LOCALE } from './normalize.ts';
 
 export interface GlossaryWord {
   id: string;
@@ -17,7 +18,7 @@ const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  */
 export function glossaryLinker(words: GlossaryWord[]) {
   const forms = words.flatMap(({ id, forms }) => forms.map((f) => ({ f, id }))).sort((a, b) => b.f.length - a.f.length);
-  const byForm = new Map(forms.map(({ f, id }) => [f.toLocaleLowerCase('pt'), id]));
+  const byForm = new Map(forms.map(({ f, id }) => [f.toLocaleLowerCase(LOCALE), id]));
   const re = forms.length
     ? new RegExp(`(?<![\\p{L}])(${forms.map(({ f }) => escapeRegExp(f)).join('|')})(?![\\p{L}])`, 'giu')
     : null;
@@ -28,7 +29,7 @@ export function glossaryLinker(words: GlossaryWord[]) {
     let out = '';
     let last = 0;
     for (const m of text.matchAll(re)) {
-      const id = byForm.get(m[0].toLocaleLowerCase('pt'));
+      const id = byForm.get(m[0].toLocaleLowerCase(LOCALE));
       if (!id || used.has(id)) continue; // explain each word once, where it first appears
       used.add(id);
       out +=

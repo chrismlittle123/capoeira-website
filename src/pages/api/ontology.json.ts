@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { TAXONOMY_KEYS } from '../../lib/songs';
+import { TAXONOMY_KEYS } from '../../lib/facets';
 import { facetUrl, glossaryUrl } from '../../lib/urls';
 import { SITE } from '../../site.config';
 

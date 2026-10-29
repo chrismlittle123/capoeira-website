@@ -1,6 +1,7 @@
 ---
 // A song in a list: difficulty, recordings badge, title and its hook line.
-import { hookOf, lyricsOf, mediaBadge, type Song } from '../lib/songs';
+import { hookOf, lyricsOf, type Song } from '../lib/songs';
+import { mediaBadge } from '../lib/media';
 import { songUrl } from '../lib/urls';
 import { difficulty } from '../lib/lyrics';
 import DifficultyBadge from './DifficultyBadge.astro';
@@ -12,7 +13,7 @@ interface Props {
   morph?: boolean;
 }
 const { song, i = 0, morph = true } = Astro.props;
-const badge = mediaBadge(song);
+const badge = mediaBadge(song.data.recordings);
 const level = difficulty(lyricsOf(song));
 ---
 

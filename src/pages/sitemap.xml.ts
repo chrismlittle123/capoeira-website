@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { TAXONOMY_KEYS, getSongs, getTaxonomy } from '../lib/songs';
+import { getSongs, getTaxonomy } from '../lib/songs';
+import { TAXONOMY_KEYS } from '../lib/facets';
 import { PAGES, facetUrl, songUrl } from '../lib/urls';
 
 export const GET: APIRoute = async ({ site }) => {

@@ -2,9 +2,9 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { fold } from '../lib/normalize';
+import { fold, compareText, LOCALE } from '../lib/normalize';
 
-const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'pt'));
+const terms = (await getCollection('glossary')).sort((a, b) => compareText(a.data.term, b.data.term));
 ---
 
 <Base title="Glossary" description="Capoeira words you'll hear in the roda and in the songs, explained.">
@@ -34,7 +34,7 @@ const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.local
       {
         terms.map((t, i) => (
           <div id={t.id} style={`--i:${i}`} data-text={fold([t.data.term, ...t.data.forms, t.data.definition].join(' '))}>
-            <dt lang="pt-BR">{t.data.term}</dt>
+            <dt lang={LOCALE}>{t.data.term}</dt>
             <dd>{t.data.definition}</dd>
           </div>
         ))

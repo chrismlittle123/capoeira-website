@@ -3,6 +3,7 @@ import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
 import { toSeconds, youtubeId, youtubeStart } from './lib/media';
+import { LOCALE } from './lib/normalize';
 import { PUBLIC_DIR, SONGS_DIR, dataFile } from './lib/paths';
 import { STYLES } from './lib/song-facts';
 
@@ -113,7 +114,7 @@ const songs = defineCollection({
     related: z.array(reference('songs')).default([]),
     origin: z.enum(['traditional', 'composed', 'unknown']).default('traditional'),
     composer: z.string().optional(),
-    language: z.string().default('pt-BR'),
+    language: z.string().default(LOCALE),
     summary: z.string().optional(),
     about: z.string().optional(),
     // false = machine/rough translation, shown with a "draft" note until someone checks it

@@ -1,5 +1,5 @@
 /** Facts the song page derives from a song's data: who wrote it, and which songs to sing next. */
-import type { TaxonomyKey } from './songs';
+import { TAXONOMY_KEYS, type TaxonomyKey } from './facets.ts';
 
 /** The capoeira styles a song can belong to (checked by src/content.config.ts), with display names. */
 export const STYLE_NAMES = { angola: 'Angola', regional: 'Regional', contemporanea: 'Contemporânea' } as const;
@@ -30,13 +30,12 @@ export interface Relatable {
 // A link either way counts most, then each shared theme or person, then each shared place.
 const LINKED = 10;
 const WEIGHTS = { themes: 3, people: 3, places: 2 } as const satisfies Record<TaxonomyKey, number>;
-const FACET_KEYS = ['themes', 'people', 'places'] as const satisfies readonly TaxonomyKey[];
 const MIN_SCORE = 2;
 const MAX_RELATED = 4;
 
 const score = (song: Relatable, other: Relatable) =>
   (song.related.includes(other.id) || other.related.includes(song.id) ? LINKED : 0) +
-  FACET_KEYS.reduce(
+  TAXONOMY_KEYS.reduce(
     (n, key) => n + WEIGHTS[key] * other.facets[key].filter((id) => song.facets[key].includes(id)).length,
     0,
   );

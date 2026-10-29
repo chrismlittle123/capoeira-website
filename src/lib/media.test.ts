@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { youtubeId, toSeconds, youtubeStart, formatTime, youtubeEmbedUrl, youtubeThumbnailUrl } from './media.ts';
+import { youtubeId, toSeconds, youtubeStart, formatTime, youtubeEmbedUrl, youtubeThumbnailUrl, mediaBadge } from './media.ts';
 
 test('youtubeId reads every link form, and nothing else', () => {
   const id = 'dQw4w9WgXcQ';
@@ -13,7 +13,11 @@ test('youtubeId reads every link form, and nothing else', () => {
     `https://www.youtube.com/shorts/${id}`,
     `https://www.youtube.com/live/${id}`,
   ]) assert.equal(youtubeId(url), id, url);
+  assert.equal(youtubeId(`https://m.youtube.com/watch?v=${id}`), id);
+  assert.equal(youtubeId(`youtu.be/${id}`), id);
   assert.equal(youtubeId('https://vimeo.com/123'), undefined);
+  assert.equal(youtubeId(`https://notyoutube.com/watch?v=${id}`), undefined);
+  assert.equal(youtubeId(`https://example.com/?u=https://youtu.be/${id}`), undefined);
 });
 
 test('toSeconds reads seconds, m:ss, h:mm:ss and 1h2m3s; anything else is NaN', () => {
@@ -34,6 +38,18 @@ test('youtubeStart reads t= or start=, else undefined; an unreadable one is NaN;
   assert.equal(youtubeStart('https://youtu.be/dQw4w9WgXcQ'), undefined);
   assert.equal(youtubeStart('not a url'), undefined);
   assert.ok(Number.isNaN(youtubeStart('https://youtu.be/dQw4w9WgXcQ?t=abc') ?? 0));
+});
+
+test('youtubeStart reads a link written without https:// the same way', () => {
+  assert.equal(youtubeStart('youtu.be/dQw4w9WgXcQ?t=90'), 90);
+  assert.ok(Number.isNaN(youtubeStart('youtu.be/dQw4w9WgXcQ?t=abc') ?? 0));
+  assert.equal(youtubeStart('youtu.be/dQw4w9WgXcQ#t=90'), undefined);
+});
+
+test('mediaBadge prefers a video, then audio, else nothing', () => {
+  assert.deepEqual(mediaBadge([{ kind: 'audio' }, { kind: 'youtube' }]), { icon: '▶', label: 'watch' });
+  assert.deepEqual(mediaBadge([{ kind: 'audio' }]), { icon: '♪', label: 'listen' });
+  assert.equal(mediaBadge([]), undefined);
 });
 
 test('formatTime gives m:ss, and a dash for no time', () => {

@@ -1,7 +1,16 @@
 /** Shared helpers for recordings (audio files and YouTube videos). */
 
-const YT_ID = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})/;
+import type { CollectionEntry } from 'astro:content';
 
+/** What a recording is played with, as the song schema normalises it. */
+export type MediaKind = CollectionEntry<'songs'>['data']['recordings'][number]['kind'];
+
+export const MEDIA_ICON: Record<MediaKind, string> = { youtube: '▶', audio: '♪' };
+
+// Anchored to the start, so only YouTube's own hosts match (not e.g. notyoutube.com).
+const YT_ID = /^(?:https?:\/\/)?(?:(?:www|m|music)\.)?(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})/;
+
+/** The 11-character video id in a YouTube link, or undefined when it isn't one. */
 export const youtubeId = (url: string) => url.match(YT_ID)?.[1];
 
 /** The privacy-enhanced embed for a video, without parameters. */
@@ -21,16 +30,25 @@ export function toSeconds(v: string | number): number {
   return NaN;
 }
 
-/** Start time encoded in a YouTube link (?t=90, ?t=1m30s, &start=90): undefined when there's none, NaN when it can't be read. */
-export function youtubeStart(url: string) {
-  try {
-    const p = new URL(url).searchParams;
-    const t = p.get('t') ?? p.get('start');
-    return t ? toSeconds(t) : undefined;
-  } catch {
-    return undefined;
-  }
+/**
+ * Start time encoded in a YouTube link (?t=90, ?t=1m30s, &start=90): undefined when there's none,
+ * NaN when it can't be read. The query is read straight off the text, so a link written
+ * without https:// is checked the same way.
+ */
+export function youtubeStart(url: string): number | undefined {
+  const p = new URLSearchParams(url.split('#')[0].split('?')[1] ?? '');
+  const t = p.get('t') ?? p.get('start');
+  return t ? toSeconds(t) : undefined;
 }
 
+/** "watch" / "listen" badge for a song's recordings, or undefined if it has none. */
+export function mediaBadge(recordings: { kind: MediaKind }[]): { icon: string; label: string } | undefined {
+  const kinds = new Set(recordings.map((r) => r.kind));
+  if (kinds.has('youtube')) return { icon: MEDIA_ICON.youtube, label: 'watch' };
+  if (kinds.has('audio')) return { icon: MEDIA_ICON.audio, label: 'listen' };
+  return undefined;
+}
+
+/** Seconds as m:ss for the player, or a dash when there's no time yet. */
 export const formatTime = (t: number) =>
   Number.isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}` : '–:––';

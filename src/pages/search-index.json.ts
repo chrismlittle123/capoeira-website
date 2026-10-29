@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { getSongs, getNames, lyricsOf, mediaBadge } from '../lib/songs';
+import { getSongs, getNames, lyricsOf } from '../lib/songs';
+import { mediaBadge } from '../lib/media';
 import { allLines, difficulty, hookLine } from '../lib/lyrics';
 import type { SearchDoc } from '../lib/search-doc';
 
@@ -25,7 +26,7 @@ export const GET: APIRoute = async () => {
       lyrics: [...new Set(lines.map((l) => l.text))].join('\n'),
       translation: [...new Set(lines.map((l) => l.translation).filter(Boolean))].join('\n'),
       lines: [...new Set(lines.flatMap((l) => [l.text, l.translation ?? '']).filter(Boolean))],
-      media: mediaBadge(song),
+      media: mediaBadge(song.data.recordings),
     };
   });
   return new Response(JSON.stringify(docs), { headers: { 'Content-Type': 'application/json' } });

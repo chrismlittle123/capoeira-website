@@ -60,3 +60,8 @@ test('difficulty counts the words of distinct lines, ignoring repeats and (x2)',
 test('levelDots fills one dot per level up to the given one', () => {
   assert.deepEqual([levelDots(1), levelDots(3)], [[true, false, false], [true, true, true]]);
 });
+
+test('a "#" line that isn\'t a "## " heading fails, rather than being sung as a lyric', () => {
+  assert.throws(() => parseLyrics('#Coro\nParanauê'), /section heading/);
+  assert.throws(() => parseLyrics('### Coro\nParanauê'), /section heading/);
+});

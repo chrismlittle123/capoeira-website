@@ -3,7 +3,7 @@
 import Icon from './Icon.astro';
 import type { Song } from '../lib/songs';
 import { takesFor } from '../lib/playback';
-import { youtubeThumbnailUrl } from '../lib/media';
+import { MEDIA_ICON, youtubeThumbnailUrl } from '../lib/media';
 
 interface Props {
   recordings: Song['data']['recordings'];
@@ -90,7 +90,7 @@ const anyVideo = takes.some((t) => t.kind === 'youtube');
               {takes.map((t, i) => (
                 <li>
                   <button type="button" class="chip" data-take={i} aria-pressed={i === 0 ? 'true' : 'false'}>
-                    {t.kind === 'youtube' ? '▶' : '♪'} {t.label}
+                    {MEDIA_ICON[t.kind]} {t.label}
                     {i === syncIndex && recordings[i].sync && <span class="count">synced</span>}
                   </button>
                 </li>

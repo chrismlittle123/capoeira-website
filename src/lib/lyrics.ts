@@ -5,9 +5,10 @@
  *   [0:12] Paranauê, paraná ← optional [m:ss] timestamp syncs the line to the recording
  *   > Paranauê, Paraná      ← "> " gives the translation of the line above
  *                           ← blank line = new stanza
- *   ## Solo                 ← any other heading is sung by the lead singer
+ *   ## Solo                 ← any other "## " heading is sung by the lead singer;
+ *                             any other "#" line is a typo and fails the build
  *   Eu não sou daqui
- *   + Marinheiro só          ← "+ " = the coro answers inside a solo section
+ *   + Marinheiro só         ← "+ " = the coro answers inside a solo section
  */
 
 export type Role = 'solo' | 'coro';
@@ -30,6 +31,7 @@ export interface LyricSection {
 const CORO = /^(coro|chorus|resposta|response|refr[aã]o)\b/i;
 const TIME = /^\[(\d+):(\d{1,2}(?:\.\d+)?)\]\s*/;
 
+/** The song's Markdown body as sections of stanzas of lines (format above). */
 export function parseLyrics(body: string): LyricSection[] {
   const sections: LyricSection[] = [];
   let section: LyricSection | undefined;
@@ -44,7 +46,6 @@ export function parseLyrics(body: string): LyricSection[] {
       section = { role: 'solo', label: 'Solo', stanzas: [] };
       sections.push(section);
     }
-    return section;
   };
 
   for (const raw of body.replace(/\r\n?/g, '\n').split('\n')) {
@@ -54,6 +55,9 @@ export function parseLyrics(body: string): LyricSection[] {
       const label = line.slice(3).trim();
       section = { role: CORO.test(label) ? 'coro' : 'solo', label, stanzas: [] };
       sections.push(section);
+    } else if (line.startsWith('#')) {
+      // "#Coro" or "### Coro" would otherwise be sung as a lyric line.
+      throw new Error(`Lyrics: a section heading is "## " then its name: "${line}"`);
     } else if (!line) {
       flushStanza();
     } else if (line.startsWith('>')) {

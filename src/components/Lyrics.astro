@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import type { LyricSection } from '../lib/lyrics';
 import { glossaryLinker } from '../lib/glossary-links';
 import { formatTime } from '../lib/media';
+import { LOCALE } from '../lib/normalize';
 
 interface Props {
   sections: LyricSection[];
@@ -41,7 +42,7 @@ const glossaryJson = JSON.stringify(Object.fromEntries(usedTerms.map((g) => [g.i
                     {formatTime(l.time)}
                   </button>
                 )}
-                <span class="pt" lang="pt-BR" set:html={l.html} />
+                <span class="pt" lang={LOCALE} set:html={l.html} />
                 {l.translation && (
                   <span class="tr" lang="en">
                     {l.translation}
