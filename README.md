@@ -7,9 +7,10 @@ instant search. Static site built with [Astro](https://astro.build) — no serve
 database to run, free to host.
 
 ```sh
-npm install
-npm run dev        # http://localhost:4321
-npm run build      # type-checks, validates all song data, outputs dist/
+pnpm install
+pnpm dev           # http://localhost:4321
+pnpm build         # type-checks, validates all song data, outputs dist/
+pnpm test          # unit tests (vitest)
 ```
 
 Set your group name, title and licence in `src/site.config.ts`, and your real domain
@@ -18,8 +19,8 @@ in `astro.config.mjs` (`site:`).
 ## Adding a song
 
 ```sh
-npm run new-song                                # asks a few questions
-npm run new-song -- "Sou eu Maitá" ~/rec.m4a    # title + audio file up front
+pnpm new-song                                   # asks a few questions
+pnpm new-song "Sou eu Maitá" ~/rec.m4a          # title + audio file up front
 ```
 
 This creates `src/content/songs/<slug>.md` (copying any audio into
@@ -149,7 +150,8 @@ songbook is public.
 1. Push this repo to GitHub.
 2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** →
    pick `capoeira-website`.
-3. Build settings: framework preset **Astro**, **Build command** `npm run build`,
+3. Build settings: framework preset **Astro**, **Build command** `npm run build` (Cloudflare installs
+   with pnpm, from `pnpm-lock.yaml`; `npm run` only runs the script),
    **Output directory** `dist`. Node comes from `.node-version`.
 4. Deploy. You get a `*.pages.dev` URL — put it (or your custom domain) in `site:` in
    `astro.config.mjs` so canonical links, the sitemap and JSON-LD point at the right

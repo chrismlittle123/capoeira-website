@@ -62,6 +62,51 @@ function cardHtml(doc: SearchDoc, terms: string[], i: number, why?: string) {
   </a></li>`;
 }
 
+interface Outputs {
+  results: HTMLElement;
+  status: HTMLElement;
+}
+
+interface Hit {
+  doc: SearchDoc;
+  r?: SearchResult;
+}
+
+/** The songs matching `terms` (every word, else the strongest any-word matches) within `level`; with no terms, every song in it. */
+function findHits({ mini, byId }: Index, terms: string[], level: Level | undefined): Hit[] {
+  const matches = (d?: SearchDoc) => !!d && (!level || d.level === level.level);
+  if (!terms.length) return [...byId.values()].filter((d) => matches(d)).map((doc) => ({ doc }));
+  const filter = level ? { filter: (r: SearchResult) => matches(byId.get(r.id)) } : {};
+  const query = terms.join(' ');
+  let res = mini.search(query, { combineWith: 'AND', ...filter });
+  if (!res.length) {
+    res = mini.search(query, { combineWith: 'OR', ...filter });
+    const top = res[0]?.score ?? 0;
+    res = res.filter((r) => r.score >= top * OR_MATCH_CUTOFF);
+  }
+  return res.flatMap((r) => {
+    const doc = byId.get(r.id);
+    return doc ? [{ doc, r }] : [];
+  });
+}
+
+/** Show `hits` as cards in `results`, and the count (or why there are none) in `status`. */
+function showHits({ results, status }: Outputs, hits: Hit[], terms: string[], q: string, level: Level | undefined) {
+  results.innerHTML = hits
+    .map(({ doc, r }, i) => {
+      // highlight the words the index actually matched too (covers typos and prefixes)
+      const marks = r ? [...new Set([...terms, ...r.terms])] : terms;
+      return cardHtml(doc, marks, i, r && whyMatchedHtml(r.match, doc, marks));
+    })
+    .join('');
+  const inLevel = level ? ` in ${escapeHtml(level.label)}` : '';
+  status.innerHTML = hits.length
+    ? `${plural(hits.length, 'song', 'songs')}${inLevel}`
+    : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${escapeHtml(q)}”${inLevel}. ${
+        level ? 'Try clearing the filter, or' : 'Try'
+      } fewer words — or just the coro.</small></span>`;
+}
+
 /** Wire one search box: its input, level buttons, results and status, and (with data-sync-url) the page's ?q= and ?level=. */
 function wireSearchBox(root: HTMLElement) {
   if (root.dataset.ready) return;
@@ -103,68 +148,40 @@ function wireSearchBox(root: HTMLElement) {
       return;
     }
     if (id !== runId) return; // a newer keystroke won
-    const { mini, byId } = index;
-    const matches = (d?: SearchDoc) => !!d && (!level || d.level === level.level);
-    const filter = level ? (r: SearchResult) => matches(byId.get(r.id)) : undefined;
-    let hits: { doc: SearchDoc; r?: SearchResult }[];
-    if (terms.length) {
-      const query = terms.join(' ');
-      let res = mini.search(query, { combineWith: 'AND', filter });
-      if (!res.length) {
-        res = mini.search(query, { combineWith: 'OR', filter });
-        const top = res[0]?.score ?? 0;
-        res = res.filter((r) => r.score >= top * OR_MATCH_CUTOFF);
-      }
-      hits = res.flatMap((r) => {
-        const doc = byId.get(r.id);
-        return doc ? [{ doc, r }] : [];
-      });
-    } else {
-      hits = [...byId.values()].filter((d) => matches(d)).map((doc) => ({ doc }));
-    }
-    results.innerHTML = hits
-      .map(({ doc, r }, i) => {
-        // highlight the words the index actually matched too (covers typos and prefixes)
-        const marks = r ? [...new Set([...terms, ...r.terms])] : terms;
-        return cardHtml(doc, marks, i, r && whyMatchedHtml(r.match, doc, marks));
-      })
-      .join('');
-    const inLevel = level ? ` in ${escapeHtml(level.label)}` : '';
-    status.innerHTML = hits.length
-      ? `${plural(hits.length, 'song', 'songs')}${inLevel}`
-      : `<span class="empty">Ninguém cantou essa ainda…<small>No songs match “${escapeHtml(q)}”${inLevel}. ${
-          level ? 'Try clearing the filter, or' : 'Try'
-        } fewer words — or just the coro.</small></span>`;
+    showHits({ results, status }, findHits(index, terms, level), terms, q, level);
   };
 
+  // run() reports a failure to load the index itself, so none of these leaves a rejection unhandled.
   let timer: number | undefined;
   input.addEventListener('input', () => {
     clearTimeout(timer);
-    timer = window.setTimeout(run, TYPING_PAUSE_MS);
+    timer = window.setTimeout(() => void run(), TYPING_PAUSE_MS);
   });
-  required(root, 'form').addEventListener('submit', async (e) => {
+  required(root, 'form').addEventListener('submit', (e) => {
     e.preventDefault();
     clearTimeout(timer);
-    await run(); // never act on results from an older query
-    const first = results.querySelector<HTMLAnchorElement>('a');
-    if (first) location.href = first.href;
+    // never act on results from an older query
+    void run().then(() => {
+      const first = results.querySelector<HTMLAnchorElement>('a');
+      if (first) location.href = first.href;
+    });
   });
   for (const btn of levelButtons) {
     btn.addEventListener('click', () => {
       level = level?.id === btn.dataset.level ? undefined : levelById(btn.dataset.level);
       showLevel();
-      run();
+      void run();
     });
   }
   // Fetch the index early; a failure is shown when a search needs it.
-  input.addEventListener('focus', () => loadIndex().catch(() => undefined), { once: true });
+  input.addEventListener('focus', () => void loadIndex().catch(() => undefined), { once: true });
 
   if (syncUrl) {
     const params = new URLSearchParams(location.search);
     input.value = params.get('q') ?? '';
     level = levelById(params.get('level'));
     showLevel();
-    if (input.value || level) run();
+    if (input.value || level) void run();
   }
 }
 

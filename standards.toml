@@ -1,9 +1,18 @@
-# Proposed by Flaude: standards-kit's template for this repo's language, at a
-# pinned tag of the standards registry (Flaude's plans/standards-gate.md).
-
+# capoeira-website - production, TypeScript (Astro, no React)
 [metadata]
-tier = "internal"
+tier = "production"
+project = "capoeira-website"
 
 [extends]
-registry = "github:chrismlittle123/standards@standards-v4.1.0"
-ruleset = "typescript-internal"
+registry = "github:chrismlittle123/standards@standards-v7.0.0"
+ruleset = "typescript-production"
+
+# Not a React template: it is Astro with no React and no .tsx, so React's
+# rules would be inert.
+#
+# Coverage takes the template's 80% floor: measured at 91.15% of lines on
+# 2026-10-30, scoped by vitest.config.ts to src/lib, the unit-tested code.
+
+# The source conform samples to audit the pinned ESLint rules against.
+[code.linting.eslint]
+files = ["src/**/*.ts", "scripts/**/*.ts"]

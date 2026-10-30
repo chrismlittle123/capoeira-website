@@ -11,7 +11,7 @@
  *   + Marinheiro só         ← "+ " = the coro answers inside a solo section
  */
 
-export type Role = 'solo' | 'coro';
+type Role = 'solo' | 'coro';
 
 interface LyricLine {
   text: string;
@@ -83,7 +83,7 @@ export function parseLyrics(body: string): LyricSection[] {
 }
 
 export const allLines = (sections: LyricSection[]) =>
-  sections.flatMap((s) => s.stanzas.flat().map((l) => ({ ...l, role: l.coro ? ('coro' as Role) : s.role })));
+  sections.flatMap((s) => s.stanzas.flat().map((l) => ({ ...l, role: l.coro ? 'coro' : s.role })));
 
 export const hasTranslation = (sections: LyricSection[]) =>
   allLines(sections).some((l) => l.translation);
