@@ -1,574 +1,329 @@
 /**
  * One set of controls (cabaça play button, wire seek bar, speed, loop, takes) driving
  * either an <audio> element or a YouTube embed, plus karaoke-style lyric sync.
+ * The engines are in player-audio.ts and player-youtube.ts, the lock screen in
+ * player-media-session.ts.
  */
-import { formatTime, youtubeEmbedUrl, youtubeThumbnailUrl } from '../lib/player/media';
-import { SITE } from '../site.config';
-import { clampTime, lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/player/playback';
+import { formatTime } from '../lib/player/media';
+import { lineAt, nextSpeed, parseTakes, progress, type Take } from '../lib/player/playback';
 import { required, requiredClosest } from './dom';
-
-interface Engine {
-  play(): void;
-  pause(): void;
-  seek(t: number): void;
-  readonly time: number;
-  readonly duration: number;
-  readonly paused: boolean;
-  rate: number;
-  /** 0–1 loudness for the gourd animation */
-  level(): number;
-}
-
-/** What an engine reports back. These only update the controls; they don't start or stop anything. */
-interface Events {
-  onPlay(): void;
-  onPause(): void;
-  onEnd(): void;
-  onMeta(): void;
-  onError(msg: string): void;
-}
+import { audioEngine } from './player-audio';
+import { reducedMotion, type Engine, type Events } from './player-engine';
+import { mediaSession, type MediaControls } from './player-media-session';
+import { youtubeEngine } from './player-youtube';
 
 // After the reader scrolls, leave the page where they put it for this long before following the song again.
 const SCROLL_PAUSE_MS = 3000;
-// Lock-screen skip back/forward, in seconds, when the system doesn't say.
-const SKIP_SECONDS = 5;
-const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ───────────────────────── audio ─────────────────────────
-
-function audioEngine(audio: HTMLAudioElement, on: Events): Engine & { load(src: string): void } {
-  let analyser: AnalyserNode | undefined;
-  let buf: Uint8Array<ArrayBuffer> | undefined;
-  let ctx: AudioContext | undefined;
-
-  // Audio-reactive gourd. Same-origin only: a cross-origin file without CORS headers would go silent.
-  const ensureAnalyser = () => {
-    if (analyser || !('AudioContext' in window)) return;
-    if (new URL(audio.currentSrc || audio.src, location.href).origin !== location.origin) return;
-    try {
-      ctx = new AudioContext();
-      const node = ctx.createMediaElementSource(audio);
-      analyser = ctx.createAnalyser();
-      analyser.fftSize = 512;
-      buf = new Uint8Array(analyser.fftSize);
-      node.connect(analyser).connect(ctx.destination);
-    } catch {
-      analyser = undefined;
-    }
-  };
-
-  audio.addEventListener('play', () => {
-    // A context that stays suspended only stills the gourd animation.
-    ctx?.resume().catch(() => undefined);
-    on.onPlay();
-  });
-  audio.addEventListener('pause', () => on.onPause());
-  audio.addEventListener('ended', () => on.onEnd());
-  audio.addEventListener('loadedmetadata', () => on.onMeta());
-  audio.addEventListener('error', () => {
-    if (audio.getAttribute('src')) on.onError("Couldn't load this recording — are you offline?");
-  });
-  // metadata may already be there (cached file) before we attached the listener
-  if (audio.readyState >= 1) queueMicrotask(() => on.onMeta());
-
+/** The player's markup: the controls inside `root`, and the slot and lyrics around it. */
+function findUi(root: HTMLElement) {
+  const $ = <T extends HTMLElement>(sel: string) => required<T>(root, sel);
+  const bar = $<HTMLInputElement>('[data-seek-bar]');
   return {
-    load(src) {
-      audio.src = src;
-      audio.load();
-    },
-    play() {
-      ensureAnalyser();
-      audio.play().catch((e: DOMException) => {
-        // AbortError: superseded by pause/seek. NotAllowedError: autoplay blocked — just stay paused.
-        if (e.name !== 'AbortError' && e.name !== 'NotAllowedError') on.onError("Couldn't play this recording.");
-      });
-    },
-    pause: () => audio.pause(),
-    seek: (t) => (audio.currentTime = t),
-    get time() {
-      return audio.currentTime;
-    },
-    get duration() {
-      return audio.duration;
-    },
-    get paused() {
-      return audio.paused;
-    },
-    get rate() {
-      return audio.playbackRate;
-    },
-    set rate(r) {
-      audio.playbackRate = r;
-    },
-    level() {
-      if (!analyser || !buf) return 0;
-      analyser.getByteTimeDomainData(buf);
-      let peak = 0;
-      for (const v of buf) peak = Math.max(peak, Math.abs(v - 128));
-      return Math.min(1, peak / 90);
-    },
+    root,
+    holder: requiredClosest(root, '[data-bar-holder]'),
+    audio: required<HTMLAudioElement>(root, 'audio'),
+    play: $<HTMLButtonElement>('[data-play]'),
+    bar,
+    // the bar runs from 0 to its max
+    seekSteps: Number(bar.max),
+    cur: $('[data-cur]'),
+    dur: $('[data-dur]'),
+    speed: $<HTMLButtonElement>('[data-speed]'),
+    speedLabel: $('[data-speed-label]'),
+    loop: $<HTMLButtonElement>('[data-loop]'),
+    download: $<HTMLAnchorElement>('[data-download]'),
+    ytLink: $<HTMLAnchorElement>('[data-youtube-link]'),
+    nowLabel: $('[data-now-label]'),
+    error: $('[data-error]'),
+    takeButtons: [...root.querySelectorAll<HTMLButtonElement>('[data-take]')],
+    video: requiredClosest(root, '[data-player-slot]').querySelector<HTMLElement>('[data-video]'),
+    lyrics: document.querySelector<HTMLElement>('[data-lyrics]'),
   };
 }
+type Ui = ReturnType<typeof findUi>;
 
-// ───────────────────────── YouTube ─────────────────────────
-
-/** The parts of YouTube's IFrame API player we use. Its methods only appear once it's ready. */
-interface YTPlayer {
-  playVideo?(): void;
-  pauseVideo?(): void;
-  seekTo?(seconds: number, allowSeekAhead: boolean): void;
-  getCurrentTime?(): number;
-  getDuration?(): number;
-  getPlayerState?(): number;
-  setPlaybackRate?(rate: number): void;
-  destroy?(): void;
+interface LyricLine {
+  el: HTMLElement;
+  t: number;
 }
-
-interface YTApi {
-  Player: new (
-    el: HTMLElement,
-    options: {
-      events: {
-        onReady(e: { target: YTPlayer }): void;
-        onStateChange(e: { data: number }): void;
-        onError(): void;
-      };
-    },
-  ) => YTPlayer;
-}
-
-declare global {
-  interface Window {
-    YT?: YTApi;
-    onYouTubeIframeAPIReady?: () => void;
-  }
-}
-
-let ytApi: Promise<YTApi> | undefined;
-function loadYouTubeApi() {
-  ytApi ??= new Promise<YTApi>((resolve, reject) => {
-    if (window.YT?.Player) return resolve(window.YT);
-    const prev = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      prev?.();
-      if (window.YT) resolve(window.YT);
-      else reject(new Error('YouTube API missing'));
-    };
-    const s = document.createElement('script');
-    s.src = 'https://www.youtube.com/iframe_api';
-    s.async = true;
-    s.onerror = () => {
-      ytApi = undefined;
-      reject(new Error('YouTube unavailable'));
-    };
-    document.head.append(s);
-  });
-  return ytApi;
-}
-
-function youtubeEngine(frame: HTMLElement, poster: HTMLElement | null, on: Events) {
-  let player: YTPlayer | undefined;
-  let ready: Promise<void> | undefined;
-  let take: Take | undefined;
-  let state = -1; // YT.PlayerState
-  let rate = 1;
-  let pendingSeek: number | undefined;
-
-  const create = (t: Take, autoplay: boolean) => {
-    if (t.kind !== 'youtube') return;
-    // Insert the embed straight away, inside the user's tap, so the video starts even
-    // before YouTube's control script has loaded (iOS only autoplays from a gesture).
-    const params = new URLSearchParams({
-      autoplay: autoplay ? '1' : '0',
-      start: String(Math.floor(pendingSeek ?? t.start)),
-      playsinline: '1',
-      rel: '0',
-      enablejsapi: '1',
-      origin: location.origin,
-    });
-    if (t.end) params.set('end', String(Math.ceil(t.end)));
-    const iframe = document.createElement('iframe');
-    iframe.src = `${youtubeEmbedUrl(t.videoId)}?${params}`;
-    iframe.title = t.label;
-    iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-    iframe.allowFullscreen = true;
-    frame.replaceChildren(iframe);
-    poster?.setAttribute('hidden', '');
-    pendingSeek = undefined;
-
-    // Then attach the API for our controls (speed, loop, seek, lyric sync).
-    ready = loadYouTubeApi().then(
-      (YT) =>
-        new Promise<void>((resolve) => {
-          player = new YT.Player(iframe, {
-            events: {
-              onReady: (e) => {
-                e.target.setPlaybackRate?.(rate);
-                on.onMeta();
-                // autoplay may already be running before the API attached
-                if (e.target.getPlayerState?.() === 1) {
-                  state = 1;
-                  on.onPlay();
-                }
-                resolve();
-              },
-              onStateChange: (e) => {
-                state = e.data;
-                if (e.data === 1) on.onPlay();
-                else if (e.data === 2) on.onPause();
-                else if (e.data === 0) on.onEnd();
-              },
-              onError: () => on.onError("This video can't be played here — try opening it on YouTube."),
-            },
-          });
-        }),
-    );
-    // The video itself still plays without the API; only our extra controls need it. The
-    // failure is reported here once, and `ready` then resolves so later calls are no-ops.
-    ready = ready.catch(() =>
-      on.onError("YouTube's player controls didn't load: use the video's own controls."),
-    );
-  };
-
-  const engine: Engine & { load(t: Take): void } = {
-    load(t) {
-      take = t;
-      state = -1;
-      player?.destroy?.();
-      player = undefined;
-      ready = undefined;
-      frame.innerHTML = '';
-      poster?.removeAttribute('hidden');
-      const img = poster?.querySelector('img');
-      if (img && t.kind === 'youtube') img.src = youtubeThumbnailUrl(t.videoId);
-    },
-    play() {
-      if (!take) return;
-      if (!ready) create(take, true);
-      else ready.then(() => player?.playVideo?.());
-    },
-    pause() {
-      ready?.then(() => player?.pauseVideo?.());
-    },
-    seek(t) {
-      if (!take) return;
-      if (!ready) {
-        pendingSeek = t;
-        create(take, true);
-        return;
-      }
-      ready.then(() => player?.seekTo?.(t, true));
-    },
-    get time() {
-      return player?.getCurrentTime?.() ?? take?.start ?? 0;
-    },
-    get duration() {
-      return player?.getDuration?.() || NaN;
-    },
-    get paused() {
-      return state !== 1 && state !== 3;
-    },
-    get rate() {
-      return rate;
-    },
-    set rate(r) {
-      rate = r;
-      player?.setPlaybackRate?.(r);
-    },
-    // No access to YouTube's audio, so the gourd just breathes while it plays.
-    level() {
-      return reducedMotion() ? 0 : 0.25 + 0.2 * Math.sin(performance.now() / 120);
-    },
-  };
-  poster?.addEventListener('click', () => engine.play());
-  return engine;
-}
-
-// ───────────────────────── controller ─────────────────────────
 
 export function initPlayer(root: HTMLElement) {
-  const slot = requiredClosest(root, '[data-player-slot]');
-  const holder = requiredClosest(root, '[data-bar-holder]');
-  const audio = required<HTMLAudioElement>(root, 'audio');
   const takes = parseTakes(JSON.parse(required(root, '[data-takes]').textContent || '[]'));
   if (!takes.length) return;
-  const $ = <T extends HTMLElement>(sel: string) => required<T>(root, sel);
-  const play = $<HTMLButtonElement>('[data-play]');
-  const bar = $<HTMLInputElement>('[data-seek-bar]');
-  // the bar runs from 0 to its max
-  const seekSteps = Number(bar.max);
-  const cur = $('[data-cur]');
-  const dur = $('[data-dur]');
-  const speedLabel = $('[data-speed-label]');
-  const loop = $<HTMLButtonElement>('[data-loop]');
-  const download = $<HTMLAnchorElement>('[data-download]');
-  const ytLink = $<HTMLAnchorElement>('[data-youtube-link]');
-  const nowLabel = $('[data-now-label]');
-  const error = $('[data-error]');
-  const takeButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-take]')];
-  const video = slot.querySelector<HTMLElement>('[data-video]');
-  const syncIndex = Number(root.dataset.syncIndex ?? 0);
-  const lyrics = document.querySelector<HTMLElement>('[data-lyrics]');
   const lines = [...document.querySelectorAll<HTMLElement>('.line[data-time]')].map((el) => ({
     el,
     t: Number(el.dataset.time),
   }));
-  const lineTimes = lines.map((l) => l.t);
+  new Player(findUi(root), takes, lines, Number(root.dataset.syncIndex ?? 0)).wire();
+}
 
-  let index = 0;
-  let looping = false;
-  let scrubbing = false;
-  let started = false;
-  let userScrolledAt = 0;
-  let current: HTMLElement | undefined;
-  let raf = 0;
-  let smooth = 0;
+class Player implements Events {
+  private index = 0;
+  private looping = false;
+  private scrubbing = false;
+  private started = false;
+  private visible = true;
+  private userScrolledAt = 0;
+  private current: HTMLElement | undefined;
+  private raf = 0;
+  private smooth = 0;
+  private readonly lineTimes: number[];
+  private readonly audioE: ReturnType<typeof audioEngine>;
+  private readonly ytE: ReturnType<typeof youtubeEngine> | undefined;
+  private readonly session: MediaControls;
 
-  const events: Events = {
-    onPlay() {
-      error.hidden = true;
-      started = true;
-      root.classList.add('playing');
-      document.body.classList.add('playing');
-      play.setAttribute('aria-label', 'Pause');
-      lyrics?.classList.toggle('synced', synced());
-      updateDock();
-      setMediaState('playing');
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(tick);
-    },
-    onPause() {
-      root.classList.remove('playing');
-      document.body.classList.remove('playing');
-      play.setAttribute('aria-label', 'Play');
-      setAmp(0);
-      setMediaState('paused');
-      tick();
-    },
-    onEnd() {
-      const t = takes[index];
-      if (looping) {
-        engine().seek(t.start);
-        engine().play();
-        return;
-      }
-      // An audio take with an `end:` is still playing when it gets here: stop it, or tick()
-      // would see it running past its end and call onEnd again, forever.
-      engine().pause();
-      events.onPause();
-      current?.classList.remove('now');
-      current = undefined;
-      lyrics?.classList.remove('synced');
-    },
-    onMeta() {
-      dur.textContent = formatTime(range()[1]);
-      tick();
-    },
-    onError(msg) {
-      error.textContent = msg;
-      error.hidden = false;
-      events.onPause();
-    },
-  };
+  constructor(
+    private readonly ui: Ui,
+    private readonly takes: Take[],
+    private readonly lines: LyricLine[],
+    private readonly syncIndex: number,
+  ) {
+    this.lineTimes = lines.map((l) => l.t);
+    this.audioE = audioEngine(ui.audio, this);
+    const video = ui.video;
+    this.ytE = video ? youtubeEngine(required(video, '[data-frame]'), video.querySelector('[data-poster]'), this) : undefined;
+    // The engine only knows its video once a take is loaded — do it for the first take now,
+    // otherwise a song whose first recording is a YouTube video can't be played.
+    if (takes[0].kind === 'youtube') this.ytE?.load(takes[0]);
+    this.session = mediaSession({
+      take: () => this.take,
+      engine: () => this.engine(),
+      range: () => this.range(),
+      audio: ui.audio,
+      title: ui.root.dataset.title,
+    });
+  }
 
-  const audioE = audioEngine(audio, events);
-  const ytE = video ? youtubeEngine(required(video, '[data-frame]'), video.querySelector('[data-poster]'), events) : undefined;
-  const engine = (): Engine => (takes[index].kind === 'youtube' && ytE ? ytE : audioE);
-  // The engine only knows its video once a take is loaded — do it for the first take now,
-  // otherwise a song whose first recording is a YouTube video can't be played.
-  if (takes[0].kind === 'youtube') ytE?.load(takes[0]);
+  private get take(): Take {
+    return this.takes[this.index];
+  }
+
+  private engine(): Engine {
+    return this.take.kind === 'youtube' && this.ytE ? this.ytE : this.audioE;
+  }
 
   /** The playable window of the current take: [start, end]. */
-  const range = (): [number, number] => {
-    const t = takes[index];
-    return [t.start, t.end ?? engine().duration];
-  };
+  private range(): [number, number] {
+    return [this.take.start, this.take.end ?? this.engine().duration];
+  }
+
+  // ── what the engines report
+
+  onPlay() {
+    const { ui } = this;
+    ui.error.hidden = true;
+    this.started = true;
+    ui.root.classList.add('playing');
+    document.body.classList.add('playing');
+    ui.play.setAttribute('aria-label', 'Pause');
+    ui.lyrics?.classList.toggle('synced', this.synced());
+    this.updateDock();
+    this.session.setState('playing');
+    cancelAnimationFrame(this.raf);
+    this.raf = requestAnimationFrame(this.tick);
+  }
+
+  onPause() {
+    this.ui.root.classList.remove('playing');
+    document.body.classList.remove('playing');
+    this.ui.play.setAttribute('aria-label', 'Play');
+    this.setAmp(0);
+    this.session.setState('paused');
+    this.tick();
+  }
+
+  onEnd() {
+    if (this.looping) {
+      this.engine().seek(this.take.start);
+      this.engine().play();
+      return;
+    }
+    // An audio take with an `end:` is still playing when it gets here: stop it, or tick()
+    // would see it running past its end and call onEnd again, forever.
+    this.engine().pause();
+    this.onPause();
+    this.current?.classList.remove('now');
+    this.current = undefined;
+    this.ui.lyrics?.classList.remove('synced');
+  }
+
+  onMeta() {
+    this.ui.dur.textContent = formatTime(this.range()[1]);
+    this.tick();
+  }
+
+  onError(msg: string) {
+    this.ui.error.textContent = msg;
+    this.ui.error.hidden = false;
+    this.onPause();
+  }
 
   // ── karaoke
-  const synced = () => lines.length > 0 && index === syncIndex;
-  function highlight(t: number) {
-    if (!synced()) return;
-    const found = lines[lineAt(lineTimes, t)]?.el;
-    if (found === current) return;
-    current?.classList.remove('now');
-    current = found;
+
+  private synced() {
+    return this.lines.length > 0 && this.index === this.syncIndex;
+  }
+
+  private highlight(t: number) {
+    if (!this.synced()) return;
+    const found = this.lines[lineAt(this.lineTimes, t)]?.el;
+    if (found === this.current) return;
+    this.current?.classList.remove('now');
+    this.current = found;
     if (!found) return;
     found.classList.add('now');
-    if (!engine().paused && Date.now() - userScrolledAt > SCROLL_PAUSE_MS)
+    if (!this.engine().paused && Date.now() - this.userScrolledAt > SCROLL_PAUSE_MS)
       found.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
   }
-  const userScrolled = () => (userScrolledAt = Date.now());
-  addEventListener('touchmove', userScrolled, { passive: true });
-  addEventListener('wheel', userScrolled, { passive: true });
-  addEventListener('keydown', (e) => {
-    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) userScrolled();
-  });
 
-  function setAmp(v: number) {
-    smooth = v;
-    root.style.setProperty('--amp', v.toFixed(3));
+  private setAmp(v: number) {
+    this.smooth = v;
+    this.ui.root.style.setProperty('--amp', v.toFixed(3));
     document.documentElement.style.setProperty('--amp', v.toFixed(3));
   }
 
-  function tick() {
-    const e = engine();
+  /** Bring the bar, the times and the lyrics up to the engine's position; runs every frame while playing. */
+  private readonly tick = (): void => {
+    const { ui } = this;
+    const e = this.engine();
     const t = e.time;
-    const [start, end] = range();
-    if (Number.isFinite(end) && t >= end && !e.paused && takes[index].kind === 'audio') return events.onEnd();
+    const [start, end] = this.range();
+    if (Number.isFinite(end) && t >= end && !e.paused && this.take.kind === 'audio') return this.onEnd();
     const p = progress(t, start, end);
-    if (!scrubbing) {
-      bar.value = String(Math.round(p * seekSteps));
-      root.style.setProperty('--p', String(p));
+    if (!this.scrubbing) {
+      ui.bar.value = String(Math.round(p * ui.seekSteps));
+      ui.root.style.setProperty('--p', String(p));
     }
-    cur.textContent = formatTime(t);
-    bar.setAttribute('aria-valuetext', `${formatTime(t)} of ${formatTime(end)}`);
-    if (dur.textContent !== formatTime(end)) dur.textContent = formatTime(end);
-    highlight(t);
-    if (e.paused) return setAmp(0);
-    setAmp(reducedMotion() ? 0 : smooth * 0.6 + e.level() * 0.4);
-    raf = requestAnimationFrame(tick);
+    ui.cur.textContent = formatTime(t);
+    ui.bar.setAttribute('aria-valuetext', `${formatTime(t)} of ${formatTime(end)}`);
+    if (ui.dur.textContent !== formatTime(end)) ui.dur.textContent = formatTime(end);
+    this.highlight(t);
+    if (e.paused) return this.setAmp(0);
+    this.setAmp(reducedMotion() ? 0 : this.smooth * 0.6 + e.level() * 0.4);
+    this.raf = requestAnimationFrame(this.tick);
+  };
+
+  // ── takes
+
+  private selectTake(i: number) {
+    const wasPlaying = !this.engine().paused;
+    this.engine().pause();
+    this.index = i;
+    const t = this.take;
+    this.ui.error.hidden = true;
+    if (t.kind === 'audio') this.audioE.load(t.src);
+    else this.ytE?.load(t);
+    this.showTake(t, i);
+    this.current?.classList.remove('now');
+    this.current = undefined;
+    this.ui.lyrics?.classList.toggle('synced', this.synced() && wasPlaying);
+    this.ui.dur.textContent = formatTime(this.range()[1]);
+    this.session.setMetadata();
+    if (wasPlaying) {
+      this.engine().seek(t.start);
+      this.engine().play();
+    }
   }
-  audio.addEventListener('timeupdate', () => audio.paused && tick());
 
-  play.addEventListener('click', () => {
-    const e = engine();
-    if (!e.paused) return e.pause();
-    const [start, end] = range();
-    if (e.time < start - 0.5 || (Number.isFinite(end) && e.time >= end - 0.1)) e.seek(start);
-    e.play();
-  });
-
-  bar.addEventListener('input', () => {
-    scrubbing = true;
-    const [start, end] = range();
-    const fraction = Number(bar.value) / seekSteps;
-    // until the length is known there's no time to show for a position
-    if (Number.isFinite(end)) cur.textContent = formatTime(start + fraction * (end - start));
-    root.style.setProperty('--p', String(fraction));
-  });
-  bar.addEventListener('change', () => {
-    scrubbing = false;
-    const [start, end] = range();
-    if (Number.isFinite(end)) engine().seek(start + (Number(bar.value) / seekSteps) * (end - start));
-  });
-
-  $<HTMLButtonElement>('[data-speed]').addEventListener('click', () => {
-    const e = engine();
-    const next = nextSpeed(e.rate);
-    audioE.rate = next;
-    if (ytE) ytE.rate = next;
-    speedLabel.textContent = `${next}×`;
-  });
-  loop.addEventListener('click', () => {
-    looping = !looping;
-    loop.setAttribute('aria-pressed', String(looping));
-  });
-
-  function selectTake(i: number) {
-    const wasPlaying = !engine().paused;
-    engine().pause();
-    index = i;
-    const t = takes[i];
-    error.hidden = true;
-    if (t.kind === 'audio') audioE.load(t.src);
-    else ytE?.load(t);
-    if (video) video.hidden = t.kind !== 'youtube';
-    download.hidden = t.kind !== 'audio';
-    download.href = t.src;
-    ytLink.hidden = t.kind !== 'youtube';
-    ytLink.href = t.src;
-    nowLabel.innerHTML = '';
+  /** The controls that depend on which take is chosen: its links, its label, the pressed button. */
+  private showTake(t: Take, i: number) {
+    const { ui } = this;
+    if (ui.video) ui.video.hidden = t.kind !== 'youtube';
+    ui.download.hidden = t.kind !== 'audio';
+    ui.download.href = t.src;
+    ui.ytLink.hidden = t.kind !== 'youtube';
+    ui.ytLink.href = t.src;
+    ui.nowLabel.innerHTML = '';
     if (t.kind === 'youtube') {
       const badge = document.createElement('span');
       badge.className = 'yt-badge';
       badge.textContent = 'YouTube';
-      nowLabel.append(badge);
+      ui.nowLabel.append(badge);
     }
-    nowLabel.append(t.label);
-    takeButtons.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.take) === i)));
-    current?.classList.remove('now');
-    current = undefined;
-    lyrics?.classList.toggle('synced', synced() && wasPlaying);
-    dur.textContent = formatTime(range()[1]);
-    setMediaMetadata();
-    if (wasPlaying) {
-      engine().seek(t.start);
-      engine().play();
-    }
+    ui.nowLabel.append(t.label);
+    ui.takeButtons.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.take) === i)));
   }
-  takeButtons.forEach((b) => b.addEventListener('click', () => selectTake(Number(b.dataset.take))));
 
-  // tap a timestamp in the lyrics to jump there
-  document.querySelectorAll<HTMLElement>('[data-seek]').forEach((b) =>
-    b.addEventListener('click', () => {
-      if (index !== syncIndex) selectTake(syncIndex);
-      engine().seek(Number(b.dataset.seek));
-      engine().play();
-    }),
-  );
+  // ── wiring
+
+  wire() {
+    this.wireControls();
+    this.wireLyrics();
+    this.wireDock();
+  }
+
+  private wireControls() {
+    const { ui } = this;
+    ui.audio.addEventListener('timeupdate', () => ui.audio.paused && this.tick());
+    ui.play.addEventListener('click', () => {
+      const e = this.engine();
+      if (!e.paused) return e.pause();
+      const [start, end] = this.range();
+      if (e.time < start - 0.5 || (Number.isFinite(end) && e.time >= end - 0.1)) e.seek(start);
+      e.play();
+    });
+    ui.bar.addEventListener('input', () => {
+      this.scrubbing = true;
+      const [start, end] = this.range();
+      const fraction = Number(ui.bar.value) / ui.seekSteps;
+      // until the length is known there's no time to show for a position
+      if (Number.isFinite(end)) ui.cur.textContent = formatTime(start + fraction * (end - start));
+      ui.root.style.setProperty('--p', String(fraction));
+    });
+    ui.bar.addEventListener('change', () => {
+      this.scrubbing = false;
+      const [start, end] = this.range();
+      if (Number.isFinite(end)) this.engine().seek(start + (Number(ui.bar.value) / ui.seekSteps) * (end - start));
+    });
+    ui.speed.addEventListener('click', () => {
+      const next = nextSpeed(this.engine().rate);
+      this.audioE.rate = next;
+      if (this.ytE) this.ytE.rate = next;
+      ui.speedLabel.textContent = `${next}×`;
+    });
+    ui.loop.addEventListener('click', () => {
+      this.looping = !this.looping;
+      ui.loop.setAttribute('aria-pressed', String(this.looping));
+    });
+    ui.takeButtons.forEach((b) => b.addEventListener('click', () => this.selectTake(Number(b.dataset.take))));
+  }
+
+  private wireLyrics() {
+    const userScrolled = () => (this.userScrolledAt = Date.now());
+    addEventListener('touchmove', userScrolled, { passive: true });
+    addEventListener('wheel', userScrolled, { passive: true });
+    addEventListener('keydown', (e) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) userScrolled();
+    });
+    // tap a timestamp in the lyrics to jump there
+    document.querySelectorAll<HTMLElement>('[data-seek]').forEach((b) =>
+      b.addEventListener('click', () => {
+        if (this.index !== this.syncIndex) this.selectTake(this.syncIndex);
+        this.engine().seek(Number(b.dataset.seek));
+        this.engine().play();
+      }),
+    );
+  }
 
   // ── dock the controls to the bottom of the screen once they scroll out of view
-  let visible = true;
-  function updateDock() {
-    const dock = !visible && started;
+
+  private updateDock() {
+    const { root, holder } = this.ui;
+    const dock = !this.visible && this.started;
     if (dock && !root.classList.contains('docked')) holder.style.setProperty('--slot-h', `${holder.offsetHeight}px`);
     root.classList.toggle('docked', dock);
   }
-  if ('IntersectionObserver' in window) {
+
+  private wireDock() {
+    if (!('IntersectionObserver' in window)) return;
     new IntersectionObserver(
       ([e]) => {
-        visible = e.isIntersecting;
-        updateDock();
+        this.visible = e.isIntersecting;
+        this.updateDock();
       },
       // the sticky header covers the top of the page
       { rootMargin: `-${document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 64}px 0px 0px 0px` },
-    ).observe(holder);
-  }
-
-  // ── lock-screen / headphone controls (audio only — YouTube manages its own)
-  const session = 'mediaSession' in navigator ? navigator.mediaSession : undefined;
-  function setMediaMetadata() {
-    if (!session) return;
-    const t = takes[index];
-    session.metadata =
-      t.kind === 'audio'
-        ? new MediaMetadata({
-            title: root.dataset.title,
-            artist: t.performer ?? SITE.title,
-            album: t.label,
-            artwork: [SITE.icon],
-          })
-        : null;
-  }
-  function setMediaState(s: MediaSessionPlaybackState) {
-    if (!session || takes[index].kind !== 'audio') return;
-    session.playbackState = s;
-    const [start, end] = range();
-    if (Number.isFinite(end))
-      try {
-        session.setPositionState({ duration: end, position: clampTime(audio.currentTime, start, end), playbackRate: audio.playbackRate });
-      } catch {
-        // Some browsers reject a position state they consider invalid; the lock screen just skips this update.
-      }
-  }
-  if (session) {
-    setMediaMetadata();
-    const clamp = (t: number) => {
-      const [start, end] = range();
-      return clampTime(t, start, end);
-    };
-    const handlers: [MediaSessionAction, MediaSessionActionHandler][] = [
-      ['play', () => engine().play()],
-      ['pause', () => engine().pause()],
-      ['seekbackward', (d) => engine().seek(clamp(engine().time - (d.seekOffset ?? SKIP_SECONDS)))],
-      ['seekforward', (d) => engine().seek(clamp(engine().time + (d.seekOffset ?? SKIP_SECONDS)))],
-      ['seekto', (d) => d.seekTime != null && engine().seek(clamp(d.seekTime))],
-    ];
-    for (const [action, fn] of handlers)
-      try {
-        session.setActionHandler(action, fn);
-      } catch {
-        // This browser doesn't support the action: leave it out.
-      }
+    ).observe(this.ui.holder);
   }
 }

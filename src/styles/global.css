@@ -426,6 +426,26 @@ a.card:hover::after {
   }
 }
 
+/* A search input: the song search (components/Search.astro) and the glossary's
+   filter. Each sets its own height, padding and type size. */
+.search-field {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search-field::placeholder {
+  color: var(--muted);
+}
+.search-field:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 14%, transparent);
+}
+
 /* ───────────────────────── View transitions ───────────────────────── */
 
 @view-transition {

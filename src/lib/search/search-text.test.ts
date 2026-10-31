@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { containsAllWords, highlight, queryTerms, searchTerm, snippet, whyMatchedHtml } from './search-text.ts';
 

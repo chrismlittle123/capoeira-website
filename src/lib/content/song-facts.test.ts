@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { STYLES, STYLE_NAMES, originFact, originText, relatedIds, type Relatable } from './song-facts.ts';
 

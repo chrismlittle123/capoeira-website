@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Scaffold a new song:  npm run new-song  (or: npm run new-song -- "Song title" path/to/audio.mp3)
+// Scaffold a new song:  pnpm new-song  (or: pnpm new-song "Song title" path/to/audio.mp3)
 import { createInterface } from 'node:readline';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -89,4 +89,4 @@ if (audioSource && song.audio) {
   console.log(`✓ copied audio to ${dest}`);
 }
 writeFileSync(songPath, songMarkdown(song));
-console.log(`\n✓ created ${songPath}\n  Open it, fill in the lyrics, then run \`npm run dev\` to see it.`);
+console.log(`\n✓ created ${songPath}\n  Open it, fill in the lyrics, then run \`pnpm dev\` to see it.`);

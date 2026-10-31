@@ -71,10 +71,11 @@ if ('wakeLock' in navigator && awake) {
       return false;
     }
   };
-  awake.addEventListener('click', async () => {
+  const toggle = async () => {
     if (wantAwake) {
       wantAwake = false;
-      await lock?.release();
+      // a lock the browser already dropped can't be released again; either way it's gone
+      await lock?.release().catch(() => undefined);
       lock = null;
       say('Screen can sleep');
     } else if (await request()) {
@@ -84,14 +85,16 @@ if ('wakeLock' in navigator && awake) {
       say("Couldn't keep the screen on");
     }
     awake.setAttribute('aria-pressed', String(wantAwake));
-  });
+  };
+  // toggle() catches every failure itself
+  awake.addEventListener('click', () => void toggle());
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && wantAwake) void request();
   });
 }
 
-// share
-tool('share')?.addEventListener('click', async () => {
+// share: every failure is caught, ending in the link shown on screen
+async function share() {
   const data = { title: document.title, url: location.href };
   if ('share' in navigator) {
     try {
@@ -107,7 +110,8 @@ tool('share')?.addEventListener('click', async () => {
   } catch {
     say(location.href);
   }
-});
+}
+tool('share')?.addEventListener('click', () => void share());
 
 // remember recently viewed songs
 const id = location.pathname.split('/').filter(Boolean).pop();
